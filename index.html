@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vijaya Sivanjan Kommuri</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;scroll-behavior:smooth;overflow-x:hidden}
+body{
+    font-family:'Inter',-apple-system,sans-serif;
+    background:#f0ede8;
+    color:#1a1a1a;
+    -webkit-font-smoothing:antialiased;
+    cursor:default;
+}
+::selection{background:#1a1a1a;color:#f0ede8}
+
+/* ━━━ Top Bar ━━━ */
+.bar{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    background:#1a1a1a;
+    padding:10px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+}
+.bar-left{display:flex;align-items:center;gap:16px}
+.bar-name{color:#fff;font-weight:700}
+.bar-role{color:#666}
+.bar-center{color:#555}
+.bar-right{color:#666}
+.bar-right span{color:#fff;font-weight:700}
+
+/* ━━━ Bottom Nav ━━━ */
+.bottom-nav{
+    position:fixed;bottom:28px;right:32px;z-index:1000;
+    display:flex;gap:28px;
+    font-family:'Space Mono',monospace;
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+}
+.bottom-nav a{
+    color:#888;text-decoration:none;
+    transition:color 0.2s ease;
+    cursor:pointer;
+}
+.bottom-nav a:hover,.bottom-nav a.active{color:#1a1a1a;font-weight:700}
+.bottom-nav .indicator{
+    color:#1a1a1a;font-weight:700;
+    margin-right:4px;
+}
+
+/* ━━━ Watermark ━━━ */
+.watermark{
+    position:fixed;bottom:24px;left:32px;z-index:1000;
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    color:#bbb;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+}
+
+/* ━━━ Page ━━━ */
+.page{
+    min-height:100vh;
+    padding:64px 32px 80px;
+    display:none;
+    animation:pageIn 0.5s ease;
+}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ━━━ INDEX PAGE ━━━ */
+.index-hero{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:calc(100vh - 144px);
+    max-width:900px;
+    margin:0 auto;
+}
+.index-tag{
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-bottom:32px;
+}
+.index-title{
+    font-size:clamp(2.5rem, 6vw, 5rem);
+    font-weight:900;
+    line-height:1.05;
+    letter-spacing:-0.03em;
+    color:#1a1a1a;
+    margin-bottom:28px;
+}
+.index-title em{
+    font-style:italic;
+    color:#888;
+    font-weight:300;
+}
+.index-desc{
+    font-size:1.05rem;
+    line-height:1.7;
+    color:#666;
+    max-width:560px;
+    margin-bottom:40px;
+}
+.index-stats{
+    display:flex;gap:48px;
+    padding-top:32px;
+    border-top:1px solid rgba(0,0,0,0.08);
+}
+.istat-val{
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.8rem;
+    font-weight:700;
+    color:#1a1a1a;
+    letter-spacing:-0.03em;
+}
+.istat-lbl{
+    font-family:'Space Mono',monospace;
+    font-size:0.6rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    margin-top:6px;
+}
+
+/* ━━━ PROJECTS PAGE ━━━ */
+.projects-grid{
+    max-width:1100px;
+    margin:80px auto 0;
+}
+.proj-header{
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-bottom:48px;
+}
+.proj-item{
+    display:grid;
+    grid-template-columns:60px 1fr auto;
+    gap:24px;
+    align-items:baseline;
+    padding:28px 0;
+    border-bottom:1px solid rgba(0,0,0,0.06);
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+.proj-item:hover{padding-left:12px}
+.proj-item:first-child{border-top:1px solid rgba(0,0,0,0.06)}
+.proj-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:#bbb;
+    font-weight:500;
+}
+.proj-info{}
+.proj-title{
+    font-size:1.3rem;
+    font-weight:700;
+    color:#1a1a1a;
+    margin-bottom:6px;
+    letter-spacing:-0.01em;
+}
+.proj-desc{
+    font-size:0.82rem;
+    color:#888;
+    line-height:1.6;
+}
+.proj-tags{
+    display:flex;gap:6px;flex-wrap:wrap;
+    margin-top:10px;
+}
+.proj-tag{
+    font-family:'Space Mono',monospace;
+    font-size:0.55rem;
+    color:#999;
+    border:1px solid rgba(0,0,0,0.08);
+    padding:3px 8px;
+    border-radius:3px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+}
+.proj-meta{
+    text-align:right;
+}
+.proj-year{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:#bbb;
+}
+.proj-metric{
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.1rem;
+    font-weight:700;
+    color:#1a1a1a;
+    margin-top:4px;
+}
+.proj-link{
+    font-family:'Space Mono',monospace;
+    font-size:0.6rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-top:8px;
+    text-decoration:none;
+    transition:color 0.2s;
+}
+.proj-link:hover{color:#1a1a1a}
+
+/* ━━━ ABOUT PAGE ━━━ */
+.about-content{
+    max-width:700px;
+    margin:80px auto 0;
+}
+.about-header{
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-bottom:40px;
+}
+.about-name{
+    font-size:2.5rem;
+    font-weight:900;
+    letter-spacing:-0.03em;
+    margin-bottom:24px;
+}
+.about-bio{
+    font-size:1rem;
+    line-height:1.8;
+    color:#555;
+    margin-bottom:32px;
+}
+.about-section{margin-bottom:36px}
+.about-section-title{
+    font-family:'Space Mono',monospace;
+    font-size:0.6rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-bottom:16px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.about-list{list-style:none}
+.about-list li{
+    font-size:0.85rem;
+    color:#555;
+    padding:6px 0;
+    display:flex;justify-content:space-between;
+}
+.about-list .label{color:#1a1a1a;font-weight:600}
+
+/* ━━━ CONTACT PAGE ━━━ */
+.contact-content{
+    max-width:600px;
+    margin:80px auto 0;
+}
+.contact-header{
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    color:#999;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-bottom:40px;
+}
+.contact-title{
+    font-size:2.2rem;
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin-bottom:32px;
+}
+.contact-row{
+    display:flex;justify-content:space-between;
+    padding:16px 0;
+    border-bottom:1px solid rgba(0,0,0,0.06);
+    font-size:0.88rem;
+}
+.contact-label{color:#999;font-family:'Space Mono',monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em}
+.contact-val a{color:#1a1a1a;text-decoration:none;border-bottom:1px solid rgba(0,0,0,0.15);transition:border-color 0.2s}
+.contact-val a:hover{border-color:#1a1a1a}
+
+/* ━━━ Responsive ━━━ */
+@media(max-width:768px){
+    .bar{padding:10px 16px;font-size:0.6rem}
+    .bar-role,.bar-center{display:none}
+    .bottom-nav{right:16px;gap:16px;font-size:0.65rem}
+    .watermark{display:none}
+    .page{padding:64px 20px 80px}
+    .index-stats{gap:24px;flex-wrap:wrap}
+    .proj-item{grid-template-columns:40px 1fr;gap:12px}
+    .proj-meta{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="bar">
+    <div class="bar-left">
+        <span class="bar-name">VIJAYA SIVANJAN KOMMURI</span>
+        <span class="bar-role">ML ENGINEER</span>
+    </div>
+    <div class="bar-center" id="clock"></div>
+    <div class="bar-right">IEEE SPICES 2026: <span>PAPER #822</span></div>
+</div>
+
+<!-- Watermark -->
+<div class="watermark">VSK &copy; 2026</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+    <a class="active" onclick="show('index')"><span class="indicator">&blacktriangleright;</span> INDEX</a>
+    <a onclick="show('projects')">PROJECTS</a>
+    <a onclick="show('about')">ABOUT</a>
+    <a onclick="show('contact')">CONTACT</a>
+</div>
+
+<!-- INDEX -->
+<div id="index" class="page active">
+<div class="index-hero">
+    <div class="index-tag">Malla Reddy University &mdash; Hyderabad, India</div>
+    <h1 class="index-title">Building ML systems<br>for <em>critical</em><br>infrastructure.</h1>
+    <p class="index-desc">I design machine learning systems for power grid resilience, IoT security, and financial risk. Currently focused on compound weather event modeling for state-agnostic outage prediction.</p>
+    <div class="index-stats">
+        <div>
+            <div class="istat-val">0.967</div>
+            <div class="istat-lbl">AUC-ROC</div>
+        </div>
+        <div>
+            <div class="istat-val">138</div>
+            <div class="istat-lbl">Features</div>
+        </div>
+        <div>
+            <div class="istat-val">3</div>
+            <div class="istat-lbl">States Validated</div>
+        </div>
+        <div>
+            <div class="istat-val">57</div>
+            <div class="istat-lbl">Tests Passing</div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- PROJECTS -->
+<div id="projects" class="page">
+<div class="projects-grid">
+    <div class="proj-header">Selected Projects &mdash; 04</div>
+
+    <div class="proj-item" onclick="window.open('https://darthaether.github.io/outage-prediction-system/','_blank')">
+        <div class="proj-num">01</div>
+        <div class="proj-info">
+            <div class="proj-title">GridShield AI</div>
+            <div class="proj-desc">Compound weather event interaction modeling with calibrated uncertainty for state-agnostic power outage prediction. XGBoost/LightGBM ensemble, H3 spatial indexing, isotonic calibration. IEEE SPICES 2026 submission.</div>
+            <div class="proj-tags">
+                <span class="proj-tag">XGBoost</span>
+                <span class="proj-tag">LightGBM</span>
+                <span class="proj-tag">H3</span>
+                <span class="proj-tag">SHAP</span>
+                <span class="proj-tag">FastAPI</span>
+                <span class="proj-tag">TimescaleDB</span>
+            </div>
+        </div>
+        <div class="proj-meta">
+            <div class="proj-year">2026</div>
+            <div class="proj-metric">0.967</div>
+            <a class="proj-link" href="https://github.com/DarthAether/outage-prediction-system" target="_blank">GitHub &nearr;</a>
+        </div>
+    </div>
+
+    <div class="proj-item" onclick="window.open('https://github.com/DarthAether/IoTGuard','_blank')">
+        <div class="proj-num">02</div>
+        <div class="proj-info">
+            <div class="proj-title">IoTGuard</div>
+            <div class="proj-desc">BERT-powered IoT command risk analyzer with real-time threat classification. Processes smart home automation rules and flags security/privacy risks before deployment.</div>
+            <div class="proj-tags">
+                <span class="proj-tag">BERT</span>
+                <span class="proj-tag">NLP</span>
+                <span class="proj-tag">IoT</span>
+                <span class="proj-tag">Security</span>
+                <span class="proj-tag">PyQt5</span>
+            </div>
+        </div>
+        <div class="proj-meta">
+            <div class="proj-year">2025</div>
+            <a class="proj-link" href="https://github.com/DarthAether/IoTGuard" target="_blank">GitHub &nearr;</a>
+        </div>
+    </div>
+
+    <div class="proj-item" onclick="window.open('https://github.com/DarthAether/threat-identification-system','_blank')">
+        <div class="proj-num">03</div>
+        <div class="proj-info">
+            <div class="proj-title">Threat Identification System</div>
+            <div class="proj-desc">Real-time AI surveillance system for weapon detection using YOLOv5 with DeepFace identity verification. Automated email and audio alerting on threat detection.</div>
+            <div class="proj-tags">
+                <span class="proj-tag">YOLOv5</span>
+                <span class="proj-tag">DeepFace</span>
+                <span class="proj-tag">OpenCV</span>
+                <span class="proj-tag">PyTorch</span>
+            </div>
+        </div>
+        <div class="proj-meta">
+            <div class="proj-year">2025</div>
+            <a class="proj-link" href="https://github.com/DarthAether/threat-identification-system" target="_blank">GitHub &nearr;</a>
+        </div>
+    </div>
+
+    <div class="proj-item" onclick="window.open('https://github.com/DarthAether/credit-risk-xai-project','_blank')">
+        <div class="proj-num">04</div>
+        <div class="proj-info">
+            <div class="proj-title">Credit Risk XAI</div>
+            <div class="proj-desc">Credit risk classification with Random Forest and SHAP-based model explainability. Global and local feature attribution for regulatory-compliant loan decisions.</div>
+            <div class="proj-tags">
+                <span class="proj-tag">Random Forest</span>
+                <span class="proj-tag">SHAP</span>
+                <span class="proj-tag">XAI</span>
+                <span class="proj-tag">FinTech</span>
+            </div>
+        </div>
+        <div class="proj-meta">
+            <div class="proj-year">2025</div>
+            <a class="proj-link" href="https://github.com/DarthAether/credit-risk-xai-project" target="_blank">GitHub &nearr;</a>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="page">
+<div class="about-content">
+    <div class="about-header">About</div>
+    <h2 class="about-name">Vijaya Sivanjan Kommuri</h2>
+    <p class="about-bio">Final year B.Tech student specializing in Artificial Intelligence and Machine Learning at Malla Reddy University, Hyderabad. I build machine learning systems for critical infrastructure — power grid resilience, IoT security, financial risk. My work combines gradient-boosted ensembles, spatial indexing, and uncertainty quantification to solve problems where prediction reliability matters.</p>
+    <p class="about-bio">Currently an IEEE SPICES 2026 author with a paper on compound weather event modeling for power outage prediction (AUC-ROC 0.967). Heading to graduate school in August 2026.</p>
+
+    <div class="about-section">
+        <div class="about-section-title">Education</div>
+        <ul class="about-list">
+            <li><span class="label">B.Tech CSE (AI & ML)</span><span>Malla Reddy University, 2022-2026</span></li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <div class="about-section-title">Publications</div>
+        <ul class="about-list">
+            <li><span class="label">IEEE SPICES 2026</span><span>Paper #822, Submitted</span></li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <div class="about-section-title">Stack</div>
+        <ul class="about-list">
+            <li><span class="label">ML/DL</span><span>XGBoost, LightGBM, PyTorch, scikit-learn</span></li>
+            <li><span class="label">NLP</span><span>BERT, Sentence-BERT, Transformers</span></li>
+            <li><span class="label">Vision</span><span>YOLOv5, DeepFace, OpenCV</span></li>
+            <li><span class="label">Backend</span><span>FastAPI, PostgreSQL, Redis, Docker</span></li>
+            <li><span class="label">Frontend</span><span>Next.js, TypeScript, React</span></li>
+            <li><span class="label">Data</span><span>pandas, H3, SHAP, Plotly</span></li>
+        </ul>
+    </div>
+</div>
+</div>
+
+<!-- CONTACT -->
+<div id="contact" class="page">
+<div class="contact-content">
+    <div class="contact-header">Contact</div>
+    <h2 class="contact-title">Let's connect.</h2>
+    <div class="contact-row">
+        <span class="contact-label">Email</span>
+        <span class="contact-val"><a href="mailto:vjkommuri@gmail.com">vjkommuri@gmail.com</a></span>
+    </div>
+    <div class="contact-row">
+        <span class="contact-label">GitHub</span>
+        <span class="contact-val"><a href="https://github.com/DarthAether" target="_blank">github.com/DarthAether</a></span>
+    </div>
+    <div class="contact-row">
+        <span class="contact-label">LinkedIn</span>
+        <span class="contact-val"><a href="#">Add your LinkedIn</a></span>
+    </div>
+    <div class="contact-row">
+        <span class="contact-label">Location</span>
+        <span class="contact-val">Hyderabad, India</span>
+    </div>
+    <div class="contact-row">
+        <span class="contact-label">Availability</span>
+        <span class="contact-val">Open to grad school &amp; research positions</span>
+    </div>
+</div>
+</div>
+
+<script>
+// Live clock
+function updateClock(){
+    const now=new Date();
+    const opts={timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
+    const date=now.toLocaleDateString('en-GB',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'2-digit'}).toUpperCase();
+    const time=now.toLocaleTimeString('en-GB',opts);
+    document.getElementById('clock').textContent=`IST ${date}  ${time}`;
+}
+updateClock();
+setInterval(updateClock,1000);
+
+// Navigation
+function show(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav a').forEach(a=>{
+        a.classList.remove('active');
+        a.innerHTML=a.textContent;
+    });
+    document.getElementById(id).classList.add('active');
+    event.target.closest('a').classList.add('active');
+    event.target.closest('a').innerHTML='<span class="indicator">&blacktriangleright;</span> '+event.target.closest('a').textContent.trim();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
