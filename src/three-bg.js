@@ -8,7 +8,7 @@ let renderer, scene, camera, particles, lineMesh
 let mouseX = 0, mouseY = 0
 let frameId = null
 const PARTICLE_COUNT = 1000
-const CONNECTION_DISTANCE = 1.0
+const CONNECTION_DISTANCE = 0.8
 
 export function initThreeBackground() {
   // Skip on mobile
@@ -27,7 +27,7 @@ export function initThreeBackground() {
     0.1,
     100
   )
-  camera.position.z = 4
+  camera.position.z = 6
 
   // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -45,7 +45,7 @@ export function initThreeBackground() {
     // Distribute in a sphere
     const theta = Math.random() * Math.PI * 2
     const phi = Math.acos(2 * Math.random() - 1)
-    const r = Math.cbrt(Math.random()) * 2.5
+    const r = Math.cbrt(Math.random()) * 4.0
 
     positions[i3] = r * Math.sin(phi) * Math.cos(theta)
     positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta)
@@ -61,10 +61,10 @@ export function initThreeBackground() {
 
   const particleMat = new THREE.PointsMaterial({
     color: 0x818cf8,
-    size: 2,
+    size: 0.03,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.6,
+    opacity: 0.5,
     depthWrite: false,
   })
 
@@ -81,7 +81,7 @@ export function initThreeBackground() {
   const lineMat = new THREE.LineBasicMaterial({
     color: 0x818cf8,
     transparent: true,
-    opacity: 0.15,
+    opacity: 0.08,
     depthWrite: false,
   })
 
