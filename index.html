@@ -3,232 +3,494 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vijaya Sivanjan Kommuri</title>
+  <title>Vijaya Sivanjan Kommuri — ML Engineer</title>
+  <meta name="description" content="ML Engineer building production-grade systems for critical infrastructure. IEEE SPICES 2026 author." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
 
-  <!-- Loader -->
-  <div class="loader" id="loader">
-    <div class="loader-inner">
-      <div class="loader-line"></div>
-      <span class="loader-text">VSK</span>
+  <!-- ═══ PRELOADER ═══ -->
+  <div class="preloader">
+    <div class="preloader-inner">
+      <span class="preloader-counter">000</span>
+      <div class="preloader-bar">
+        <div class="preloader-bar-inner"></div>
+      </div>
+      <span class="preloader-label">VSK</span>
     </div>
   </div>
 
-  <!-- Cursor -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-dot" id="cursorDot"></div>
+  <!-- ═══ CUSTOM CURSOR ═══ -->
+  <div class="cursor"></div>
+  <div class="cursor-dot"></div>
 
-  <!-- Top Bar -->
-  <header class="bar">
-    <div class="bar-left">
-      <span class="bar-name">VIJAYA SIVANJAN KOMMURI</span>
-      <span class="bar-dot"></span>
-      <span class="bar-role">ML ENGINEER</span>
+  <!-- ═══ FILM GRAIN ═══ -->
+  <canvas id="grain-canvas"></canvas>
+
+  <!-- ═══ TOP BAR ═══ -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <span class="top-bar-name">VIJAYA SIVANJAN KOMMURI</span>
+      <span class="top-bar-dot"></span>
+      <span class="top-bar-role">ML ENGINEER</span>
     </div>
-    <div class="bar-center" id="clock"></div>
-    <div class="bar-right">
-      <span class="bar-badge">IEEE SPICES 2026</span>
+    <div class="top-bar-center">
+      <span class="top-bar-clock" id="clock">00:00:00</span>
+    </div>
+    <div class="top-bar-right">
+      <span class="top-bar-badge">IEEE SPICES 2026</span>
     </div>
   </header>
 
-  <!-- Main Content (smooth scroll wrapper) -->
-  <main id="smooth-content">
+  <!-- ═══ NAV DOTS ═══ -->
+  <nav class="nav-dots" aria-label="Section navigation">
+    <button class="nav-dot active" data-target="hero" aria-label="Hero section"></button>
+    <button class="nav-dot" data-target="projects" aria-label="Projects section"></button>
+    <button class="nav-dot" data-target="about" aria-label="About section"></button>
+    <button class="nav-dot" data-target="timeline" aria-label="Timeline section"></button>
+    <button class="nav-dot" data-target="metrics" aria-label="Metrics section"></button>
+    <button class="nav-dot" data-target="contact" aria-label="Contact section"></button>
+  </nav>
 
-    <!-- HERO -->
-    <section class="section hero" data-section="hero">
-      <div class="hero-inner">
-        <div class="hero-tag" data-animate="fade-up">MALLA REDDY UNIVERSITY — HYDERABAD, INDIA</div>
-        <h1 class="hero-title">
-          <span class="line" data-animate="reveal">Building ML systems</span>
-          <span class="line" data-animate="reveal">for <em>critical</em></span>
-          <span class="line" data-animate="reveal">infrastructure.</span>
-        </h1>
-        <p class="hero-desc" data-animate="fade-up">I design machine learning systems for power grid resilience, IoT security, and financial risk. Compound weather event modeling. Calibrated uncertainty. State-agnostic deployment.</p>
-        <div class="hero-stats" data-animate="fade-up">
-          <div class="hero-stat">
-            <div class="hero-stat-val" data-count="0.967">0</div>
-            <div class="hero-stat-lbl">AUC-ROC</div>
-          </div>
-          <div class="hero-stat">
-            <div class="hero-stat-val" data-count="138">0</div>
-            <div class="hero-stat-lbl">FEATURES</div>
-          </div>
-          <div class="hero-stat">
-            <div class="hero-stat-val" data-count="3">0</div>
-            <div class="hero-stat-lbl">STATES VALIDATED</div>
-          </div>
-          <div class="hero-stat">
-            <div class="hero-stat-val" data-count="57">0</div>
-            <div class="hero-stat-lbl">TESTS PASSING</div>
-          </div>
+  <!-- ═══ SECTION 1: HERO ═══ -->
+  <section class="section section-hero" data-section="hero" data-bg="#050505" data-accent="#818cf8">
+    <div id="hero-canvas"></div>
+    <div class="hero-content">
+      <span class="hero-tag">MALLA REDDY UNIVERSITY &mdash; HYDERABAD</span>
+      <h1 class="hero-title">
+        <span class="line"><span class="line-inner">Building ML systems</span></span>
+        <span class="line"><span class="line-inner">for critical</span></span>
+        <span class="line"><span class="line-inner">infrastructure.</span></span>
+      </h1>
+      <p class="hero-desc">
+        I design and build production-grade machine learning pipelines, from feature engineering
+        to deployment. Currently focused on compound weather event modeling and enterprise security systems.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-count="0.967">0.000</span>
+          <span class="hero-stat-label">AUC-ROC</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-count="138">0</span>
+          <span class="hero-stat-label">FEATURES</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-count="3">0</span>
+          <span class="hero-stat-label">STATES</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" data-count="213">0</span>
+          <span class="hero-stat-label">TESTS</span>
         </div>
       </div>
-      <div class="scroll-indicator" data-animate="fade-up">
-        <span>SCROLL</span>
-        <div class="scroll-line"></div>
+    </div>
+    <div class="scroll-indicator">
+      <span class="scroll-indicator-text">SCROLL</span>
+      <div class="scroll-indicator-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 2: TECH MARQUEE ═══ -->
+  <section class="section section-marquee" data-section="marquee">
+    <div class="marquee">
+      <div class="marquee-track">
+        <span class="marquee-item">XGBOOST</span>
+        <span class="marquee-item">LIGHTGBM</span>
+        <span class="marquee-item">PYTORCH</span>
+        <span class="marquee-item">FASTAPI</span>
+        <span class="marquee-item">NEXT.JS</span>
+        <span class="marquee-item">THREE.JS</span>
+        <span class="marquee-item">GSAP</span>
+        <span class="marquee-item">REACT</span>
+        <span class="marquee-item">TYPESCRIPT</span>
+        <!-- duplicate for seamless loop -->
+        <span class="marquee-item">XGBOOST</span>
+        <span class="marquee-item">LIGHTGBM</span>
+        <span class="marquee-item">PYTORCH</span>
+        <span class="marquee-item">FASTAPI</span>
+        <span class="marquee-item">NEXT.JS</span>
+        <span class="marquee-item">THREE.JS</span>
+        <span class="marquee-item">GSAP</span>
+        <span class="marquee-item">REACT</span>
+        <span class="marquee-item">TYPESCRIPT</span>
       </div>
-    </section>
-
-    <!-- MARQUEE -->
-    <section class="marquee-section">
-      <div class="marquee">
-        <div class="marquee-track">
-          <span>XGBOOST</span><span class="marquee-dot">◆</span>
-          <span>LIGHTGBM</span><span class="marquee-dot">◆</span>
-          <span>PYTORCH</span><span class="marquee-dot">◆</span>
-          <span>FASTAPI</span><span class="marquee-dot">◆</span>
-          <span>H3 SPATIAL</span><span class="marquee-dot">◆</span>
-          <span>SHAP</span><span class="marquee-dot">◆</span>
-          <span>BERT</span><span class="marquee-dot">◆</span>
-          <span>YOLOV5</span><span class="marquee-dot">◆</span>
-          <span>NEXT.JS</span><span class="marquee-dot">◆</span>
-          <span>DOCKER</span><span class="marquee-dot">◆</span>
-          <span>TIMESCALEDB</span><span class="marquee-dot">◆</span>
-          <span>REDIS</span><span class="marquee-dot">◆</span>
-          <!-- duplicate for seamless loop -->
-          <span>XGBOOST</span><span class="marquee-dot">◆</span>
-          <span>LIGHTGBM</span><span class="marquee-dot">◆</span>
-          <span>PYTORCH</span><span class="marquee-dot">◆</span>
-          <span>FASTAPI</span><span class="marquee-dot">◆</span>
-          <span>H3 SPATIAL</span><span class="marquee-dot">◆</span>
-          <span>SHAP</span><span class="marquee-dot">◆</span>
-          <span>BERT</span><span class="marquee-dot">◆</span>
-          <span>YOLOV5</span><span class="marquee-dot">◆</span>
-          <span>NEXT.JS</span><span class="marquee-dot">◆</span>
-          <span>DOCKER</span><span class="marquee-dot">◆</span>
-          <span>TIMESCALEDB</span><span class="marquee-dot">◆</span>
-          <span>REDIS</span><span class="marquee-dot">◆</span>
-        </div>
+    </div>
+    <div class="marquee marquee-reverse">
+      <div class="marquee-track marquee-track-reverse">
+        <span class="marquee-item">DOCKER</span>
+        <span class="marquee-item">POSTGRESQL</span>
+        <span class="marquee-item">REDIS</span>
+        <span class="marquee-item">PROMETHEUS</span>
+        <span class="marquee-item">GRAFANA</span>
+        <span class="marquee-item">TIMESCALEDB</span>
+        <span class="marquee-item">MQTT</span>
+        <span class="marquee-item">ONNX</span>
+        <span class="marquee-item">ALEMBIC</span>
+        <!-- duplicate for seamless loop -->
+        <span class="marquee-item">DOCKER</span>
+        <span class="marquee-item">POSTGRESQL</span>
+        <span class="marquee-item">REDIS</span>
+        <span class="marquee-item">PROMETHEUS</span>
+        <span class="marquee-item">GRAFANA</span>
+        <span class="marquee-item">TIMESCALEDB</span>
+        <span class="marquee-item">MQTT</span>
+        <span class="marquee-item">ONNX</span>
+        <span class="marquee-item">ALEMBIC</span>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- PROJECTS -->
-    <section class="section projects" data-section="projects">
-      <div class="container">
-        <div class="section-label" data-animate="fade-up">SELECTED PROJECTS — 04</div>
+  <!-- ═══ SECTION 3: FEATURED PROJECTS ═══ -->
+  <section class="section section-projects" data-section="projects" data-bg="#080808" data-accent="#f59e0b">
+    <span class="section-label">FEATURED PROJECTS &mdash; 03</span>
 
-        <a class="project-row" href="https://darthaether.github.io/outage-prediction-system/" target="_blank" data-animate="fade-up">
-          <div class="project-num">01</div>
-          <div class="project-content">
-            <h3 class="project-name">GridShield AI</h3>
-            <p class="project-desc">Compound weather event modeling for state-agnostic power outage prediction. 138 features, calibrated uncertainty, cross-state generalization.</p>
-            <div class="project-tags"><span>XGBoost</span><span>LightGBM</span><span>H3</span><span>SHAP</span><span>FastAPI</span></div>
+    <!-- Project 01 -->
+    <div class="project-showcase" data-color="#f59e0b">
+      <div class="project-number">01</div>
+      <div class="project-body">
+        <h3 class="project-name">GridShield AI</h3>
+        <p class="project-desc">
+          Compound weather event modeling for state-agnostic power outage prediction.
+          XGBoost/LightGBM ensemble with calibrated uncertainty quantification.
+        </p>
+        <div class="project-metrics">
+          <div class="project-metric">
+            <span class="project-metric-value">7,600+</span>
+            <span class="project-metric-label">LoC</span>
           </div>
-          <div class="project-right">
-            <div class="project-year">2026</div>
-            <div class="project-metric">0.967</div>
-            <div class="project-arrow">↗</div>
+          <div class="project-metric">
+            <span class="project-metric-value">57</span>
+            <span class="project-metric-label">Tests</span>
           </div>
-        </a>
-
-        <a class="project-row" href="https://github.com/DarthAether/IoTGuard" target="_blank" data-animate="fade-up">
-          <div class="project-num">02</div>
-          <div class="project-content">
-            <h3 class="project-name">IoTGuard</h3>
-            <p class="project-desc">BERT-powered IoT command risk analyzer with real-time threat classification and GUI interface for smart home security.</p>
-            <div class="project-tags"><span>BERT</span><span>NLP</span><span>IoT</span><span>Security</span></div>
+          <div class="project-metric">
+            <span class="project-metric-value">0.967</span>
+            <span class="project-metric-label">AUC-ROC</span>
           </div>
-          <div class="project-right">
-            <div class="project-year">2025</div>
-            <div class="project-arrow">↗</div>
-          </div>
-        </a>
-
-        <a class="project-row" href="https://github.com/DarthAether/threat-identification-system" target="_blank" data-animate="fade-up">
-          <div class="project-num">03</div>
-          <div class="project-content">
-            <h3 class="project-name">Threat Identification System</h3>
-            <p class="project-desc">Real-time AI surveillance with YOLOv5 weapon detection and DeepFace identity verification. Automated alerting pipeline.</p>
-            <div class="project-tags"><span>YOLOv5</span><span>DeepFace</span><span>OpenCV</span><span>PyTorch</span></div>
-          </div>
-          <div class="project-right">
-            <div class="project-year">2025</div>
-            <div class="project-arrow">↗</div>
-          </div>
-        </a>
-
-        <a class="project-row" href="https://github.com/DarthAether/credit-risk-xai-project" target="_blank" data-animate="fade-up">
-          <div class="project-num">04</div>
-          <div class="project-content">
-            <h3 class="project-name">Credit Risk XAI</h3>
-            <p class="project-desc">Credit risk classification with Random Forest and SHAP explainability for regulatory-compliant financial decisions.</p>
-            <div class="project-tags"><span>Random Forest</span><span>SHAP</span><span>XAI</span><span>FinTech</span></div>
-          </div>
-          <div class="project-right">
-            <div class="project-year">2025</div>
-            <div class="project-arrow">↗</div>
-          </div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="section about" data-section="about">
-      <div class="container narrow">
-        <div class="section-label" data-animate="fade-up">ABOUT</div>
-        <h2 class="about-name" data-animate="fade-up">Vijaya Sivanjan<br>Kommuri</h2>
-        <p class="about-bio" data-animate="fade-up">Final year B.Tech student specializing in AI and Machine Learning at Malla Reddy University. I build ML systems for critical infrastructure — power grid resilience, IoT security, financial risk.</p>
-        <p class="about-bio" data-animate="fade-up">Currently an IEEE SPICES 2026 author. Heading to graduate school in August 2026.</p>
-
-        <div class="about-grid" data-animate="fade-up">
-          <div class="about-block">
-            <div class="about-block-title">EDUCATION</div>
-            <div class="about-item"><span class="about-key">B.Tech CSE (AI & ML)</span><span class="about-val">Malla Reddy University, 2022–26</span></div>
-          </div>
-          <div class="about-block">
-            <div class="about-block-title">PUBLICATIONS</div>
-            <div class="about-item"><span class="about-key">IEEE SPICES 2026</span><span class="about-val">Paper #822, Submitted</span></div>
-          </div>
-          <div class="about-block">
-            <div class="about-block-title">STACK</div>
-            <div class="about-item"><span class="about-key">ML/DL</span><span class="about-val">XGBoost, LightGBM, PyTorch</span></div>
-            <div class="about-item"><span class="about-key">NLP</span><span class="about-val">BERT, Transformers</span></div>
-            <div class="about-item"><span class="about-key">Vision</span><span class="about-val">YOLOv5, DeepFace, OpenCV</span></div>
-            <div class="about-item"><span class="about-key">Backend</span><span class="about-val">FastAPI, PostgreSQL, Docker</span></div>
-            <div class="about-item"><span class="about-key">Frontend</span><span class="about-val">Next.js, TypeScript, React</span></div>
+          <div class="project-metric">
+            <span class="project-metric-value">3-Model</span>
+            <span class="project-metric-label">Ensemble</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section class="section contact" data-section="contact">
-      <div class="container narrow">
-        <div class="section-label" data-animate="fade-up">CONTACT</div>
-        <h2 class="contact-title" data-animate="fade-up">Let's connect.</h2>
-        <div class="contact-links" data-animate="fade-up">
-          <a class="contact-row" href="mailto:vjkommuri@gmail.com">
-            <span class="contact-lbl">EMAIL</span>
-            <span class="contact-val">vjkommuri@gmail.com</span>
-          </a>
-          <a class="contact-row" href="https://github.com/DarthAether" target="_blank">
-            <span class="contact-lbl">GITHUB</span>
-            <span class="contact-val">github.com/DarthAether</span>
-          </a>
-          <div class="contact-row">
-            <span class="contact-lbl">LOCATION</span>
-            <span class="contact-val">Hyderabad, India</span>
-          </div>
-          <div class="contact-row">
-            <span class="contact-lbl">STATUS</span>
-            <span class="contact-val">Open to grad school & research</span>
-          </div>
+        <div class="project-tags">
+          <span class="project-tag">XGBoost</span>
+          <span class="project-tag">LightGBM</span>
+          <span class="project-tag">LSTM</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">H3</span>
+          <span class="project-tag">SHAP</span>
+          <span class="project-tag">TimescaleDB</span>
+          <span class="project-tag">Docker</span>
+        </div>
+        <div class="project-links">
+          <a href="https://darthaether.github.io/outage-prediction-system/" target="_blank" rel="noopener" class="project-link">View Docs &rarr;</a>
+          <a href="https://github.com/DarthAether/outage-prediction-system" target="_blank" rel="noopener" class="project-link">GitHub &rarr;</a>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-      <span>VSK © 2026</span>
-      <span>BUILT WITH VITE + GSAP + LENIS</span>
-    </footer>
+    <!-- Project 02 -->
+    <div class="project-showcase" data-color="#f43f5e">
+      <div class="project-number">02</div>
+      <div class="project-body">
+        <h3 class="project-name">ThreatSight</h3>
+        <p class="project-desc">
+          Enterprise AI-powered security surveillance with real-time weapon detection,
+          face recognition, and multi-channel alerting system.
+        </p>
+        <div class="project-metrics">
+          <div class="project-metric">
+            <span class="project-metric-value">12,383</span>
+            <span class="project-metric-label">LoC</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">213</span>
+            <span class="project-metric-label">Tests</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">121</span>
+            <span class="project-metric-label">Files</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">11</span>
+            <span class="project-metric-label">Prometheus Metrics</span>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">YOLOv5</span>
+          <span class="project-tag">ONNX</span>
+          <span class="project-tag">DeepFace</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">Redis</span>
+          <span class="project-tag">Prometheus</span>
+          <span class="project-tag">Grafana</span>
+        </div>
+        <div class="project-links">
+          <a href="https://darthaether.github.io/threat-identification-system/" target="_blank" rel="noopener" class="project-link">View Docs &rarr;</a>
+          <a href="https://github.com/DarthAether/threat-identification-system" target="_blank" rel="noopener" class="project-link">GitHub &rarr;</a>
+        </div>
+      </div>
+    </div>
 
-  </main>
+    <!-- Project 03 -->
+    <div class="project-showcase" data-color="#06b6d4">
+      <div class="project-number">03</div>
+      <div class="project-body">
+        <h3 class="project-name">IoTGuard</h3>
+        <p class="project-desc">
+          Enterprise IoT command security platform with LLM-based risk analysis,
+          rule engine, MQTT integration, and real-time monitoring.
+        </p>
+        <div class="project-metrics">
+          <div class="project-metric">
+            <span class="project-metric-value">10,255</span>
+            <span class="project-metric-label">LoC</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">92</span>
+            <span class="project-metric-label">Files</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">6</span>
+            <span class="project-metric-label">ORM Models</span>
+          </div>
+          <div class="project-metric">
+            <span class="project-metric-value">MQTT + Gemini</span>
+            <span class="project-metric-label">AI Integration</span>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">MQTT</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">Redis</span>
+          <span class="project-tag">Prometheus</span>
+          <span class="project-tag">Grafana</span>
+        </div>
+        <div class="project-links">
+          <a href="https://darthaether.github.io/IoTGuard/" target="_blank" rel="noopener" class="project-link">View Docs &rarr;</a>
+          <a href="https://github.com/DarthAether/IoTGuard" target="_blank" rel="noopener" class="project-link">GitHub &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 4: PROJECT GRID ═══ -->
+  <section class="section section-grid" data-section="grid" data-bg="#0a0a0a">
+    <span class="section-label">MORE WORK</span>
+    <div class="grid-container">
+      <a href="https://github.com/DarthAether/credit-risk-xai" target="_blank" rel="noopener" class="grid-card">
+        <span class="grid-card-year">2025</span>
+        <h4 class="grid-card-title">Credit Risk XAI</h4>
+        <p class="grid-card-desc">Random Forest + SHAP explainability for credit risk assessment with transparent decision-making.</p>
+      </a>
+      <a href="https://github.com/DarthAether/SecureIoT-NLP" target="_blank" rel="noopener" class="grid-card">
+        <span class="grid-card-year">2025</span>
+        <h4 class="grid-card-title">SecureIoT-NLP</h4>
+        <p class="grid-card-desc">NLP security for IoT automation rules. Natural language command validation and threat analysis.</p>
+      </a>
+      <a href="https://github.com/DarthAether/amazon-clone" target="_blank" rel="noopener" class="grid-card">
+        <span class="grid-card-year">2024</span>
+        <h4 class="grid-card-title">Amazon Clone</h4>
+        <p class="grid-card-desc">Frontend e-commerce UI with responsive design, cart functionality, and product catalog.</p>
+      </a>
+      <div class="grid-card grid-card-active">
+        <span class="grid-card-year">2026</span>
+        <h4 class="grid-card-title">Portfolio v2</h4>
+        <p class="grid-card-desc">This site. Vite + Three.js + GSAP + Lenis. Dark cinematic design with film grain overlay.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 5: ABOUT ═══ -->
+  <section class="section section-about" data-section="about" data-bg="#080a05" data-accent="#10b981">
+    <span class="section-label">ABOUT</span>
+    <div class="about-content">
+      <h2 class="about-name">Vijaya Sivanjan<br>Kommuri</h2>
+      <p class="about-bio">
+        I am a final-year B.Tech student in Computer Science (AI & ML) at Malla Reddy University,
+        Hyderabad. My work sits at the intersection of machine learning engineering and systems design,
+        building pipelines that survive contact with production traffic.
+      </p>
+      <p class="about-bio">
+        My research on compound weather event modeling for power outage prediction is under review
+        at IEEE SPICES 2026. I have also built enterprise-grade systems for security surveillance
+        and IoT command analysis, each with comprehensive testing, monitoring, and containerized deployment.
+      </p>
+      <div class="skills">
+        <div class="skill">
+          <div class="skill-label">
+            <span>ML / Deep Learning</span>
+            <span>95%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+        </div>
+        <div class="skill">
+          <div class="skill-label">
+            <span>NLP</span>
+            <span>88%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+        </div>
+        <div class="skill">
+          <div class="skill-label">
+            <span>Computer Vision</span>
+            <span>85%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+        </div>
+        <div class="skill">
+          <div class="skill-label">
+            <span>Backend Engineering</span>
+            <span>90%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+        </div>
+        <div class="skill">
+          <div class="skill-label">
+            <span>Frontend</span>
+            <span>75%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+        </div>
+        <div class="skill">
+          <div class="skill-label">
+            <span>DevOps / MLOps</span>
+            <span>82%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 6: TIMELINE ═══ -->
+  <section class="section section-timeline" data-section="timeline" data-bg="#070707">
+    <span class="section-label">JOURNEY</span>
+    <div class="timeline">
+      <div class="timeline-line">
+        <svg preserveAspectRatio="none" viewBox="0 0 2 100" class="timeline-svg">
+          <line x1="1" y1="0" x2="1" y2="100" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="timeline-entry left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-year">2022</span>
+          <p class="timeline-text">Started B.Tech CSE (AI & ML) at Malla Reddy University, Hyderabad.</p>
+        </div>
+      </div>
+      <div class="timeline-entry right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-year">2024</span>
+          <p class="timeline-text">First ML projects &mdash; credit risk modeling, IoT security analysis.</p>
+        </div>
+      </div>
+      <div class="timeline-entry left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-year">2025</span>
+          <p class="timeline-text">Enterprise systems &mdash; threat detection, IoT command analysis, production deployment.</p>
+        </div>
+      </div>
+      <div class="timeline-entry right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-year">2026</span>
+          <p class="timeline-text">IEEE SPICES 2026 paper. Graduate school applications. Portfolio v2 launch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 7: METRICS ═══ -->
+  <section class="section section-metrics" data-section="metrics" data-bg="#060606">
+    <span class="section-label">BY THE NUMBERS</span>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-value" data-count="14">0</span>
+        <span class="metric-label">Repositories</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" data-count="35000">0</span>
+        <span class="metric-label">Lines of Code</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" data-count="300">0</span>
+        <span class="metric-label">Tests</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" data-count="5">0</span>
+        <span class="metric-label">Languages</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" data-count="3">0</span>
+        <span class="metric-label">Enterprise Systems</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" data-count="1">0</span>
+        <span class="metric-label">IEEE Publication</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 8: RESEARCH ═══ -->
+  <section class="section section-research" data-section="research" data-bg="#080808">
+    <span class="section-label">RESEARCH</span>
+    <div class="research-card">
+      <div class="research-header">
+        <span class="research-status">Under Review</span>
+        <span class="research-journal">IEEE SPICES 2026 &mdash; Paper #822</span>
+      </div>
+      <h3 class="research-title">Compound Weather Event Modeling for State-Agnostic Power Outage Prediction</h3>
+      <div class="research-contributions">
+        <h4 class="research-contributions-heading">Key Contributions</h4>
+        <ul class="research-list">
+          <li>3-model ensemble (XGBoost, LightGBM, LSTM) with calibrated probability outputs</li>
+          <li>Compound weather event feature engineering capturing multi-hazard interactions</li>
+          <li>Calibrated uncertainty quantification for actionable risk thresholds</li>
+          <li>Cross-state generalization validated across 3 US states with consistent performance</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 9: CONTACT ═══ -->
+  <section class="section section-contact" data-section="contact" data-bg="#05050a" data-accent="#6366f1">
+    <div class="contact-content">
+      <h2 class="contact-title">Let's connect.</h2>
+      <div class="contact-rows">
+        <a href="mailto:vjkommuri@gmail.com" class="contact-row">
+          <span class="contact-row-label">EMAIL</span>
+          <span class="contact-row-value">vjkommuri@gmail.com</span>
+        </a>
+        <a href="https://github.com/DarthAether" target="_blank" rel="noopener" class="contact-row">
+          <span class="contact-row-label">GITHUB</span>
+          <span class="contact-row-value">github.com/DarthAether</span>
+        </a>
+        <div class="contact-row">
+          <span class="contact-row-label">LOCATION</span>
+          <span class="contact-row-value">Hyderabad, India</span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-label">STATUS</span>
+          <span class="contact-row-value">Open to grad school & research</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <span class="footer-left">VSK &copy; 2026</span>
+    <span class="footer-right">VITE + THREE.JS + GSAP + LENIS</span>
+  </footer>
 
   <script type="module" src="/src/main.js"></script>
 </body>

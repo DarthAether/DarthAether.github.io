@@ -1,182 +1,116 @@
-import Lenis from '@studio-freight/lenis'
+/**
+ * main.js — Entry point orchestrator
+ * Imports and initializes all modules in the correct order
+ */
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+// ──── Register GSAP plugins ────
 gsap.registerPlugin(ScrollTrigger)
 
-// ━━━ Smooth Scroll ━━━
-const lenis = new Lenis({
-  duration: 1.2,
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true,
-})
+// ──── Core modules ────
+import { lenis } from './core/smooth-scroll.js'
+import { initCursor } from './core/cursor.js'
+import { initGrain } from './core/grain.js'
+import { initClock } from './core/clock.js'
+import { initColorShift } from './core/color-shift.js'
 
-function raf(time) {
-  lenis.raf(time)
-  requestAnimationFrame(raf)
-}
-requestAnimationFrame(raf)
+// ──── Animation modules ────
+import { initPreloader } from './animations/preloader.js'
+import { initHeroAnimation } from './animations/hero.js'
+import { initScrollTriggers } from './animations/scroll-triggers.js'
+import { initMagneticEffects } from './animations/magnetic.js'
+import { initMarquee } from './animations/marquee.js'
+import { initProjectAnimations } from './animations/projects.js'
+import { initTimeline } from './animations/timeline.js'
+import { initClipReveals } from './animations/clip-reveals.js'
+import { createTextReveal } from './animations/text-reveal.js'
 
-// Sync Lenis with GSAP ScrollTrigger
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time) => lenis.raf(time * 1000))
-gsap.ticker.lagSmoothing(0)
+// ──── Three.js ────
+import { initScene } from './three/scene.js'
+import { createParticles } from './three/particles.js'
 
-// ━━━ Loader ━━━
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('done')
-    animateHero()
-  }, 1800)
-})
+// ──────────────────────────────────────
+// Phase 1: Immediate initialization
+// These run before the page is fully loaded
+// ──────────────────────────────────────
 
-// ━━━ Custom Cursor ━━━
-const cursor = document.getElementById('cursor')
-const cursorDot = document.getElementById('cursorDot')
+// Core systems that should start immediately
+initCursor()
+initGrain()
+initClock()
 
-if (cursor && window.innerWidth > 768) {
-  let mx = 0, my = 0, cx = 0, cy = 0
+// ──────────────────────────────────────
+// Phase 2: On window load — preloader + reveals
+// ──────────────────────────────────────
 
-  document.addEventListener('mousemove', (e) => {
-    mx = e.clientX
-    my = e.clientY
-    gsap.to(cursorDot, { x: mx, y: my, duration: 0.1 })
+window.addEventListener('load', async () => {
+  // Initialize Three.js scene (renders behind hero)
+  try {
+    initScene()
+    createParticles()
+  } catch (err) {
+    console.warn('Three.js initialization skipped:', err.message)
+  }
+
+  // Run preloader and wait for it to complete
+  await initPreloader()
+
+  // ──────────────────────────────────
+  // Phase 3: Post-preloader animations
+  // Everything below runs after the preloader hides
+  // ──────────────────────────────────
+
+  // Hero entrance animation (char reveals, counters)
+  initHeroAnimation()
+
+  // ScrollTrigger-based animations for all sections
+  initScrollTriggers()
+
+  // Magnetic hover effects
+  initMagneticEffects()
+
+  // Marquee hover controls
+  initMarquee()
+
+  // Project section animations
+  initProjectAnimations()
+
+  // Timeline SVG draw + entry reveals
+  initTimeline()
+
+  // Clip-path reveals for select elements
+  initClipReveals()
+
+  // Per-section color transitions
+  initColorShift()
+
+  // Text reveal for headings (about, contact titles)
+  createTextReveal('.about-name', {
+    type: 'chars',
+    stagger: 0.02,
+    duration: 1,
+    ease: 'power4.out',
   })
 
-  gsap.ticker.add(() => {
-    cx += (mx - cx) * 0.12
-    cy += (my - cy) * 0.12
-    gsap.set(cursor, { x: cx, y: cy })
-  })
-
-  // Hover effect on links and buttons
-  document.querySelectorAll('a, button, .project-row').forEach((el) => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('hover'))
-    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'))
-  })
-}
-
-// ━━━ Clock ━━━
-function updateClock() {
-  const now = new Date()
-  const opts = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
-  const date = now.toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase()
-  const time = now.toLocaleTimeString('en-GB', opts)
-  const el = document.getElementById('clock')
-  if (el) el.textContent = `IST ${date}  ${time}`
-}
-updateClock()
-setInterval(updateClock, 1000)
-
-// ━━━ Hero Animation ━━━
-function animateHero() {
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
-
-  // Wrap each line's text in a .line-inner span for reveal
-  document.querySelectorAll('.hero-title .line').forEach((line) => {
-    const text = line.innerHTML
-    line.innerHTML = `<span class="line-inner">${text}</span>`
-  })
-
-  tl.to('.hero-title .line-inner', {
-    y: 0,
-    duration: 1.2,
-    stagger: 0.12,
-  })
-  .to('.hero-tag', { opacity: 1, y: 0, duration: 0.8 }, '-=0.6')
-  .to('.hero-desc', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-  .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.4')
-  .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.3')
-
-  // Counter animation
-  document.querySelectorAll('.hero-stat-val').forEach((el) => {
-    const target = parseFloat(el.dataset.count)
-    const isDecimal = target < 10
-    const obj = { val: 0 }
-    gsap.to(obj, {
-      val: target,
-      duration: 2,
-      delay: 1,
-      ease: 'power2.out',
-      onUpdate: () => {
-        el.textContent = isDecimal ? obj.val.toFixed(3) : Math.round(obj.val)
-      },
-    })
-  })
-}
-
-// ━━━ Scroll Animations ━━━
-// Fade up elements on scroll
-gsap.utils.toArray('[data-animate="fade-up"]').forEach((el) => {
-  // Skip hero elements (animated separately)
-  if (el.closest('.hero')) return
-
-  gsap.from(el, {
-    scrollTrigger: {
-      trigger: el,
-      start: 'top 85%',
-      toggleActions: 'play none none none',
-    },
-    y: 40,
-    opacity: 0,
+  createTextReveal('.contact-title', {
+    type: 'words',
+    stagger: 0.08,
     duration: 0.8,
     ease: 'power3.out',
   })
 })
 
-// Project rows stagger
-gsap.utils.toArray('.project-row').forEach((row, i) => {
-  gsap.from(row, {
-    scrollTrigger: {
-      trigger: row,
-      start: 'top 88%',
-    },
-    y: 30,
-    opacity: 0,
-    duration: 0.7,
-    delay: i * 0.08,
-    ease: 'power3.out',
-  })
-})
+// ──────────────────────────────────────
+// Resize handler
+// ──────────────────────────────────────
 
-// About items
-gsap.utils.toArray('.about-item').forEach((item, i) => {
-  gsap.from(item, {
-    scrollTrigger: {
-      trigger: item,
-      start: 'top 90%',
-    },
-    x: -20,
-    opacity: 0,
-    duration: 0.5,
-    delay: i * 0.05,
-    ease: 'power2.out',
-  })
-})
+let resizeTimeout = null
 
-// Contact rows
-gsap.utils.toArray('.contact-row').forEach((row, i) => {
-  gsap.from(row, {
-    scrollTrigger: {
-      trigger: row,
-      start: 'top 90%',
-    },
-    y: 20,
-    opacity: 0,
-    duration: 0.5,
-    delay: i * 0.08,
-    ease: 'power2.out',
-  })
-})
-
-// Parallax on hero stats
-gsap.to('.hero-stats', {
-  scrollTrigger: {
-    trigger: '.hero',
-    start: 'top top',
-    end: 'bottom top',
-    scrub: 1,
-  },
-  y: -30,
-  opacity: 0.3,
+window.addEventListener('resize', () => {
+  // Debounce resize events
+  if (resizeTimeout) clearTimeout(resizeTimeout)
+  resizeTimeout = setTimeout(() => {
+    ScrollTrigger.refresh()
+  }, 250)
 })
