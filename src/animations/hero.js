@@ -89,7 +89,7 @@ export function initHeroAnimation() {
   }, '-=0.3')
 
   // 6. Animate stat counters
-  animateCounters('.hero-stat-val', {
+  animateCounters('.hero-stat-value', {
     duration: 2,
     delay: 0.8,
   })

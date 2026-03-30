@@ -29,7 +29,7 @@ export function initScrollTriggers() {
 function fadeUpElements() {
   gsap.utils.toArray('[data-animate="fade-up"]').forEach((el) => {
     // Skip hero elements — they're animated separately
-    if (el.closest('.hero')) return
+    if (el.closest('.section-hero')) return
 
     gsap.set(el, { y: 40, opacity: 0 })
 
@@ -55,7 +55,7 @@ function fadeUpElements() {
  * About section items — stagger reveal from left
  */
 function aboutItems() {
-  const items = gsap.utils.toArray('.about-item')
+  const items = gsap.utils.toArray('.skill')
   if (!items.length) return
 
   items.forEach((item, i) => {
@@ -206,7 +206,7 @@ function heroParallax() {
 
   const trigger = gsap.to(stats, {
     scrollTrigger: {
-      trigger: '.hero',
+      trigger: '.section-hero',
       start: 'top top',
       end: 'bottom top',
       scrub: 1,

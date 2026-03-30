@@ -10,7 +10,7 @@ const boundElements = new Map()
  * Initialize magnetic hover effects on all .magnetic and target elements
  */
 export function initMagneticEffects() {
-  const selectors = '.magnetic, .project-link, .contact-row a, .bar-badge'
+  const selectors = '.magnetic, .project-link, .contact-row a, .top-bar-badge'
   const elements = document.querySelectorAll(selectors)
 
   elements.forEach(bindMagnetic)

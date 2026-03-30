@@ -22,28 +22,23 @@ const updateCallbacks = []
  * Attaches to #hero-canvas if it exists, otherwise creates one
  */
 export function initScene() {
-  canvas = document.getElementById('hero-canvas')
-
-  if (!canvas) {
-    canvas = document.createElement('canvas')
-    canvas.id = 'hero-canvas'
-    canvas.style.cssText = `
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    `
-    // Insert before the first section or at the start of body
-    const hero = document.querySelector('.hero')
-    if (hero) {
-      hero.style.position = 'relative'
-      hero.insertBefore(canvas, hero.firstChild)
-      canvas.style.position = 'absolute'
-    } else {
-      document.body.prepend(canvas)
-    }
+  // Create canvas and append to .section-hero as first child
+  canvas = document.createElement('canvas')
+  canvas.id = 'hero-canvas'
+  canvas.style.cssText = `
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  `
+  const hero = document.querySelector('.section-hero')
+  if (hero) {
+    hero.style.position = 'relative'
+    hero.insertBefore(canvas, hero.firstChild)
+  } else {
+    document.body.prepend(canvas)
   }
 
   // Renderer

@@ -58,7 +58,7 @@ function gridCards() {
  * About section: reveal from center circle outward
  */
 function aboutSection() {
-  const about = document.querySelector('.about')
+  const about = document.querySelector('.section-about')
   if (!about) return
 
   const aboutName = about.querySelector('.about-name')

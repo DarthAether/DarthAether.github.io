@@ -25,8 +25,8 @@ const RING_EXPAND_SIZE = 80
 export function initCursor() {
   if (window.innerWidth <= 768) return
 
-  cursorEl = document.getElementById('cursor')
-  dotEl = document.getElementById('cursorDot')
+  cursorEl = document.querySelector('.cursor')
+  dotEl = document.querySelector('.cursor-dot')
 
   if (!cursorEl || !dotEl) return
 

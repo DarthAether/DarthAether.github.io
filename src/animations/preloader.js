@@ -10,15 +10,15 @@ import { gsap } from 'gsap'
  */
 export function initPreloader() {
   return new Promise((resolve) => {
-    const loader = document.querySelector('.loader') || document.getElementById('loader')
+    const loader = document.querySelector('.preloader')
 
     if (!loader) {
       resolve()
       return
     }
 
-    const loaderText = loader.querySelector('.loader-text')
-    const loaderLine = loader.querySelector('.loader-line')
+    const loaderText = loader.querySelector('.preloader-counter')
+    const loaderLine = loader.querySelector('.preloader-bar-inner')
 
     // Create counter element if loader text exists
     let counterEl = null
@@ -57,7 +57,7 @@ export function initPreloader() {
       onUpdate: () => {
         const val = Math.round(counter.value)
         if (counterEl) {
-          counterEl.textContent = `${val}%`
+          counterEl.textContent = String(val).padStart(3, '0')
         }
       },
     })

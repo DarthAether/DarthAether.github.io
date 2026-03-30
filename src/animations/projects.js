@@ -28,11 +28,11 @@ function projectShowcases() {
   if (!showcases.length) return
 
   showcases.forEach((showcase) => {
-    const num = showcase.querySelector('.project-num, .showcase-num')
-    const name = showcase.querySelector('.project-name, .showcase-name')
-    const desc = showcase.querySelector('.project-desc, .showcase-desc')
-    const metrics = showcase.querySelectorAll('[data-count]')
-    const tags = showcase.querySelectorAll('.project-tags span, .showcase-tags span')
+    const num = showcase.querySelector('.project-number')
+    const name = showcase.querySelector('.project-name')
+    const desc = showcase.querySelector('.project-desc')
+    const metrics = showcase.querySelectorAll('.project-metric-value')
+    const tags = showcase.querySelectorAll('.project-tag')
     const arch = showcase.querySelector('.architecture-text, .project-arch')
     const color = showcase.getAttribute('data-color')
 
@@ -132,10 +132,10 @@ function projectRows() {
   if (!rows.length) return
 
   rows.forEach((row, i) => {
-    const num = row.querySelector('.project-num')
+    const num = row.querySelector('.project-number')
     const name = row.querySelector('.project-name')
     const desc = row.querySelector('.project-desc')
-    const tags = row.querySelectorAll('.project-tags span')
+    const tags = row.querySelectorAll('.project-tag')
     const arrow = row.querySelector('.project-arrow')
     const color = row.getAttribute('data-color')
 

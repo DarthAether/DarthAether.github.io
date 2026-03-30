@@ -25,7 +25,7 @@ export function initTimeline() {
  * Uses strokeDasharray + strokeDashoffset technique
  */
 function drawTimelineLine() {
-  const path = document.querySelector('.timeline-line path, .timeline-line line, .timeline-line')
+  const path = document.querySelector('.timeline-svg path, .timeline-line path, .timeline-line line, .timeline-line')
 
   if (!path) return
 

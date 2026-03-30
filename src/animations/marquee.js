@@ -11,7 +11,7 @@ const SLOW_DURATION = 150  // 20% speed = 5x duration
  * Initialize marquee hover interactions
  */
 export function initMarquee() {
-  const section = document.querySelector('.marquee-section')
+  const section = document.querySelector('.section-marquee')
   if (!section) return
 
   const track = section.querySelector('.marquee-track')
@@ -35,7 +35,7 @@ export function initMarquee() {
   section.addEventListener('mouseleave', () => {
     slowMarquee(track, false)
     // Remove glow from all items
-    const items = track.querySelectorAll('span:not(.marquee-dot)')
+    const items = track.querySelectorAll('.marquee-item')
     items.forEach((item) => {
       item.classList.remove('marquee-glow')
       gsap.to(item, { scale: 1, duration: 0.3, ease: 'power2.out' })
@@ -43,7 +43,7 @@ export function initMarquee() {
   })
 
   // Individual item hover — scale + glow
-  const items = track.querySelectorAll('span:not(.marquee-dot)')
+  const items = track.querySelectorAll('.marquee-item')
   items.forEach((item) => {
     item.style.display = 'inline-block'
     item.style.cursor = 'default'
