@@ -107,6 +107,42 @@ img {
 
 
 
+
+/* ═══ CUSTOM SCROLLBAR ═══ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(129, 140, 248, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(129, 140, 248, 0.4);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(129, 140, 248, 0.2) var(--bg);
+}
+
+/* ═══ TEXT SELECTION ═══ */
+::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: #fff;
+}
+
+::-moz-selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: #fff;
+}
+
 /* ═══ VIEWPORT VIGNETTE (fluid.glass-inspired) ═══ */
 .viewport-vignette {
   position: fixed;
@@ -230,8 +266,13 @@ img {
   align-items: center;
   justify-content: space-between;
   background: transparent;
-  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), transform 0.4s var(--ease-out);
   border-bottom: 1px solid transparent;
+}
+
+
+#navbar.nav-hidden {
+  transform: translateY(-100%);
 }
 
 #navbar.scrolled {
@@ -433,6 +474,20 @@ img {
   border-radius: 2px;
 }
 
+
+/* ═══ HERO CHAR STAGGER ═══ */
+.name-line .char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: none;
+}
+
+.name-line .char.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .hero-role {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -512,6 +567,14 @@ img {
   50% { opacity: 0.3; transform: scaleY(0.6); }
 }
 
+
+
+/* ═══ MAGNETIC BUTTONS ═══ */
+.btn {
+  position: relative;
+  transition: transform 0.3s var(--ease-out), background 0.3s var(--ease-out),
+              color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
 
 /* ═══ CARD BORDER ORIGIN ANIMATION ═══ */
 .project-card,
@@ -1244,6 +1307,55 @@ a.contact-item:hover,
   margin-top: 16px;
 }
 
+
+/* ═══ CV DOWNLOAD ═══ */
+.contact-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 32px;
+  transition: background 0.3s var(--ease-out), transform 0.3s var(--ease-out),
+              box-shadow 0.3s var(--ease-out);
+}
+
+.contact-cv:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.25);
+}
+
+.contact-cv svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+
+/* ═══ BACK TO TOP ═══ */
+.back-to-top {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.3s var(--ease-out);
+  cursor: pointer;
+}
+
+.back-to-top:hover {
+  color: var(--accent);
+}
+
 /* ═══ FOOTER ═══ */
 #footer {
   display: flex;
@@ -1442,6 +1554,7 @@ pre.modal-arch {
   }
 
   #navbar {
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), transform 0.4s var(--ease-out);
     padding: 0 20px;
   }
 
@@ -1643,7 +1756,8 @@ pre.modal-arch {
   .contact-seeking { color: #222 !important; }
 
   /* Layout fixes */
-  #navbar { position: static !important; background: none !important;
+  #navbar {
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), transform 0.4s var(--ease-out); position: static !important; background: none !important;
     backdrop-filter: none !important; border: none !important; }
   #hero { min-height: auto !important; padding: 20pt 0 !important; }
   .hero-content { padding: 0 !important; }

@@ -245,6 +245,8 @@ function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
           fadedIn.add(p.targetEl)
           // Start fading in the DOM while particles are still swarming
           gsap.to(p.targetEl, { opacity: 1, duration: 0.8, ease: 'power1.out' })
+          // Trigger char stagger when hero-name becomes visible
+          if (p.targetEl.classList.contains('hero-name')) revealHeroChars()
         }
 
         // Particles linger and fade SLOWLY — they glow around the text
@@ -319,6 +321,7 @@ function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
         if (!fadedIn.has(el)) {
           fadedIn.add(el)
           gsap.to(el, { opacity: 1, duration: 0.5 })
+          if (el.classList.contains('hero-name')) revealHeroChars()
         }
       })
       if (navbar && !fadedIn.has(navbar)) {
@@ -400,18 +403,32 @@ function initAll() {
   initCursor()
   if (!prefersReducedMotion) initGrain()
   initProjectModal()
+  initMagneticButtons()
+  initBackToTop()
 }
 
 /* ─── Hero reveal ─── */
 function heroReveal() {
-  // Don't animate hero elements here — the particle transition handles
-  // fading them in seamlessly. Just split text for styling and start counters.
+  // Split text into chars for stagger animation
   document.querySelectorAll('.name-line').forEach((line) => {
     new SplitType(line, { types: 'chars' })
   })
 
-  // Hero stat counters (start immediately — they'll be visible when particles converge)
+  // Hero stat counters
   animateCounters('.hero-stats .stat-value[data-target]', false)
+}
+
+/* ─── Hero char stagger (called after preloader) ─── */
+function revealHeroChars() {
+  const chars = document.querySelectorAll('.name-line .char')
+  if (!chars.length) return
+
+  chars.forEach((char, i) => {
+    setTimeout(() => {
+      char.style.transition = `opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)`
+      char.classList.add('revealed')
+    }, 50 + i * 30) // 30ms stagger between each letter
+  })
 }
 
 /* ─── Navbar ─── */
@@ -419,11 +436,36 @@ function navbarBehavior() {
   const navbar = document.getElementById('navbar')
   if (!navbar) return
 
-  // Glass effect on scroll — toggleClass fires once at threshold, not per-pixel
+  // Glass effect + auto-hide navbar
+  let lastScrollY = 0
+  let navHidden = false
+
   ScrollTrigger.create({
-    start: 100,
-    end: 99999,
-    toggleClass: { targets: navbar, className: 'scrolled' },
+    start: 0,
+    end: 'max',
+    onUpdate(self) {
+      const scrollY = self.scroll()
+
+      // Glass effect
+      navbar.classList.toggle('scrolled', scrollY > 100)
+
+      // Auto-hide: hide on scroll down, show on scroll up
+      if (scrollY > 200) {
+        const delta = scrollY - lastScrollY
+        if (delta > 5 && !navHidden) {
+          navbar.classList.add('nav-hidden')
+          navHidden = true
+        } else if (delta < -5 && navHidden) {
+          navbar.classList.remove('nav-hidden')
+          navHidden = false
+        }
+      } else {
+        navbar.classList.remove('nav-hidden')
+        navHidden = false
+      }
+
+      lastScrollY = scrollY
+    },
   })
 
   // Active section tracking
@@ -648,6 +690,38 @@ function scrollAnimations() {
         gsap.fromTo(title, { '--dot-scale': 0 }, { '--dot-scale': 1, duration: 0.4, ease: 'back.out(3)' })
       },
     })
+  })
+}
+
+
+/* ─── Magnetic hover on buttons ─── */
+function initMagneticButtons() {
+  if (window.innerWidth < 768 || prefersReducedMotion) return
+
+  document.querySelectorAll('.btn, .contact-cv').forEach((btn) => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect()
+      const x = e.clientX - rect.left - rect.width / 2
+      const y = e.clientY - rect.top - rect.height / 2
+      // Subtle pull — 20% of distance
+      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`
+    }, { passive: true })
+
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = ''
+    })
+  })
+}
+
+
+/* ─── Back to top ─── */
+function initBackToTop() {
+  const btt = document.querySelector('.back-to-top')
+  if (!btt) return
+  btt.addEventListener('click', (e) => {
+    e.preventDefault()
+    if (lenis) lenis.scrollTo('#hero', { offset: 0 })
+    else window.scrollTo({ top: 0, behavior: 'smooth' })
   })
 }
 
