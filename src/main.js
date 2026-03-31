@@ -24,7 +24,7 @@ lenis.on('scroll', ScrollTrigger.update)
 gsap.ticker.add((time) => lenis.raf(time * 1000))
 gsap.ticker.lagSmoothing(0)
 
-/* ═══ Preloader ═══ */
+/* ═══ Preloader with line-burst transition ═══ */
 window.addEventListener('load', () => {
   const preloader = document.getElementById('preloader')
   const counter = document.getElementById('preloader-count')
@@ -44,18 +44,57 @@ window.addEventListener('load', () => {
     width: '100%',
     duration: 1.2,
     ease: 'power2.inOut',
-    onComplete() {
-      gsap.to(preloader, {
-        opacity: 0,
-        duration: 0.4,
-        onComplete() {
-          preloader.style.display = 'none'
-          initAll()
-        },
-      })
-    },
+    onComplete: () => lineBurstTransition(preloader, counter),
   })
 })
+
+function lineBurstTransition(preloader, counter) {
+  // Scale up counter number
+  const tl = gsap.timeline()
+
+  tl.to(counter, {
+    scale: 3,
+    opacity: 0,
+    duration: 0.4,
+    ease: 'power2.in',
+  })
+
+  // Create burst lines from center
+  const lineCount = 8
+  const lines = []
+  for (let i = 0; i < lineCount; i++) {
+    const line = document.createElement('div')
+    line.className = 'preloader-line'
+    const angle = (i / lineCount) * 360
+    const rad = (angle * Math.PI) / 180
+    line.style.top = '50%'
+    line.style.width = '0px'
+    line.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`
+    preloader.appendChild(line)
+    lines.push({ el: line, angle, rad })
+  }
+
+  // Animate lines bursting outward
+  tl.to(lines.map((l) => l.el), {
+    opacity: 1,
+    width: '200vw',
+    duration: 0.5,
+    stagger: 0.03,
+    ease: 'power3.out',
+  }, '-=0.1')
+
+  // Fade preloader out as lines reach edges
+  tl.to(preloader, {
+    opacity: 0,
+    duration: 0.3,
+    ease: 'power2.out',
+    onComplete() {
+      preloader.style.display = 'none'
+      lines.forEach((l) => l.el.remove())
+      initAll()
+    },
+  }, '-=0.2')
+}
 
 /* ═══ Counter utility ═══ */
 function formatNumber(n, decimals) {
@@ -377,18 +416,53 @@ const TECH_DATA = {
   },
 }
 
-/* ─── Marquee interaction + tech popups ─── */
+/* ─── Marquee: dock magnification + tech popups ─── */
 function marqueeHover() {
   const popup = document.getElementById('tech-popup')
-  if (!popup) return
+  const strip = document.querySelector('.marquee-strip')
+  if (!strip) return
 
+  const items = strip.querySelectorAll('.marquee-item')
+  const MAGNIFY_RANGE = 120  // px radius of magnification effect
+  const MAX_SCALE = 1.4
+  const MIN_SCALE = 1.0
+
+  // Dock magnification on mousemove
+  strip.addEventListener('mousemove', (e) => {
+    const mouseX = e.clientX
+    items.forEach((item) => {
+      const rect = item.getBoundingClientRect()
+      const itemCenterX = rect.left + rect.width / 2
+      const dist = Math.abs(mouseX - itemCenterX)
+
+      if (dist < MAGNIFY_RANGE) {
+        const ratio = 1 - dist / MAGNIFY_RANGE
+        const scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * ratio * ratio
+        item.style.transform = `scale(${scale})`
+        item.style.color = ratio > 0.5 ? 'var(--accent)' : ''
+      } else {
+        item.style.transform = 'scale(1)'
+        item.style.color = ''
+      }
+    })
+  })
+
+  strip.addEventListener('mouseleave', () => {
+    items.forEach((item) => {
+      item.style.transform = 'scale(1)'
+      item.style.color = ''
+    })
+  })
+
+  // Tech popup on click
+  if (!popup) return
   const popupName = popup.querySelector('.tech-popup-name')
   const popupDesc = popup.querySelector('.tech-popup-desc')
   const popupUsage = popup.querySelector('.tech-popup-usage')
   let hideTimeout = null
 
-  document.querySelectorAll('.marquee-item[data-tech]').forEach((item) => {
-    item.addEventListener('mouseenter', (e) => {
+  items.forEach((item) => {
+    item.addEventListener('mouseenter', () => {
       clearTimeout(hideTimeout)
       const key = item.dataset.tech
       const data = TECH_DATA[key]
@@ -400,7 +474,6 @@ function marqueeHover() {
         .map((p) => `<span class="tech-popup-project">${p}</span>`)
         .join('')
 
-      // Position popup above the item
       const rect = item.getBoundingClientRect()
       const popupW = 320
       let left = rect.left + rect.width / 2 - popupW / 2
@@ -416,7 +489,6 @@ function marqueeHover() {
     })
   })
 
-  // Keep popup open when hovering over it
   popup.addEventListener('mouseenter', () => clearTimeout(hideTimeout))
   popup.addEventListener('mouseleave', () => {
     hideTimeout = setTimeout(() => popup.classList.remove('visible'), 200)
