@@ -12,7 +12,7 @@
   <meta property="og:title" content="Vijaya Sivanjan Kommuri &mdash; AI/ML Researcher &amp; Engineer" />
   <meta property="og:description" content="IEEE SPICES 2026 author. Building ML systems for power grid resilience with calibrated uncertainty. B.Tech AI&amp;ML, seeking M.Sc. in Germany (WS 2026/27)." />
   <meta property="og:url" content="https://darthaether.github.io/" />
-  <meta property="og:image" content="https://darthaether.github.io/og-image.png" />
+  <meta property="og:image" content="https://darthaether.github.io/og-image.svg" />
   <meta property="og:site_name" content="VSK Portfolio" />
 
   <!-- Twitter Card -->
@@ -50,9 +50,19 @@
   <!-- Fontshare: Clash Display -->
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet" />
 
+  <!-- DNS Prefetch -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://api.fontshare.com" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://darthaether.github.io/" />
+
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
+
+  <!-- SKIP TO CONTENT (a11y) -->
+  <a href="#projects" class="skip-link">Skip to content</a>
 
   <!-- PRELOADER -->
   <div id="preloader">
@@ -61,17 +71,17 @@
   </div>
 
   <!-- CUSTOM CURSOR (desktop only) -->
-  <div class="cursor-ring"></div>
-  <div class="cursor-dot"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
 
   <!-- FILM GRAIN -->
-  <canvas id="grain"></canvas>
+  <canvas id="grain" aria-hidden="true"></canvas>
 
   <!-- SCROLL PROGRESS BAR -->
-  <div id="scroll-progress"></div>
+  <div id="scroll-progress" role="progressbar" aria-hidden="true"></div>
 
   <!-- NAVBAR -->
-  <nav id="navbar">
+  <nav id="navbar" aria-label="Main navigation">
     <a href="#hero" class="nav-brand">VSK</a>
     <div class="nav-links">
       <a href="#hero" class="nav-link active">Home</a>
@@ -97,7 +107,7 @@
   </div>
 
   <!-- MAIN CONTENT -->
-  <main>
+  <main role="main">
 
     <!-- HERO -->
     <section id="hero">
@@ -111,7 +121,7 @@
         <p class="hero-role">AI/ML Researcher &amp; Engineer <span class="hero-dot">&middot;</span> IEEE SPICES 2026</p>
         <span class="hero-availability">Available for WS 2026/27</span>
         <p class="hero-bio">Building ML systems for power grid resilience, IoT security, and financial risk. Compound weather event modeling. Calibrated uncertainty.</p>
-        <div class="hero-stats">
+        <div class="hero-stats" aria-label="Key metrics">
           <div class="stat">
             <span class="stat-value" data-target="0.967" data-decimals="3">0</span>
             <span class="stat-label">AUC-ROC</span>
@@ -323,6 +333,7 @@
             <div class="edu-item">
               <span class="edu-degree">B.Tech CSE (AI &amp; ML)</span>
               <span class="edu-school">Malla Reddy University, 2021-2026</span>
+              <span class="edu-detail">CGPA: 8.09 &middot; IELTS: 8.0</span>
             </div>
           </div>
         </div>
@@ -417,8 +428,8 @@
       <div class="section-container narrow">
         <h2 class="contact-heading">Let's connect.</h2>
         <p class="contact-seeking">Actively seeking M.Sc. opportunities in AI/CS at German universities (WS 2026/27)</p>
-        <div class="contact-list">
-          <a href="mailto:vjkommuri@gmail.com" class="contact-item">
+        <div class="contact-list" role="list">
+          <a href="mailto:vjkommuri@gmail.com" class="contact-item" role="listitem">
             <span class="contact-label">EMAIL</span>
             <span class="contact-value">vjkommuri@gmail.com</span>
           </a>
@@ -452,7 +463,7 @@
   </main>
 
   <!-- PROJECT MODAL -->
-  <div id="project-modal" class="modal" aria-hidden="true">
+  <div id="project-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Project details">
     <button class="modal-close" aria-label="Close">&times;</button>
     <div class="modal-body"></div>
   </div>

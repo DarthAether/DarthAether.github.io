@@ -102,9 +102,14 @@ export function initProjectModal() {
   const modalBody = modal.querySelector('.modal-body')
   const closeBtn = modal.querySelector('.modal-close')
 
+  let previousFocus = null
+
   function openModal(key) {
     const project = PROJECTS[key]
     if (!project || !modalBody) return
+
+    previousFocus = document.activeElement
+    modal.setAttribute('aria-hidden', 'false')
 
     modalBody.innerHTML = `
       <h2 style="color:${project.color}">${project.name}</h2>
@@ -134,21 +139,38 @@ export function initProjectModal() {
     `
 
     modal.classList.add('open')
+    // Focus close button for keyboard users
+    if (closeBtn) setTimeout(() => closeBtn.focus(), 100)
     document.body.style.overflow = 'hidden'
   }
 
   function closeModal() {
     modal.classList.remove('open')
+    modal.setAttribute('aria-hidden', 'true')
     document.body.style.overflow = ''
+    // Restore focus to the card that opened the modal
+    if (previousFocus) previousFocus.focus()
   }
 
-  // Card click — but not on demo/gh buttons
+  // Card click + keyboard — but not on demo/gh buttons
   document.querySelectorAll('.project-card[data-project]').forEach((card) => {
+    // Make cards keyboard-focusable
+    card.setAttribute('tabindex', '0')
+    card.setAttribute('role', 'button')
+    card.setAttribute('aria-label', `View details for ${card.querySelector('.card-name')?.textContent || 'project'}`)
+
     card.addEventListener('click', (e) => {
-      // Don't open modal if clicking demo or github links
       if (e.target.closest('.btn-demo') || e.target.closest('.btn-gh')) return
       const key = card.dataset.project
       openModal(key)
+    })
+
+    // Enter/Space to open
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        openModal(card.dataset.project)
+      }
     })
   })
 
@@ -157,10 +179,29 @@ export function initProjectModal() {
     closeBtn.addEventListener('click', closeModal)
   }
 
-  // Escape key
+  // Keyboard: Escape to close, Tab to trap focus
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('open')) {
+    if (!modal.classList.contains('open')) return
+
+    if (e.key === 'Escape') {
       closeModal()
+      return
+    }
+
+    // Focus trap
+    if (e.key === 'Tab') {
+      const focusable = modal.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])')
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
   })
 
