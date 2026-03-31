@@ -192,14 +192,27 @@ function animate() {
     lineAttr.needsUpdate = true
   }
 
-  // Auto rotation
-  particles.rotation.y += 0.0005
+  // Scroll velocity influence — particles react to scroll speed
+  const scrollVel = window.__scrollVelocity || 0
+  const absVel = Math.min(Math.abs(scrollVel), 8)
+
+  // Auto rotation — accelerates with scroll
+  particles.rotation.y += 0.0005 + absVel * 0.0003
   lineMesh.rotation.y = particles.rotation.y
 
   // Mouse influence (subtle shift)
   const targetX = mouseY * 0.3
   particles.rotation.x += (targetX - particles.rotation.x) * 0.02
   lineMesh.rotation.x = particles.rotation.x
+
+  // Scroll velocity stretches the particle field vertically
+  const targetScaleY = 1 + absVel * 0.015
+  particles.scale.y += (targetScaleY - particles.scale.y) * 0.08
+  lineMesh.scale.y = particles.scale.y
+
+  // Particle opacity pulses with scroll intensity
+  const targetOpacity = 0.5 + absVel * 0.04
+  particles.material.opacity += (targetOpacity - particles.material.opacity) * 0.1
 
   renderer.render(scene, camera)
 }
