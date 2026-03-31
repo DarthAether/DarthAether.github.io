@@ -1,8 +1,10 @@
 /**
- * cursor.js v2.2 — GPU-composited custom cursor
+ * cursor.js — GPU-composited custom cursor
  */
+import { state } from '../core/state.js'
+
 export function initCursor() {
-  if (window.innerWidth < 768) return
+  if (state.get('isMobile')) return
 
   const ring = document.querySelector('.cursor-ring')
   const dot = document.querySelector('.cursor-dot')

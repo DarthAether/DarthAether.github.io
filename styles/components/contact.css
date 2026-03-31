@@ -1,0 +1,159 @@
+/* ═══ CONTACT ═══ */
+.contact-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  margin-bottom: 48px;
+  letter-spacing: -0.03em;
+}
+
+.contact-seeking {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 32px;
+  letter-spacing: 0.02em;
+}
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: padding-left 0.4s var(--ease-out);
+}
+
+a.contact-item:hover,
+.contact-item:hover {
+  padding-left: 12px;
+}
+
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.contact-value {
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 1px;
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-out);
+}
+
+a.contact-item:hover .contact-value {
+  background-size: 100% 1px;
+}
+
+/* ═══ CV DOWNLOAD ═══ */
+.contact-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.6) 0%,
+    rgba(99, 102, 241, 0.4) 100%
+  );
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  border-top-color: rgba(165, 180, 252, 0.4);
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  margin-top: 32px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transition: all 0.35s var(--ease-out);
+}
+
+.contact-cv:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.7) 0%,
+    rgba(99, 102, 241, 0.5) 100%
+  );
+  border-top-color: rgba(165, 180, 252, 0.5);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 16px rgba(129, 140, 248, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.contact-cv svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* ═══ BACK TO TOP ═══ */
+.back-to-top {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.3s var(--ease-out);
+  cursor: pointer;
+}
+
+.back-to-top:hover {
+  color: var(--accent);
+}
+
+/* ═══ FOOTER ═══ */
+#footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ═══ RESPONSIVE CONTACT ═══ */
+@media (max-width: 768px) {
+  .contact-heading {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  #footer {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 24px 20px;
+  }
+}

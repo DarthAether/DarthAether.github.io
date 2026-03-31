@@ -1,0 +1,124 @@
+/* ═══ MARQUEE STRIP ═══ */
+.marquee-strip {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee-row {
+  will-change: transform;
+  display: flex;
+  gap: 48px;
+  white-space: nowrap;
+  animation: marqueeScroll 25s linear infinite;
+  width: max-content;
+  align-items: center;
+}
+
+.marquee-strip:hover .marquee-row {
+  will-change: transform;
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.08s ease-out;
+  position: relative;
+  user-select: none;
+}
+
+.marquee-item:hover {
+  border-color: rgba(129, 140, 248, 0.25);
+  background: rgba(129, 140, 248, 0.06);
+}
+
+.marquee-item .marquee-sep {
+  color: rgba(255, 255, 255, 0.08);
+  margin: 0 4px;
+  pointer-events: none;
+}
+
+/* Tech detail popup */
+.tech-popup {
+  position: fixed;
+  z-index: 3000;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(129, 140, 248, 0.04) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 20px 24px;
+  max-width: 340px;
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.tech-popup.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.tech-popup-name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.tech-popup-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.tech-popup-usage {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tech-popup-project {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  margin-top: 4px;
+  margin-right: 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}

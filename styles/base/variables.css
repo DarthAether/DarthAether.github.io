@@ -1,0 +1,20 @@
+/* ═══ CUSTOM PROPERTIES ═══ */
+:root {
+  --bg: #08090d;
+  --bg-card: #0e1014;
+  --bg-card-hover: #14161c;
+  --text: #f0f0f0;
+  --text-muted: #888;
+  --text-dim: #555;
+  --accent: #818cf8;
+  --accent-hover: #a5b4fc;
+  --border: rgba(255, 255, 255, 0.06);
+  --font-display: 'Clash Display', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Signature easing — quart curve: snappy start, soft landing */
+  --ease-master: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}

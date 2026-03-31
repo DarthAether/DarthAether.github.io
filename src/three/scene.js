@@ -1,8 +1,10 @@
 /**
- * three-bg.js v2.1 — Performance-optimized Three.js particle background
- * Adaptive particle count, spatial hashing for connections, visibility-aware rendering.
+ * scene.js — Performance-optimized Three.js particle background
+ * Reads from state store, subscribes to changes. No window.__ globals.
  */
 import * as THREE from 'three'
+import { state } from '../core/state.js'
+import { isLowEnd } from '../utils/device.js'
 
 let renderer, scene, camera, particles, lineMesh
 let mouseX = 0, mouseY = 0
@@ -11,8 +13,8 @@ let frameCount = 0
 let isVisible = true
 
 // Adaptive particle count based on device capability
-const isLowEnd = navigator.hardwareConcurrency <= 4 || window.innerWidth < 1200
-const PARTICLE_COUNT = isLowEnd ? 500 : 1000
+const IS_LOW_END = isLowEnd()
+const PARTICLE_COUNT = IS_LOW_END ? 500 : 1000
 const CONNECTION_DISTANCE = 0.8
 const CONN_DIST_SQ = CONNECTION_DISTANCE * CONNECTION_DISTANCE
 
@@ -165,7 +167,7 @@ function animate() {
     const maxSegments = linePos.length / 6
 
     // Wider step for fewer checks
-    const step = isLowEnd ? 5 : 3
+    const step = IS_LOW_END ? 5 : 3
     for (let i = 0; i < PARTICLE_COUNT && lineIdx < maxSegments; i += step) {
       const i3 = i * 3
       for (let j = i + 1; j < PARTICLE_COUNT && lineIdx < maxSegments; j += step) {
@@ -193,7 +195,7 @@ function animate() {
   }
 
   // Scroll velocity influence — particles react to scroll speed
-  const scrollVel = window.__scrollVelocity || 0
+  const scrollVel = state.get('scrollVelocity') || 0
   const absVel = Math.min(Math.abs(scrollVel), 12)
 
   // Auto rotation — accelerates with scroll
@@ -206,7 +208,6 @@ function animate() {
   lineMesh.rotation.x = particles.rotation.x
 
   // HYPERSPACE: scroll velocity stretches particles into star-streaks
-  // At low speed: subtle stretch. At high speed: full hyperspace elongation
   const hyperFactor = absVel > 4 ? absVel * 0.06 : absVel * 0.02
   const targetScaleY = 1 + hyperFactor
   particles.scale.y += (targetScaleY - particles.scale.y) * 0.1
@@ -221,8 +222,8 @@ function animate() {
   particles.material.opacity += (targetOpacity - particles.material.opacity) * 0.1
 
   // ── Color: Sith mode OR section-based shifting ──
-  const sithMode = window.__sithMode || false
-  let targetColor = sithMode ? 0xef4444 : (window.__particleTargetColor || 0x818cf8)
+  const sithMode = state.get('sithMode') || false
+  let targetColor = sithMode ? 0xef4444 : (state.get('particleColor') || 0x818cf8)
   const currentHex = particles.material.color.getHex()
   if (currentHex !== targetColor) {
     // Lerp color for smooth transition
@@ -233,9 +234,9 @@ function animate() {
   }
 
   // ── Audio reactivity ──
-  const bass = window.__audioBass || 0
-  const mid = window.__audioMid || 0
-  const high = window.__audioHigh || 0
+  const bass = state.get('audioBass') || 0
+  const mid = state.get('audioMid') || 0
+  const high = state.get('audioHigh') || 0
 
   if (bass > 0.01 || mid > 0.01) {
     // Bass: displacement/scale pulse
@@ -260,8 +261,8 @@ function animate() {
   }
 
   // ── Gyroscope parallax (mobile) ──
-  const gyroX = window.__gyroX || 0
-  const gyroY = window.__gyroY || 0
+  const gyroX = state.get('gyroX') || 0
+  const gyroY = state.get('gyroY') || 0
   if (Math.abs(gyroX) > 0.01 || Math.abs(gyroY) > 0.01) {
     const gyroTargetY = gyroX * 0.5
     const gyroTargetX = gyroY * 0.3
@@ -273,20 +274,20 @@ function animate() {
 
   // ── Cursor repulsion field (lightweight) ──
   if (mouseX !== 0 || mouseY !== 0) {
-    const repulsorX = mouseX * 4 // map -1..1 to -4..4 (3D space coords)
+    const repulsorX = mouseX * 4
     const repulsorY = mouseY * 3
     const repulseRadius = 1.5
     const repulseStrength = 0.002
 
     // Only check a subset for performance
-    for (let i = 0; i < PARTICLE_COUNT; i += (isLowEnd ? 4 : 2)) {
+    for (let i = 0; i < PARTICLE_COUNT; i += (IS_LOW_END ? 4 : 2)) {
       const i3 = i * 3
       const dx = pos[i3] - repulsorX
       const dy = pos[i3 + 1] - repulsorY
       const distSq = dx * dx + dy * dy
       if (distSq < repulseRadius * repulseRadius && distSq > 0.01) {
-        const dist = Math.sqrt(distSq)
-        const force = repulseStrength / dist
+        const d = Math.sqrt(distSq)
+        const force = repulseStrength / d
         vel[i3] += dx * force
         vel[i3 + 1] += dy * force
       }
