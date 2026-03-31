@@ -313,18 +313,113 @@ function startClock() {
   setInterval(tick, 1000)
 }
 
-/* ─── Marquee hover (Bug #5 fix: target .marquee-row, not .marquee-strip) ─── */
-function marqueeHover() {
-  document.querySelectorAll('.marquee-strip').forEach((strip) => {
-    const row = strip.querySelector('.marquee-row')
-    if (!row) return
+/* ─── Tech stack data ─── */
+const TECH_DATA = {
+  xgboost: {
+    name: 'XGBoost',
+    desc: 'Gradient boosted decision trees for tabular outage prediction. Primary model in the GridShield ensemble achieving 0.967 AUC-ROC with temporal cross-validation.',
+    projects: ['GridShield AI', 'Credit Risk XAI'],
+  },
+  lightgbm: {
+    name: 'LightGBM',
+    desc: 'Histogram-based gradient boosting for fast training on 138 engineered features. Second model in the stacking ensemble with leaf-wise growth strategy.',
+    projects: ['GridShield AI'],
+  },
+  pytorch: {
+    name: 'PyTorch',
+    desc: 'LSTM with multi-head self-attention for sequential weather patterns. MC Dropout for uncertainty quantification in the temporal model branch.',
+    projects: ['GridShield AI', 'ThreatSight'],
+  },
+  fastapi: {
+    name: 'FastAPI',
+    desc: 'Async REST API backbone for all 3 enterprise systems. JWT/RBAC auth, WebSocket streaming, Pydantic schemas, dependency injection, and OpenAPI docs.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  threejs: {
+    name: 'Three.js',
+    desc: 'WebGL particle constellation in the portfolio hero. 1000 particles with proximity-based connections and mouse-reactive rotation.',
+    projects: ['This Portfolio'],
+  },
+  gsap: {
+    name: 'GSAP',
+    desc: 'ScrollTrigger-driven animations throughout this portfolio. Text reveals, section fades, counter animations, and smooth scroll integration with Lenis.',
+    projects: ['This Portfolio'],
+  },
+  docker: {
+    name: 'Docker',
+    desc: 'Multi-stage builds with non-root users and healthchecks. Docker Compose orchestrating API + PostgreSQL + Redis + Prometheus + Grafana stacks.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  postgresql: {
+    name: 'PostgreSQL',
+    desc: 'Primary database for all systems. TimescaleDB hypertables for time-series in GridShield. Async SQLAlchemy with Alembic migrations across all projects.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  redis: {
+    name: 'Redis',
+    desc: 'Caching layer for API responses, pub/sub for real-time WebSocket broadcasting, rate limiting, and alert deduplication across all 3 platforms.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  prometheus: {
+    name: 'Prometheus',
+    desc: '11 custom metrics in ThreatSight: detection latency, FPS, alerts fired, active cameras. Pre-built Grafana dashboards for all 3 systems.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  shap: {
+    name: 'SHAP',
+    desc: 'SHapley Additive exPlanations for model interpretability. Feature importance analysis on 138 features in GridShield and credit risk predictions.',
+    projects: ['GridShield AI', 'Credit Risk XAI'],
+  },
+  onnx: {
+    name: 'ONNX Runtime',
+    desc: 'YOLOv5 model export to ONNX for 2-5x faster CPU inference in ThreatSight. Runtime-selectable backend: native PyTorch vs ONNX via configuration.',
+    projects: ['ThreatSight'],
+  },
+}
 
-    strip.addEventListener('mouseenter', () => {
-      row.style.animationDuration = '60s'
+/* ─── Marquee interaction + tech popups ─── */
+function marqueeHover() {
+  const popup = document.getElementById('tech-popup')
+  if (!popup) return
+
+  const popupName = popup.querySelector('.tech-popup-name')
+  const popupDesc = popup.querySelector('.tech-popup-desc')
+  const popupUsage = popup.querySelector('.tech-popup-usage')
+  let hideTimeout = null
+
+  document.querySelectorAll('.marquee-item[data-tech]').forEach((item) => {
+    item.addEventListener('mouseenter', (e) => {
+      clearTimeout(hideTimeout)
+      const key = item.dataset.tech
+      const data = TECH_DATA[key]
+      if (!data) return
+
+      popupName.textContent = data.name
+      popupDesc.textContent = data.desc
+      popupUsage.innerHTML = 'Used in: ' + data.projects
+        .map((p) => `<span class="tech-popup-project">${p}</span>`)
+        .join('')
+
+      // Position popup above the item
+      const rect = item.getBoundingClientRect()
+      const popupW = 320
+      let left = rect.left + rect.width / 2 - popupW / 2
+      left = Math.max(12, Math.min(left, window.innerWidth - popupW - 12))
+      popup.style.left = `${left}px`
+      popup.style.bottom = `${window.innerHeight - rect.top + 12}px`
+      popup.style.top = 'auto'
+      popup.classList.add('visible')
     })
-    strip.addEventListener('mouseleave', () => {
-      row.style.animationDuration = '20s'
+
+    item.addEventListener('mouseleave', () => {
+      hideTimeout = setTimeout(() => popup.classList.remove('visible'), 200)
     })
+  })
+
+  // Keep popup open when hovering over it
+  popup.addEventListener('mouseenter', () => clearTimeout(hideTimeout))
+  popup.addEventListener('mouseleave', () => {
+    hideTimeout = setTimeout(() => popup.classList.remove('visible'), 200)
   })
 }
 
