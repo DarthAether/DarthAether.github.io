@@ -1942,3 +1942,101 @@ pre.modal-arch {
   /* Footer */
   #footer { border-top: 1pt solid #ccc !important; }
 }
+
+/* ═══ ORDER 66 — SITH MODE ═══ */
+.sith-mode {
+  --accent: #ef4444;
+  --accent-hover: #f87171;
+}
+
+.sith-mode .cursor-ring {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.12) 0%,
+    rgba(239, 68, 68, 0.04) 40%,
+    rgba(220, 38, 38, 0.08) 70%,
+    rgba(239, 68, 68, 0.1) 100%
+  ) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+  border-top-color: rgba(239, 68, 68, 0.3) !important;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(239, 68, 68, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+.sith-mode .cursor-dot {
+  background: radial-gradient(circle, rgba(255,100,100,0.9) 0%, rgba(239,68,68,0.4) 60%, transparent 100%) !important;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5) !important;
+}
+
+.sith-mode .viewport-vignette {
+  box-shadow:
+    inset 0 0 80px 0 rgba(239, 68, 68, 0.06),
+    inset 0 0 160px 0 rgba(239, 68, 68, 0.03),
+    inset 0 0 300px 0 rgba(8, 9, 13, 0.3) !important;
+}
+
+.sith-mode .name-line:last-child::after {
+  background: #ef4444 !important;
+}
+
+.sith-mode #scroll-progress {
+  background: linear-gradient(90deg, #ef4444, #f87171, #ef4444) !important;
+}
+
+.sith-mode .hero-availability {
+  background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05)) !important;
+  border-color: rgba(239,68,68,0.2) !important;
+  border-top-color: rgba(239,68,68,0.3) !important;
+  color: #ef4444 !important;
+}
+
+.sith-mode .nav-link.active {
+  background-image: linear-gradient(#ef4444, #ef4444) !important;
+}
+
+.sith-mode .nav-link:hover {
+  background-image: linear-gradient(#ef4444, #ef4444) !important;
+}
+
+/* Order 66 flash overlay */
+.order66-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  animation: order66Flash 2.5s ease-out forwards;
+}
+
+.order66-flash span {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #ef4444;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 30px rgba(239, 68, 68, 0.5), 0 0 60px rgba(239, 68, 68, 0.2);
+  animation: order66Text 2.5s ease-out forwards;
+}
+
+@keyframes order66Flash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+@keyframes order66Text {
+  0% { transform: scale(0.5); opacity: 0; }
+  15% { transform: scale(1.1); opacity: 1; }
+  25% { transform: scale(1); }
+  70% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
