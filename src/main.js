@@ -24,13 +24,17 @@ lenis.on('scroll', ScrollTrigger.update)
 gsap.ticker.add((time) => lenis.raf(time * 1000))
 gsap.ticker.lagSmoothing(0)
 
-/* ═══ Preloader with line-burst transition ═══ */
+/* ═══ Preloader with particle explosion ═══ */
 window.addEventListener('load', () => {
+  // Init homepage IMMEDIATELY so it renders behind preloader
+  initAll()
+
   const preloader = document.getElementById('preloader')
   const counter = document.getElementById('preloader-count')
   const fill = document.getElementById('preloader-fill')
+  const bar = document.getElementById('preloader-bar')
 
-  if (!preloader) { initAll(); return }
+  if (!preloader) return
 
   const obj = { val: 0 }
   gsap.to(obj, {
@@ -44,56 +48,96 @@ window.addEventListener('load', () => {
     width: '100%',
     duration: 1.2,
     ease: 'power2.inOut',
-    onComplete: () => lineBurstTransition(preloader, counter),
+    onComplete: () => particleExplosion(preloader, counter, bar),
   })
 })
 
-function lineBurstTransition(preloader, counter) {
-  // Scale up counter number
-  const tl = gsap.timeline()
+function particleExplosion(preloader, counter, bar) {
+  // Hide the progress bar
+  if (bar) gsap.to(bar, { opacity: 0, duration: 0.2 })
 
-  tl.to(counter, {
-    scale: 3,
-    opacity: 0,
-    duration: 0.4,
-    ease: 'power2.in',
-  })
+  // Create a canvas over the preloader for particles
+  const canvas = document.createElement('canvas')
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;'
+  document.body.appendChild(canvas)
+  const ctx = canvas.getContext('2d')
 
-  // Create burst lines from center
-  const lineCount = 8
-  const lines = []
-  for (let i = 0; i < lineCount; i++) {
-    const line = document.createElement('div')
-    line.className = 'preloader-line'
-    const angle = (i / lineCount) * 360
-    const rad = (angle * Math.PI) / 180
-    line.style.top = '50%'
-    line.style.width = '0px'
-    line.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`
-    preloader.appendChild(line)
-    lines.push({ el: line, angle, rad })
+  // Get the "100" text position to spawn particles from it
+  const counterRect = counter.getBoundingClientRect()
+  const cx = counterRect.left + counterRect.width / 2
+  const cy = counterRect.top + counterRect.height / 2
+
+  // Create particles from the counter position
+  const PARTICLE_COUNT = 80
+  const particles = []
+  const ACCENT_COLORS = ['#818cf8', '#a5b4fc', '#6366f1', '#c4b5fd', '#e0e7ff']
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const angle = Math.random() * Math.PI * 2
+    const speed = 2 + Math.random() * 6
+    const size = 2 + Math.random() * 4
+    particles.push({
+      x: cx + (Math.random() - 0.5) * counterRect.width,
+      y: cy + (Math.random() - 0.5) * counterRect.height,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size,
+      alpha: 1,
+      color: ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)],
+      decay: 0.012 + Math.random() * 0.015,
+      gravity: 0.04 + Math.random() * 0.03,
+    })
   }
 
-  // Animate lines bursting outward
-  tl.to(lines.map((l) => l.el), {
-    opacity: 1,
-    width: '200vw',
-    duration: 0.5,
-    stagger: 0.03,
-    ease: 'power3.out',
-  }, '-=0.1')
+  // Hide the counter text
+  gsap.to(counter, { opacity: 0, scale: 1.5, duration: 0.15 })
 
-  // Fade preloader out as lines reach edges
-  tl.to(preloader, {
+  // Fade the preloader background
+  gsap.to(preloader, {
     opacity: 0,
-    duration: 0.3,
+    duration: 0.8,
+    delay: 0.1,
     ease: 'power2.out',
-    onComplete() {
+  })
+
+  // Animate particles
+  let frame = 0
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    let alive = 0
+    for (const p of particles) {
+      if (p.alpha <= 0) continue
+      alive++
+
+      p.x += p.vx
+      p.y += p.vy
+      p.vy += p.gravity
+      p.vx *= 0.99
+      p.alpha -= p.decay
+
+      if (p.alpha <= 0) continue
+
+      ctx.globalAlpha = p.alpha
+      ctx.fillStyle = p.color
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    frame++
+    if (alive > 0 && frame < 120) {
+      requestAnimationFrame(animateParticles)
+    } else {
+      // Cleanup
+      canvas.remove()
       preloader.style.display = 'none'
-      lines.forEach((l) => l.el.remove())
-      initAll()
-    },
-  }, '-=0.2')
+    }
+  }
+
+  requestAnimationFrame(animateParticles)
 }
 
 /* ═══ Counter utility ═══ */

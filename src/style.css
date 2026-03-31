@@ -97,16 +97,9 @@ img {
   border-radius: 1px;
 }
 
-/* Preloader line burst effect */
-.preloader-line {
-  position: fixed;
-  height: 2px;
-  background: var(--accent);
-  left: 50%;
-  transform-origin: center;
-  z-index: 10001;
-  pointer-events: none;
-  opacity: 0;
+/* Preloader counter scale-up */
+#preloader-count {
+  will-change: transform, opacity;
 }
 
 /* ═══ CUSTOM CURSOR ═══ */
