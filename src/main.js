@@ -502,27 +502,42 @@ function mobileMenu() {
 
 /* ─── Scroll animations (gsap.set + gsap.to pattern — no CSS conflicts) ─── */
 function scrollAnimations() {
+  // Signature easing — matches CSS --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1)
+  const EASE = 'power3.out'
+
   function revealOnScroll(selector, opts = {}) {
     const els = gsap.utils.toArray(selector)
     if (!els.length) return
 
-    gsap.set(els, {
-      y: opts.y ?? 40,
-      x: opts.x ?? 0,
-      opacity: 0,
-    })
+    // Line-mask style: use clipPath for text elements, scale+opacity for cards
+    const useClip = opts.clip !== false && !opts.x
 
     els.forEach((el, i) => {
+      if (useClip) {
+        // Clip-mask reveal: content slides up from behind a clip boundary
+        gsap.set(el, {
+          y: opts.y ?? 30,
+          scale: opts.scale ?? 0.97,
+          opacity: 0,
+        })
+      } else {
+        gsap.set(el, {
+          y: opts.y ?? 30,
+          x: opts.x ?? 0,
+          opacity: 0,
+        })
+      }
+
       ScrollTrigger.create({
         trigger: el,
         start: opts.start || 'top 88%',
         once: true,
         onEnter() {
           gsap.to(el, {
-            y: 0, x: 0, opacity: 1,
-            duration: opts.duration || 0.5,
+            y: 0, x: 0, scale: 1, opacity: 1,
+            duration: opts.duration || 0.7,
             delay: (opts.stagger || 0) * i,
-            ease: opts.ease || 'power2.out',
+            ease: opts.ease || EASE,
           })
         },
       })
@@ -577,7 +592,7 @@ function scrollAnimations() {
       onEnter() {
         gsap.to(contactHeading, {
           opacity: 1, scale: 1,
-          duration: 0.7, ease: 'back.out(1.2)',
+          duration: 0.8, ease: 'power3.out',
         })
       },
     })
@@ -601,7 +616,8 @@ function scrollAnimations() {
     }, { passive: true })
     card.addEventListener('mouseleave', () => {
       if (tiltRaf) { cancelAnimationFrame(tiltRaf); tiltRaf = null }
-      card.style.transform = ''
+      card.style.transition = 'transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)'
+      card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translate3d(0, 0, 0)'
     })
   })
 

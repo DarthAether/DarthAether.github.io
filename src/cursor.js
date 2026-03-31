@@ -31,8 +31,8 @@ export function initCursor() {
   }
   requestAnimationFrame(tick)
 
-  document.querySelectorAll('a, button, .project-card, .other-card').forEach((el) => {
-    el.addEventListener('mouseenter', () => { hovering = true })
-    el.addEventListener('mouseleave', () => { hovering = false })
+  document.querySelectorAll('a, button, .project-card, .other-card, .research-card, .experience-card').forEach((el) => {
+    el.addEventListener('mouseenter', () => { hovering = true; ring.classList.add('hover') })
+    el.addEventListener('mouseleave', () => { hovering = false; ring.classList.remove('hover') })
   })
 }
