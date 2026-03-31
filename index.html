@@ -3,10 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Vijaya Sivanjan Kommuri — ML Engineer. Building ML systems for power grid resilience, IoT security, and financial risk." />
+  <meta name="description" content="Vijaya Sivanjan Kommuri &mdash; AI/ML Researcher &amp; Engineer. IEEE SPICES 2026 author. Compound weather event modeling, calibrated uncertainty, power grid resilience. B.Tech AI&amp;ML, seeking M.Sc. in Germany." />
   <meta name="author" content="Vijaya Sivanjan Kommuri" />
-  <title>Vijaya Sivanjan Kommuri — ML Engineer</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <title>Vijaya Sivanjan Kommuri &mdash; AI/ML Researcher &amp; Engineer</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Vijaya Sivanjan Kommuri &mdash; AI/ML Researcher &amp; Engineer" />
+  <meta property="og:description" content="IEEE SPICES 2026 author. Building ML systems for power grid resilience with calibrated uncertainty. B.Tech AI&amp;ML, seeking M.Sc. in Germany (WS 2026/27)." />
+  <meta property="og:url" content="https://darthaether.github.io/" />
+  <meta property="og:image" content="https://darthaether.github.io/og-image.png" />
+  <meta property="og:site_name" content="VSK Portfolio" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Vijaya Sivanjan Kommuri &mdash; AI/ML Researcher &amp; Engineer" />
+  <meta name="twitter:description" content="IEEE SPICES 2026 author. Compound weather event modeling, calibrated uncertainty, power grid resilience." />
+
+  <!-- JSON-LD Person Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Vijaya Sivanjan Kommuri",
+    "url": "https://darthaether.github.io/",
+    "jobTitle": "AI/ML Researcher & Engineer",
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "Malla Reddy University"
+    },
+    "knowsAbout": ["Machine Learning", "Deep Learning", "Power Grid Resilience", "Calibrated Uncertainty", "XGBoost", "PyTorch"],
+    "sameAs": [
+      "https://github.com/DarthAether",
+      "https://linkedin.com/in/vijaya-sivanjan"
+    ]
+  }
+  </script>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x26A1;</text></svg>">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,6 +77,7 @@
       <a href="#hero" class="nav-link active">Home</a>
       <a href="#projects" class="nav-link">Projects</a>
       <a href="#about" class="nav-link">About</a>
+      <a href="#experience" class="nav-link">Experience</a>
       <a href="#research" class="nav-link">Research</a>
       <a href="#contact" class="nav-link">Contact</a>
     </div>
@@ -56,6 +91,7 @@
     <a href="#hero" class="mobile-link">Home</a>
     <a href="#projects" class="mobile-link">Projects</a>
     <a href="#about" class="mobile-link">About</a>
+    <a href="#experience" class="mobile-link">Experience</a>
     <a href="#research" class="mobile-link">Research</a>
     <a href="#contact" class="mobile-link">Contact</a>
   </div>
@@ -67,12 +103,13 @@
     <section id="hero">
       <div class="hero-bg" id="hero-canvas-wrap"></div>
       <div class="hero-content">
-        <p class="hero-uni">MALLA REDDY UNIVERSITY — HYDERABAD, INDIA</p>
+        <p class="hero-uni">MALLA REDDY UNIVERSITY &mdash; HYDERABAD, INDIA</p>
         <h1 class="hero-name">
           <span class="name-line">VIJAYA SIVANJAN</span>
           <span class="name-line">KOMMURI</span>
         </h1>
-        <p class="hero-role">ML Engineer <span class="hero-dot">&middot;</span> IEEE SPICES 2026</p>
+        <p class="hero-role">AI/ML Researcher &amp; Engineer <span class="hero-dot">&middot;</span> IEEE SPICES 2026</p>
+        <span class="hero-availability">Available for WS 2026/27</span>
         <p class="hero-bio">Building ML systems for power grid resilience, IoT security, and financial risk. Compound weather event modeling. Calibrated uncertainty.</p>
         <div class="hero-stats">
           <div class="stat">
@@ -84,11 +121,15 @@
             <span class="stat-label">FEATURES</span>
           </div>
           <div class="stat">
+            <span class="stat-value" data-target="2" data-decimals="0">0</span>
+            <span class="stat-label">PAPERS</span>
+          </div>
+          <div class="stat">
             <span class="stat-value" data-target="3" data-decimals="0">0</span>
             <span class="stat-label">STATES</span>
           </div>
           <div class="stat">
-            <span class="stat-value" data-target="213" data-decimals="0">0</span>
+            <span class="stat-value" data-target="695" data-decimals="0">0</span>
             <span class="stat-label">TESTS</span>
           </div>
         </div>
@@ -106,24 +147,33 @@
         <span class="marquee-item" data-tech="lightgbm">LightGBM</span>
         <span class="marquee-item" data-tech="pytorch">PyTorch</span>
         <span class="marquee-item" data-tech="fastapi">FastAPI</span>
+        <span class="marquee-item" data-tech="typescript">TypeScript</span>
+        <span class="marquee-item" data-tech="react">React</span>
+        <span class="marquee-item" data-tech="nextjs">Next.js</span>
+        <span class="marquee-item" data-tech="nestjs">NestJS</span>
+        <span class="marquee-item" data-tech="graphql">GraphQL</span>
+        <span class="marquee-item" data-tech="playwright">Playwright</span>
         <span class="marquee-item" data-tech="threejs">Three.js</span>
-        <span class="marquee-item" data-tech="gsap">GSAP</span>
         <span class="marquee-item" data-tech="docker">Docker</span>
         <span class="marquee-item" data-tech="postgresql">PostgreSQL</span>
         <span class="marquee-item" data-tech="redis">Redis</span>
-        <span class="marquee-item" data-tech="prometheus">Prometheus</span>
         <span class="marquee-item" data-tech="shap">SHAP</span>
         <span class="marquee-item" data-tech="onnx">ONNX</span>
+        <!-- duplicate set for seamless scroll -->
         <span class="marquee-item" data-tech="xgboost">XGBoost</span>
         <span class="marquee-item" data-tech="lightgbm">LightGBM</span>
         <span class="marquee-item" data-tech="pytorch">PyTorch</span>
         <span class="marquee-item" data-tech="fastapi">FastAPI</span>
+        <span class="marquee-item" data-tech="typescript">TypeScript</span>
+        <span class="marquee-item" data-tech="react">React</span>
+        <span class="marquee-item" data-tech="nextjs">Next.js</span>
+        <span class="marquee-item" data-tech="nestjs">NestJS</span>
+        <span class="marquee-item" data-tech="graphql">GraphQL</span>
+        <span class="marquee-item" data-tech="playwright">Playwright</span>
         <span class="marquee-item" data-tech="threejs">Three.js</span>
-        <span class="marquee-item" data-tech="gsap">GSAP</span>
         <span class="marquee-item" data-tech="docker">Docker</span>
         <span class="marquee-item" data-tech="postgresql">PostgreSQL</span>
         <span class="marquee-item" data-tech="redis">Redis</span>
-        <span class="marquee-item" data-tech="prometheus">Prometheus</span>
         <span class="marquee-item" data-tech="shap">SHAP</span>
         <span class="marquee-item" data-tech="onnx">ONNX</span>
       </div>
@@ -240,7 +290,7 @@
         <div class="about-layout">
           <div class="about-text">
             <h3 class="about-name">Vijaya Sivanjan Kommuri</h3>
-            <p>Final year B.Tech student specializing in AI and Machine Learning at Malla Reddy University. I build ML systems for critical infrastructure — power grid resilience, IoT security, financial risk.</p>
+            <p>Final year B.Tech student specializing in AI and Machine Learning at Malla Reddy University. I build ML systems for critical infrastructure &mdash; power grid resilience, IoT security, financial risk.</p>
             <p>Currently an IEEE SPICES 2026 author. Heading to graduate school in August 2026.</p>
           </div>
           <div class="about-skills">
@@ -272,9 +322,33 @@
           <div class="about-education">
             <div class="edu-item">
               <span class="edu-degree">B.Tech CSE (AI &amp; ML)</span>
-              <span class="edu-school">Malla Reddy University, 2022-2026</span>
+              <span class="edu-school">Malla Reddy University, 2021-2026</span>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="section-container">
+        <h2 class="section-title">Experience</h2>
+        <div class="experience-card">
+          <div class="exp-header">
+            <div>
+              <h3 class="exp-role">Full-Stack Developer Intern</h3>
+              <p class="exp-company">VTAG Software</p>
+            </div>
+            <span class="exp-period">Dec 2025 &mdash; Jun 2026</span>
+          </div>
+          <div class="exp-tags">
+            <span>TypeScript</span><span>Next.js</span><span>React</span><span>NestJS</span><span>GraphQL</span><span>Prisma</span><span>PostgreSQL</span><span>Playwright</span>
+          </div>
+          <ul class="exp-highlights">
+            <li>Built 695+ end-to-end Playwright tests across 9 projects, covering broker dashboard, property management, lead attribution, and Senior Living platform</li>
+            <li>Developed backend features for the Senior Living platform using NestJS, GraphQL, and Prisma with PostgreSQL</li>
+            <li>Implemented property management workflows and lead attribution systems in a production Next.js + React stack</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -282,17 +356,58 @@
     <!-- RESEARCH -->
     <section id="research">
       <div class="section-container">
-        <h2 class="section-title">Research</h2>
-        <div class="research-card">
-          <span class="research-badge">Under Review</span>
-          <h3 class="research-paper-title">Compound Weather Event Modeling for State-Agnostic Power Outage Prediction</h3>
-          <p class="research-journal">IEEE SPICES 2026 &middot; Paper #822</p>
-          <ul class="research-contributions">
-            <li>3-model ensemble (XGBoost + LightGBM + LSTM with attention)</li>
-            <li>Novel compound weather event feature engineering</li>
-            <li>Calibrated uncertainty with ECE of 0.004</li>
-            <li>Cross-state generalization (AUC gaps &lt; 0.007)</li>
-          </ul>
+        <h2 class="section-title">Research &amp; Publications</h2>
+        <div class="research-grid">
+
+          <!-- IEEE Paper -->
+          <div class="research-card">
+            <span class="research-badge">Under Review</span>
+            <h3 class="research-paper-title">Compound Weather Event Interaction Modeling with Calibrated Uncertainty for State-Agnostic Power Outage Prediction</h3>
+            <p class="research-authors">Dr. Md. Adam Baba, V.S. Kommuri, T. Mahadev, R.C.P. Chase</p>
+            <p class="research-journal">IEEE SPICES 2026 &middot; Paper ID #822</p>
+            <div class="research-metrics">
+              <span class="research-metric"><strong>AUC-ROC</strong> 0.967</span>
+              <span class="research-metric"><strong>F1</strong> 0.947</span>
+              <span class="research-metric"><strong>ECE</strong> 0.004</span>
+              <span class="research-metric"><strong>Features</strong> 138</span>
+              <span class="research-metric"><strong>Cross-state gap</strong> &lt;0.007</span>
+            </div>
+            <ul class="research-contributions">
+              <li>3-model ensemble (XGBoost + LightGBM + LSTM with attention)</li>
+              <li>Novel compound weather event feature engineering</li>
+              <li>Calibrated uncertainty with ECE of 0.004</li>
+              <li>Cross-state generalization across TX, CA, FL</li>
+            </ul>
+            <div class="research-links">
+              <a href="https://github.com/DarthAether/outage-prediction-system" target="_blank" rel="noopener" class="btn btn-gh">GitHub</a>
+            </div>
+          </div>
+
+          <!-- GNN Paper -->
+          <div class="research-card">
+            <span class="research-badge research-badge-published">Published</span>
+            <h3 class="research-paper-title">Adaptive Graph Neural Networks with Curriculum Learning for Robust Social Network Analysis</h3>
+            <p class="research-journal">IJSREM &middot; Vol. 09, Issue 08 &middot; August 2025 &middot; ISSN: 2582-3930</p>
+            <ul class="research-contributions">
+              <li>Curriculum learning strategy for GNN training on noisy social graphs</li>
+              <li>Adaptive architecture with dynamic neighborhood aggregation</li>
+              <li>Robust performance under adversarial perturbations</li>
+            </ul>
+          </div>
+
+          <!-- Thesis -->
+          <div class="research-card">
+            <span class="research-badge research-badge-thesis">B.Tech Thesis</span>
+            <h3 class="research-paper-title">Full-Stack ML System for Real-Time Power Outage Prediction</h3>
+            <p class="research-journal">GridShield AI &middot; Production System &middot; 2025-2026</p>
+            <ul class="research-contributions">
+              <li>FastAPI backend with Next.js 14 frontend, TimescaleDB for time-series storage</li>
+              <li>Redis caching, MLflow experiment tracking, Docker Compose orchestration</li>
+              <li>57 automated tests covering model serving, data pipeline, and API endpoints</li>
+              <li>Real-time prediction API with SHAP-based feature explanations</li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </section>
@@ -301,6 +416,7 @@
     <section id="contact">
       <div class="section-container narrow">
         <h2 class="contact-heading">Let's connect.</h2>
+        <p class="contact-seeking">Actively seeking M.Sc. opportunities in AI/CS at German universities (WS 2026/27)</p>
         <div class="contact-list">
           <a href="mailto:vjkommuri@gmail.com" class="contact-item">
             <span class="contact-label">EMAIL</span>
@@ -310,13 +426,17 @@
             <span class="contact-label">GITHUB</span>
             <span class="contact-value">github.com/DarthAether</span>
           </a>
+          <a href="https://linkedin.com/in/vijaya-sivanjan" target="_blank" rel="noopener" class="contact-item">
+            <span class="contact-label">LINKEDIN</span>
+            <span class="contact-value">linkedin.com/in/vijaya-sivanjan</span>
+          </a>
           <div class="contact-item">
             <span class="contact-label">LOCATION</span>
             <span class="contact-value">Hyderabad, India</span>
           </div>
           <div class="contact-item">
             <span class="contact-label">STATUS</span>
-            <span class="contact-value">Open to grad school &amp; research</span>
+            <span class="contact-value">Open to M.Sc. programs, research collaborations &amp; Werkstudent roles in Germany</span>
           </div>
         </div>
       </div>

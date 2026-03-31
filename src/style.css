@@ -137,6 +137,7 @@ img {
 
 /* ═══ GRAIN CANVAS ═══ */
 #grain {
+  will-change: contents;
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -148,6 +149,7 @@ img {
 
 /* ═══ SCROLL PROGRESS ═══ */
 #scroll-progress {
+  will-change: transform;
   position: fixed;
   top: 0;
   left: 0;
@@ -450,6 +452,7 @@ img {
 }
 
 .marquee-row {
+  will-change: transform;
   display: flex;
   gap: 48px;
   white-space: nowrap;
@@ -459,6 +462,7 @@ img {
 }
 
 .marquee-strip:hover .marquee-row {
+  will-change: transform;
   animation-play-state: paused;
 }
 
@@ -559,6 +563,7 @@ section {
 }
 
 .section-container {
+  contain: content;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 40px;
@@ -597,6 +602,7 @@ section {
 }
 
 .project-card {
+  will-change: transform;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -953,6 +959,170 @@ a.contact-item:hover,
   font-size: 0.95rem;
 }
 
+/* ═══ HERO AVAILABILITY BADGE ═══ */
+.hero-availability {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  color: var(--accent);
+  border-radius: 20px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* ═══ CONTACT SEEKING ═══ */
+.contact-seeking {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 32px;
+  letter-spacing: 0.02em;
+}
+
+/* ═══ EXPERIENCE ═══ */
+.experience-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.exp-role {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.exp-company {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.exp-period {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.exp-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.exp-highlights {
+  list-style: none;
+  padding: 0;
+}
+
+.exp-highlights li {
+  padding: 8px 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.exp-highlights li::before {
+  content: '\2192';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ═══ RESEARCH GRID ═══ */
+.research-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.research-authors {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.research-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  margin-top: 12px;
+}
+
+.research-metric {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.15);
+  border-radius: 6px;
+  color: var(--text-muted);
+}
+
+.research-metric strong {
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+.research-badge-published {
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+  color: #3b82f6 !important;
+}
+
+.research-badge-thesis {
+  background: rgba(168, 85, 247, 0.1) !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
+  color: #a855f7 !important;
+}
+
+.research-links {
+  margin-top: 16px;
+}
+
 /* ═══ FOOTER ═══ */
 #footer {
   display: flex;
@@ -1186,6 +1356,7 @@ pre.modal-arch {
   }
 
   .section-container {
+  contain: content;
     padding: 0 20px;
   }
 
@@ -1231,6 +1402,27 @@ pre.modal-arch {
   .research-paper-title {
     font-size: 1.2rem;
   }
+
+  .research-grid {
+    gap: 16px;
+  }
+
+  .research-metrics {
+    gap: 8px;
+  }
+
+  .experience-card {
+    padding: 24px;
+  }
+
+  .exp-role {
+    font-size: 1.2rem;
+  }
+
+  .hero-availability {
+    font-size: 0.5rem;
+  }
+
 
   /* Modal */
   .modal-body {

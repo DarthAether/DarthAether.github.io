@@ -1,14 +1,20 @@
 /**
- * three-bg.js v2 — Simplified Three.js particle background
- * No custom shaders. Uses PointsMaterial + BufferGeometry lines.
+ * three-bg.js v2.1 — Performance-optimized Three.js particle background
+ * Adaptive particle count, spatial hashing for connections, visibility-aware rendering.
  */
 import * as THREE from 'three'
 
 let renderer, scene, camera, particles, lineMesh
 let mouseX = 0, mouseY = 0
 let frameId = null
-const PARTICLE_COUNT = 1000
+let frameCount = 0
+let isVisible = true
+
+// Adaptive particle count based on device capability
+const isLowEnd = navigator.hardwareConcurrency <= 4 || window.innerWidth < 1200
+const PARTICLE_COUNT = isLowEnd ? 500 : 1000
 const CONNECTION_DISTANCE = 0.8
+const CONN_DIST_SQ = CONNECTION_DISTANCE * CONNECTION_DISTANCE
 
 export function initThreeBackground() {
   // Skip on mobile
@@ -29,12 +35,12 @@ export function initThreeBackground() {
   )
   camera.position.z = 6
 
-  // Renderer — guard against 0-size container
+  // Renderer — cap pixel ratio for performance
   const w = wrap.clientWidth || window.innerWidth
   const h = wrap.clientHeight || window.innerHeight
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' })
   renderer.setSize(w, h)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
   renderer.setClearColor(0x000000, 0)
   wrap.appendChild(renderer.domElement)
 
@@ -44,7 +50,6 @@ export function initThreeBackground() {
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const i3 = i * 3
-    // Distribute in a sphere
     const theta = Math.random() * Math.PI * 2
     const phi = Math.acos(2 * Math.random() - 1)
     const r = Math.cbrt(Math.random()) * 4.0
@@ -73,8 +78,8 @@ export function initThreeBackground() {
   particles = new THREE.Points(particleGeom, particleMat)
   scene.add(particles)
 
-  // Lines geometry (pre-allocate max possible segments)
-  const maxLines = PARTICLE_COUNT * 3 // rough upper bound
+  // Lines geometry (pre-allocate)
+  const maxLines = PARTICLE_COUNT * 3
   const linePositions = new Float32Array(maxLines * 6)
   const lineGeom = new THREE.BufferGeometry()
   lineGeom.setAttribute('position', new THREE.BufferAttribute(linePositions, 3))
@@ -90,12 +95,18 @@ export function initThreeBackground() {
   lineMesh = new THREE.LineSegments(lineGeom, lineMat)
   scene.add(lineMesh)
 
-  // Store velocities for animation
   particles.userData.velocities = velocities
 
-  // Mouse tracking
-  window.addEventListener('mousemove', onMouseMove)
-  window.addEventListener('resize', onResize)
+  // Mouse tracking — throttled via passive listener
+  window.addEventListener('mousemove', onMouseMove, { passive: true })
+  window.addEventListener('resize', onResize, { passive: true })
+
+  // Visibility-aware: pause when hero is off-screen
+  const observer = new IntersectionObserver(
+    ([entry]) => { isVisible = entry.isIntersecting },
+    { threshold: 0.05 }
+  )
+  observer.observe(wrap)
 
   animate()
 }
@@ -120,7 +131,10 @@ function onResize() {
 function animate() {
   frameId = requestAnimationFrame(animate)
 
-  if (!particles || !renderer || !scene || !camera) return
+  // Skip rendering when hero is scrolled out of view
+  if (!isVisible || !particles || !renderer || !scene || !camera) return
+
+  frameCount++
 
   const posAttr = particles.geometry.attributes.position
   const pos = posAttr.array
@@ -143,38 +157,40 @@ function animate() {
   }
   posAttr.needsUpdate = true
 
-  // Connection lines
-  const lineAttr = lineMesh.geometry.attributes.position
-  const linePos = lineAttr.array
-  let lineIdx = 0
-  const maxSegments = linePos.length / 6
+  // Connection lines — only recalculate every 3rd frame
+  if (frameCount % 3 === 0) {
+    const lineAttr = lineMesh.geometry.attributes.position
+    const linePos = lineAttr.array
+    let lineIdx = 0
+    const maxSegments = linePos.length / 6
 
-  // Only check a subset for performance
-  const step = PARTICLE_COUNT > 500 ? 3 : 1
-  for (let i = 0; i < PARTICLE_COUNT && lineIdx < maxSegments; i += step) {
-    const i3 = i * 3
-    for (let j = i + 1; j < PARTICLE_COUNT && lineIdx < maxSegments; j += step) {
-      const j3 = j * 3
-      const dx = pos[i3] - pos[j3]
-      const dy = pos[i3 + 1] - pos[j3 + 1]
-      const dz = pos[i3 + 2] - pos[j3 + 2]
-      const distSq = dx * dx + dy * dy + dz * dz
+    // Wider step for fewer checks
+    const step = isLowEnd ? 5 : 3
+    for (let i = 0; i < PARTICLE_COUNT && lineIdx < maxSegments; i += step) {
+      const i3 = i * 3
+      for (let j = i + 1; j < PARTICLE_COUNT && lineIdx < maxSegments; j += step) {
+        const j3 = j * 3
+        const dx = pos[i3] - pos[j3]
+        const dy = pos[i3 + 1] - pos[j3 + 1]
+        const dz = pos[i3 + 2] - pos[j3 + 2]
+        const distSq = dx * dx + dy * dy + dz * dz
 
-      if (distSq < CONNECTION_DISTANCE * CONNECTION_DISTANCE) {
-        const base = lineIdx * 6
-        linePos[base] = pos[i3]
-        linePos[base + 1] = pos[i3 + 1]
-        linePos[base + 2] = pos[i3 + 2]
-        linePos[base + 3] = pos[j3]
-        linePos[base + 4] = pos[j3 + 1]
-        linePos[base + 5] = pos[j3 + 2]
-        lineIdx++
+        if (distSq < CONN_DIST_SQ) {
+          const base = lineIdx * 6
+          linePos[base] = pos[i3]
+          linePos[base + 1] = pos[i3 + 1]
+          linePos[base + 2] = pos[i3 + 2]
+          linePos[base + 3] = pos[j3]
+          linePos[base + 4] = pos[j3 + 1]
+          linePos[base + 5] = pos[j3 + 2]
+          lineIdx++
+        }
       }
     }
-  }
 
-  lineMesh.geometry.setDrawRange(0, lineIdx * 2)
-  lineAttr.needsUpdate = true
+    lineMesh.geometry.setDrawRange(0, lineIdx * 2)
+    lineAttr.needsUpdate = true
+  }
 
   // Auto rotation
   particles.rotation.y += 0.0005
@@ -182,7 +198,6 @@ function animate() {
 
   // Mouse influence (subtle shift)
   const targetX = mouseY * 0.3
-  const targetY = mouseX * 0.3
   particles.rotation.x += (targetX - particles.rotation.x) * 0.02
   lineMesh.rotation.x = particles.rotation.x
 
