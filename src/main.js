@@ -1417,3 +1417,214 @@ window.addEventListener('resize', () => {
     initGyro()
   }
 })()
+
+
+/* ═══ POKEMON EASTER EGG ═══ */
+;(function() {
+  // Pokemon data: emoji + name + mega form emoji
+  const POKEMON = [
+    { sprite: '\u26A1', name: 'Pikachu', mega: '\u{1F329}\uFE0F' },        // lightning -> cloud lightning
+    { sprite: '\u{1F525}', name: 'Charizard', mega: '\u{1F30B}' },         // fire -> volcano
+    { sprite: '\u{1F4A7}', name: 'Blastoise', mega: '\u{1F30A}' },        // droplet -> wave
+    { sprite: '\u{1F33F}', name: 'Bulbasaur', mega: '\u{1F333}' },        // herb -> tree
+    { sprite: '\u2B50', name: 'Jirachi', mega: '\u{1F31F}' },             // star -> glowing star
+    { sprite: '\u{1F47B}', name: 'Gengar', mega: '\u{1F608}' },           // ghost -> devil
+    { sprite: '\u{1F409}', name: 'Dragonite', mega: '\u{1F432}' },        // dragon
+    { sprite: '\u{1F4A0}', name: 'Mewtwo', mega: '\u{1F52E}' },           // diamond -> crystal ball
+  ]
+
+  let pokemonActive = false
+  let megaEvolved = false
+  let sprites = []
+
+  // Less important areas where Pokemon can appear
+  const SPAWN_ZONES = [
+    { selector: '#other-work', weight: 3 },
+    { selector: '#footer', weight: 2 },
+    { selector: '.about-skills', weight: 2 },
+    { selector: '.marquee-strip', weight: 1 },
+    { selector: '.about-education', weight: 1 },
+  ]
+
+  // Register secret words
+  // "pokemon" triggers spawn, "megaevolve" triggers mega evolution
+  // These integrate with the existing secret word buffer
+  const origKeydown = null
+  let buffer2 = ''
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+
+    buffer2 += e.key.toLowerCase()
+    if (buffer2.length > 20) buffer2 = buffer2.slice(-20)
+
+    if (buffer2.endsWith('pokemon') && !pokemonActive) {
+      buffer2 = ''
+      spawnPokemon()
+    } else if (buffer2.endsWith('megaevolve') && pokemonActive && !megaEvolved) {
+      buffer2 = ''
+      megaEvolve()
+    }
+  })
+
+  function getRandomSpawnPosition() {
+    // Pick a random zone weighted by importance
+    const zones = []
+    for (const z of SPAWN_ZONES) {
+      const el = document.querySelector(z.selector)
+      if (!el) continue
+      for (let i = 0; i < z.weight; i++) zones.push(el)
+    }
+
+    if (zones.length === 0) {
+      // Fallback: random position on screen
+      return {
+        x: 100 + Math.random() * (window.innerWidth - 200),
+        y: 200 + Math.random() * (window.innerHeight - 300),
+      }
+    }
+
+    const zone = zones[Math.floor(Math.random() * zones.length)]
+    const rect = zone.getBoundingClientRect()
+
+    return {
+      x: rect.left + Math.random() * rect.width,
+      y: rect.top + Math.random() * Math.max(rect.height - 40, 20),
+    }
+  }
+
+  function spawnPokemon() {
+    pokemonActive = true
+    document.body.classList.add('pokemon-mode')
+
+    // Spawn particles go yellow
+    window.__particleTargetColor = 0xfbbf24
+
+    // Spawn 6 random Pokemon with stagger
+    const selected = []
+    // Always include Pikachu first
+    selected.push(POKEMON[0])
+    const others = POKEMON.slice(1).sort(() => Math.random() - 0.5).slice(0, 5)
+    selected.push(...others)
+
+    selected.forEach((poke, i) => {
+      setTimeout(() => {
+        const pos = getRandomSpawnPosition()
+        const el = document.createElement('div')
+        el.className = 'pokemon-sprite bounce'
+        el.textContent = poke.sprite
+        el.dataset.name = poke.name
+        el.dataset.mega = poke.mega
+        el.style.left = pos.x + 'px'
+        el.style.top = pos.y + 'px'
+        document.body.appendChild(el)
+        sprites.push(el)
+
+        // After bounce, start floating
+        setTimeout(() => {
+          el.classList.remove('bounce')
+          el.classList.add('idle')
+        }, 600)
+
+        // Start wandering
+        wanderPokemon(el)
+      }, i * 300)
+    })
+
+    console.log(
+      '%c POKEMON %c Wild Pokemon appeared! Type "megaevolve" to trigger Mega Evolution!',
+      'background: #fbbf24; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #fbbf24;'
+    )
+  }
+
+  function wanderPokemon(el) {
+    if (!pokemonActive) return
+
+    function move() {
+      if (!document.body.contains(el)) return
+
+      const pos = getRandomSpawnPosition()
+      const currentX = parseFloat(el.style.left)
+      const currentY = parseFloat(el.style.top)
+
+      // Face direction of movement
+      if (pos.x < currentX) {
+        el.style.transform = 'scaleX(-1)'
+      } else {
+        el.style.transform = 'scaleX(1)'
+      }
+
+      el.classList.remove('idle')
+      el.classList.add('walking')
+
+      // Animate to new position
+      const duration = 2000 + Math.random() * 3000
+      el.style.transition = `left ${duration}ms linear, top ${duration}ms linear`
+      el.style.left = pos.x + 'px'
+      el.style.top = pos.y + 'px'
+
+      // Return to idle after arriving
+      setTimeout(() => {
+        if (!document.body.contains(el)) return
+        el.classList.remove('walking')
+        el.classList.add('idle')
+        el.style.transform = ''
+        el.style.transition = ''
+
+        // Wait then move again
+        setTimeout(move, 2000 + Math.random() * 4000)
+      }, duration)
+    }
+
+    // Start first move after a random delay
+    setTimeout(move, 1000 + Math.random() * 3000)
+  }
+
+  function megaEvolve() {
+    megaEvolved = true
+
+    // Flash overlay
+    const flash = document.createElement('div')
+    flash.className = 'mega-flash'
+    flash.innerHTML = '<div class="mega-flash-inner"></div>'
+    document.body.appendChild(flash)
+
+    // Text
+    const text = document.createElement('div')
+    text.className = 'mega-text'
+    text.innerHTML = '<span class="mega-line1">Mega Evolution!</span><span class="mega-line2">Beyond Evolution</span>'
+    document.body.appendChild(text)
+
+    // Particles go purple/gold
+    window.__particleTargetColor = 0xa855f7
+
+    // Transform all sprites after the flash peak
+    setTimeout(() => {
+      sprites.forEach((el, i) => {
+        setTimeout(() => {
+          // Swap to mega form
+          const megaSprite = el.dataset.mega
+          el.textContent = megaSprite
+          el.classList.remove('idle', 'walking')
+          el.classList.add('bounce', 'mega')
+
+          setTimeout(() => {
+            el.classList.remove('bounce')
+            el.classList.add('idle')
+          }, 600)
+        }, i * 150)
+      })
+    }, 800)
+
+    // Cleanup overlays
+    setTimeout(() => flash.remove(), 2200)
+    setTimeout(() => text.remove(), 2800)
+
+    console.log(
+      '%c MEGA EVOLUTION %c The power of Mega Evolution surges through the battlefield!',
+      'background: linear-gradient(90deg, #fbbf24, #a855f7); color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #a855f7;'
+    )
+  }
+})()
