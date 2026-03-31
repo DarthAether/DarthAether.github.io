@@ -22,7 +22,7 @@ const lenis = new Lenis({
 
 lenis.on('scroll', ScrollTrigger.update)
 gsap.ticker.add((time) => lenis.raf(time * 1000))
-gsap.ticker.lagSmoothing(0)
+gsap.ticker.lagSmoothing(500, 33)
 
 /* ═══ Preloader: seamless particle-to-page transition ═══
  *
@@ -411,12 +411,11 @@ function navbarBehavior() {
   const navbar = document.getElementById('navbar')
   if (!navbar) return
 
-  // Glass effect on scroll
+  // Glass effect on scroll — toggleClass fires once at threshold, not per-pixel
   ScrollTrigger.create({
     start: 100,
-    onUpdate(self) {
-      navbar.classList.toggle('scrolled', self.scroll() > 100)
-    },
+    end: 99999,
+    toggleClass: { targets: navbar, className: 'scrolled' },
   })
 
   // Active section tracking
@@ -830,11 +829,13 @@ function marqueeHover() {
 /* ═══ Scroll progress bar ═══ */
 const progressBar = document.getElementById('scroll-progress')
 if (progressBar) {
+  progressBar.style.transformOrigin = 'left'
+  progressBar.style.width = '100%'
   ScrollTrigger.create({
     start: 0,
     end: 'max',
     onUpdate(self) {
-      progressBar.style.width = `${self.progress * 100}%`
+      progressBar.style.transform = `scaleX(${self.progress})`
     },
   })
 }
