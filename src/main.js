@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
 
   // Hide all hero content — particles will "become" them
   const heroEls = document.querySelectorAll(
-    '.hero-uni, .hero-name, .hero-role, .hero-bio, .hero-stats, .hero-scroll'
+    '.hero-uni, .hero-name, .hero-role, .hero-availability, .hero-bio, .hero-stats, .hero-scroll'
   )
   heroEls.forEach((el) => { el.style.opacity = '0' })
 
@@ -551,6 +551,8 @@ function scrollAnimations() {
   // Skill rows (fade in the labels)
   revealOnScroll('.skill-row', { y: 20, stagger: 0.08 })
 
+  // Experience card
+  revealOnScroll('.experience-card')
   // Research card
   revealOnScroll('.research-card')
 
@@ -574,17 +576,24 @@ function scrollAnimations() {
     })
   }
 
-  // ── Project card 3D tilt on hover ──
+  // ── Project card 3D tilt on hover (GPU-composited, rAF-throttled) ──
   document.querySelectorAll('.project-card, .other-card').forEach((card) => {
+    let tiltRaf = null
+    card.style.willChange = 'transform'
     card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width - 0.5  // -0.5 to 0.5
-      const y = (e.clientY - rect.top) / rect.height - 0.5
-      const tiltX = y * -8  // degrees
-      const tiltY = x * 8
-      card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px)`
-    })
+      if (tiltRaf) return
+      tiltRaf = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect()
+        const x = (e.clientX - rect.left) / rect.width - 0.5
+        const y = (e.clientY - rect.top) / rect.height - 0.5
+        const tiltX = y * -8
+        const tiltY = x * 8
+        card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(0, -4px, 0)`
+        tiltRaf = null
+      })
+    }, { passive: true })
     card.addEventListener('mouseleave', () => {
+      if (tiltRaf) { cancelAnimationFrame(tiltRaf); tiltRaf = null }
       card.style.transform = ''
     })
   })
@@ -706,6 +715,36 @@ const TECH_DATA = {
     name: 'ONNX Runtime',
     desc: 'YOLOv5 model export to ONNX for 2-5x faster CPU inference in ThreatSight. Runtime-selectable backend: native PyTorch vs ONNX via configuration.',
     projects: ['ThreatSight'],
+  },
+  typescript: {
+    name: 'TypeScript',
+    desc: 'Strongly-typed JavaScript for production applications. Used across the full stack at VTAG Software with Next.js, React, NestJS, and Playwright test suites.',
+    projects: ['VTAG Software'],
+  },
+  react: {
+    name: 'React',
+    desc: 'Component-based UI library for building interactive dashboards. Broker portal, property management, and lead attribution interfaces at VTAG Software.',
+    projects: ['VTAG Software'],
+  },
+  nextjs: {
+    name: 'Next.js',
+    desc: 'React meta-framework with SSR and file-based routing. Production frontend for broker dashboards and property management at VTAG Software.',
+    projects: ['VTAG Software', 'GridShield AI'],
+  },
+  nestjs: {
+    name: 'NestJS',
+    desc: 'Enterprise Node.js framework with dependency injection, decorators, and module system. Backend services for the Senior Living platform at VTAG Software.',
+    projects: ['VTAG Software'],
+  },
+  graphql: {
+    name: 'GraphQL',
+    desc: 'Query language for APIs with typed schemas. Used with NestJS and Prisma for efficient data fetching across VTAG Software platforms.',
+    projects: ['VTAG Software'],
+  },
+  playwright: {
+    name: 'Playwright',
+    desc: 'Cross-browser end-to-end testing framework. 695+ tests across 9 projects at VTAG Software covering critical user flows and regression detection.',
+    projects: ['VTAG Software'],
   },
 }
 
