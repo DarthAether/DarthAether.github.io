@@ -81,193 +81,257 @@ function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
 
   const W = window.innerWidth
   const H = window.innerHeight
+  const DPR = Math.min(window.devicePixelRatio, 2)
 
-  // Create fullscreen canvas
+  // Fullscreen canvas
   const canvas = document.createElement('canvas')
-  canvas.width = W * window.devicePixelRatio
-  canvas.height = H * window.devicePixelRatio
+  canvas.width = W * DPR
+  canvas.height = H * DPR
   canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:10002;pointer-events:none;'
   document.body.appendChild(canvas)
   const ctx = canvas.getContext('2d')
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+  ctx.scale(DPR, DPR)
 
-  // Counter position (explosion origin)
+  // Explosion origin
   const counterRect = counter.getBoundingClientRect()
   const originX = counterRect.left + counterRect.width / 2
   const originY = counterRect.top + counterRect.height / 2
 
-  // Target positions: where hero elements are on the page
+  // Build convergence targets from hero elements
   const targets = []
   heroEls.forEach((el) => {
     const r = el.getBoundingClientRect()
-    // Create multiple target points spread across each element
-    const pts = Math.max(3, Math.floor(r.width / 40))
-    for (let i = 0; i < pts; i++) {
-      targets.push({
-        x: r.left + (r.width * (i + 0.5)) / pts,
-        y: r.top + r.height / 2,
-        el,
-      })
+    const density = Math.max(4, Math.floor(r.width / 25))
+    for (let i = 0; i < density; i++) {
+      for (let j = 0; j < 2; j++) {
+        targets.push({
+          x: r.left + (r.width * (i + 0.5)) / density,
+          y: r.top + (r.height * (j + 0.5)) / 2,
+          el,
+        })
+      }
     }
   })
-
-  // Also add targets for navbar
   if (navbar) {
     const nr = navbar.getBoundingClientRect()
-    for (let i = 0; i < 5; i++) {
-      targets.push({
-        x: nr.left + (nr.width * (i + 0.5)) / 5,
-        y: nr.top + nr.height / 2,
-        el: navbar,
-      })
+    for (let i = 0; i < 8; i++) {
+      targets.push({ x: nr.left + (nr.width * (i + 0.5)) / 8, y: nr.top + nr.height / 2, el: navbar })
     }
   }
 
-  // Create particles
-  const COUNT = 200
+  // ── Particle creation ──
+  const COUNT = 400
   const particles = []
-  const COLORS = ['#818cf8', '#a5b4fc', '#6366f1', '#c4b5fd', '#e0e7ff', '#7c3aed']
+  const COLORS = [
+    '#818cf8', '#a5b4fc', '#6366f1', '#c4b5fd', '#e0e7ff',
+    '#7c3aed', '#ddd6fe', '#4f46e5', '#93c5fd', '#f0abfc',
+  ]
 
   for (let i = 0; i < COUNT; i++) {
     const angle = Math.random() * Math.PI * 2
-    const speed = 3 + Math.random() * 8
+    const speed = 2 + Math.random() * 10
     const target = targets[i % targets.length]
+    const isSpark = Math.random() < 0.15 // 15% are bright sparkle particles
 
     particles.push({
-      // Current position (starts at counter)
-      x: originX + (Math.random() - 0.5) * 60,
-      y: originY + (Math.random() - 0.5) * 30,
-      // Velocity (explosion outward)
+      x: originX + (Math.random() - 0.5) * 50,
+      y: originY + (Math.random() - 0.5) * 25,
+      // Previous position for trails
+      px: originX,
+      py: originY,
+      // Velocity
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
-      // Target position (where on the page to converge)
-      tx: target.x + (Math.random() - 0.5) * 30,
-      ty: target.y + (Math.random() - 0.5) * 20,
+      // Target
+      tx: target.x + (Math.random() - 0.5) * 20,
+      ty: target.y + (Math.random() - 0.5) * 15,
       targetEl: target.el,
       // Visual
-      size: 1.5 + Math.random() * 3.5,
+      size: isSpark ? (0.8 + Math.random() * 1.5) : (1.5 + Math.random() * 4),
+      baseSize: 0,
       alpha: 1,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      isSpark,
+      shimmerPhase: Math.random() * Math.PI * 2,
+      shimmerSpeed: 0.05 + Math.random() * 0.1,
+      // Trail
+      trail: [],
+      trailMax: isSpark ? 3 : (5 + Math.floor(Math.random() * 8)),
       // Timing
-      phase: 'explode', // explode → swirl → converge → done
-      explodeFrames: 20 + Math.floor(Math.random() * 15), // how long to fly outward
+      phase: 'explode',
+      explodeFrames: 15 + Math.floor(Math.random() * 20),
       swirlFrames: 0,
-      convergeSpeed: 0.03 + Math.random() * 0.04,
-      // Swirl params
-      swirlRadius: 20 + Math.random() * 40,
-      swirlSpeed: (Math.random() - 0.5) * 0.15,
+      convergeSpeed: 0.02 + Math.random() * 0.035,
+      // Swirl
+      swirlRadius: 30 + Math.random() * 60,
+      swirlSpeed: (Math.random() - 0.5) * 0.12,
       swirlAngle: Math.random() * Math.PI * 2,
+      // Bloom
+      bloomSize: isSpark ? 0 : (8 + Math.random() * 16),
     })
+    particles[i].baseSize = particles[i].size
   }
 
-  // Hide counter
-  gsap.to(counter, { opacity: 0, scale: 2, duration: 0.2 })
+  // Hide counter with a flash
+  gsap.to(counter, { opacity: 0, scale: 2.5, duration: 0.15 })
 
-  // Track which elements have been faded in
   const fadedIn = new Set()
   let frame = 0
-  const TOTAL_FRAMES = 150 // ~2.5s at 60fps
+  const TOTAL_FRAMES = 180 // ~3s at 60fps
 
-  // Fade preloader bg during phase 2-3
-  gsap.to(preloader, {
-    opacity: 0,
-    duration: 1.0,
-    delay: 0.3,
-    ease: 'power1.out',
-  })
+  // Preloader bg fade
+  gsap.to(preloader, { opacity: 0, duration: 1.2, delay: 0.4, ease: 'power1.out' })
 
   function animate() {
-    ctx.clearRect(0, 0, W, H)
-    frame++
+    // Semi-transparent clear for motion trail effect
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.15)'
+    ctx.fillRect(0, 0, W, H)
 
-    const progress = Math.min(frame / TOTAL_FRAMES, 1) // 0→1 over animation
+    frame++
+    const progress = Math.min(frame / TOTAL_FRAMES, 1)
+
+    // Draw particles with additive blending for bloom
+    ctx.globalCompositeOperation = 'lighter'
 
     for (const p of particles) {
-      if (p.alpha <= 0) continue
+      if (p.alpha <= 0.01) continue
 
+      // Store trail
+      p.trail.push({ x: p.x, y: p.y, a: p.alpha })
+      if (p.trail.length > p.trailMax) p.trail.shift()
+
+      p.px = p.x
+      p.py = p.y
+
+      // ── Phase: Explode ──
       if (p.phase === 'explode') {
-        // Phase 2: fly outward
         p.x += p.vx
         p.y += p.vy
-        p.vx *= 0.96
-        p.vy *= 0.96
+        p.vx *= 0.95
+        p.vy *= 0.95
         p.explodeFrames--
         if (p.explodeFrames <= 0) p.phase = 'swirl'
-
-      } else if (p.phase === 'swirl') {
-        // Brief swirl before converging
+      }
+      // ── Phase: Swirl + Converge ──
+      else if (p.phase === 'swirl') {
         p.swirlAngle += p.swirlSpeed
         p.swirlFrames++
 
-        // Start converging toward target
         const dx = p.tx - p.x
         const dy = p.ty - p.y
         const dist = Math.sqrt(dx * dx + dy * dy)
 
-        // Add circular swirl motion
-        const swirlFade = Math.max(0, 1 - p.swirlFrames / 40)
-        p.x += dx * p.convergeSpeed + Math.cos(p.swirlAngle) * p.swirlRadius * swirlFade * 0.1
-        p.y += dy * p.convergeSpeed + Math.sin(p.swirlAngle) * p.swirlRadius * swirlFade * 0.1
+        // Ease-in convergence (accelerates as it gets closer to timeline)
+        const convergeEase = Math.min(1, p.swirlFrames / 60)
+        const spd = p.convergeSpeed * (0.5 + convergeEase * 1.5)
 
-        // When close to target, start fading and reveal the element
-        if (dist < 30) {
-          p.alpha -= 0.04
-          p.size *= 0.97
+        // Swirl fades out over time
+        const swirlFade = Math.max(0, 1 - p.swirlFrames / 50)
+        const swirlX = Math.cos(p.swirlAngle) * p.swirlRadius * swirlFade * 0.08
+        const swirlY = Math.sin(p.swirlAngle) * p.swirlRadius * swirlFade * 0.08
 
-          // Fade in the target DOM element
+        p.x += dx * spd + swirlX
+        p.y += dy * spd + swirlY
+
+        // Approaching target — fade out particle, reveal DOM
+        if (dist < 50) {
+          const closeness = 1 - dist / 50
+          p.alpha -= 0.02 * (1 + closeness * 2)
+          p.size = p.baseSize * (0.3 + 0.7 * (dist / 50))
+
           if (p.targetEl && !fadedIn.has(p.targetEl)) {
             fadedIn.add(p.targetEl)
-            gsap.to(p.targetEl, {
-              opacity: 1,
-              duration: 0.5,
-              ease: 'power2.out',
-            })
+            gsap.to(p.targetEl, { opacity: 1, duration: 0.6, ease: 'power2.out' })
           }
         }
       }
 
-      // Draw particle
-      if (p.alpha > 0) {
-        ctx.globalAlpha = Math.min(p.alpha, 1)
-        ctx.fillStyle = p.color
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2)
-        ctx.fill()
+      // ── Shimmer ──
+      p.shimmerPhase += p.shimmerSpeed
+      const shimmer = 0.7 + 0.3 * Math.sin(p.shimmerPhase)
+      const drawAlpha = Math.min(1, p.alpha * shimmer)
 
-        // Glow effect for larger particles
-        if (p.size > 2.5) {
-          ctx.globalAlpha = p.alpha * 0.15
+      // ── Draw trail ──
+      if (p.trail.length > 1 && !p.isSpark) {
+        for (let t = 0; t < p.trail.length - 1; t++) {
+          const tp = p.trail[t]
+          const trailAlpha = (t / p.trail.length) * drawAlpha * 0.3
+          ctx.globalAlpha = trailAlpha
+          ctx.fillStyle = p.color
+          const trailSize = p.size * (t / p.trail.length) * 0.6
           ctx.beginPath()
-          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2)
+          ctx.arc(tp.x, tp.y, Math.max(0.3, trailSize), 0, Math.PI * 2)
           ctx.fill()
         }
       }
+
+      // ── Draw bloom/glow ──
+      if (p.bloomSize > 0 && drawAlpha > 0.1) {
+        ctx.globalAlpha = drawAlpha * 0.06
+        ctx.fillStyle = p.color
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.bloomSize, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Inner glow
+        ctx.globalAlpha = drawAlpha * 0.12
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.bloomSize * 0.5, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // ── Draw core particle ──
+      ctx.globalAlpha = drawAlpha
+      ctx.fillStyle = p.color
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, Math.max(0.3, p.size), 0, Math.PI * 2)
+      ctx.fill()
+
+      // Sparkle: bright white center
+      if (p.isSpark && drawAlpha > 0.3) {
+        ctx.globalAlpha = drawAlpha * 0.9
+        ctx.fillStyle = '#ffffff'
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size * 0.4, 0, Math.PI * 2)
+        ctx.fill()
+      }
     }
 
-    // Force-reveal any remaining elements after 80% progress
-    if (progress > 0.8) {
+    // Reset composite
+    ctx.globalCompositeOperation = 'source-over'
+
+    // Force-reveal remaining elements at 75%
+    if (progress > 0.75) {
       heroEls.forEach((el) => {
         if (!fadedIn.has(el)) {
           fadedIn.add(el)
-          gsap.to(el, { opacity: 1, duration: 0.4 })
+          gsap.to(el, { opacity: 1, duration: 0.5 })
         }
       })
       if (navbar && !fadedIn.has(navbar)) {
         fadedIn.add(navbar)
-        gsap.to(navbar, { opacity: 1, duration: 0.4 })
+        gsap.to(navbar, { opacity: 1, duration: 0.5 })
       }
     }
 
-    // Continue or cleanup
-    const alive = particles.some((p) => p.alpha > 0)
+    const alive = particles.some((p) => p.alpha > 0.01)
     if (alive && frame < TOTAL_FRAMES) {
       requestAnimationFrame(animate)
     } else {
-      // Ensure everything is visible
+      // Final cleanup — clear trail residue
+      ctx.clearRect(0, 0, W, H)
       heroEls.forEach((el) => { el.style.opacity = '1' })
       if (navbar) navbar.style.opacity = '1'
-      canvas.remove()
-      preloader.style.display = 'none'
+      // Fade canvas out smoothly
+      gsap.to(canvas, {
+        opacity: 0,
+        duration: 0.4,
+        onComplete() {
+          canvas.remove()
+          preloader.style.display = 'none'
+        },
+      })
     }
   }
 
