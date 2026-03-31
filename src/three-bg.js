@@ -194,10 +194,10 @@ function animate() {
 
   // Scroll velocity influence — particles react to scroll speed
   const scrollVel = window.__scrollVelocity || 0
-  const absVel = Math.min(Math.abs(scrollVel), 8)
+  const absVel = Math.min(Math.abs(scrollVel), 12)
 
   // Auto rotation — accelerates with scroll
-  particles.rotation.y += 0.0005 + absVel * 0.0003
+  particles.rotation.y += 0.0005 + absVel * 0.0004
   lineMesh.rotation.y = particles.rotation.y
 
   // Mouse influence (subtle shift)
@@ -205,14 +205,28 @@ function animate() {
   particles.rotation.x += (targetX - particles.rotation.x) * 0.02
   lineMesh.rotation.x = particles.rotation.x
 
-  // Scroll velocity stretches the particle field vertically
-  const targetScaleY = 1 + absVel * 0.015
-  particles.scale.y += (targetScaleY - particles.scale.y) * 0.08
+  // HYPERSPACE: scroll velocity stretches particles into star-streaks
+  // At low speed: subtle stretch. At high speed: full hyperspace elongation
+  const hyperFactor = absVel > 4 ? absVel * 0.06 : absVel * 0.02
+  const targetScaleY = 1 + hyperFactor
+  particles.scale.y += (targetScaleY - particles.scale.y) * 0.1
   lineMesh.scale.y = particles.scale.y
 
+  // Particle size increases during hyperspace
+  const targetSize = 0.03 + (absVel > 4 ? absVel * 0.004 : 0)
+  particles.material.size += (targetSize - particles.material.size) * 0.1
+
   // Particle opacity pulses with scroll intensity
-  const targetOpacity = 0.5 + absVel * 0.04
+  const targetOpacity = 0.5 + absVel * 0.05
   particles.material.opacity += (targetOpacity - particles.material.opacity) * 0.1
+
+  // Sith mode: swap particle color to red
+  const sithMode = window.__sithMode || false
+  const targetColor = sithMode ? 0xef4444 : 0x818cf8
+  if (particles.material.color.getHex() !== targetColor) {
+    particles.material.color.setHex(targetColor)
+    lineMesh.material.color.setHex(targetColor)
+  }
 
   renderer.render(scene, camera)
 }

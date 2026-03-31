@@ -3,34 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 &mdash; VSK</title>
+  <title>404 &mdash; These aren't the pages you're looking for</title>
   <style>
     body {
       margin: 0; padding: 0;
-      background: #050505; color: #f0f0f0;
+      background: #08090d; color: #f0f0f0;
       font-family: 'Inter', system-ui, sans-serif;
       display: flex; align-items: center; justify-content: center;
       min-height: 100vh;
       text-align: center;
     }
-    h1 { font-size: 6rem; font-weight: 800; color: #818cf8; margin: 0; }
-    p { color: #888; margin: 16px 0 32px; }
+    .container { max-width: 500px; padding: 0 24px; }
+    h1 {
+      font-size: 8rem; font-weight: 800; color: #818cf8; margin: 0;
+      text-shadow: 0 0 40px rgba(129, 140, 248, 0.2);
+      line-height: 1;
+    }
+    .hand { font-size: 3rem; margin: 16px 0; display: block; }
+    .quote {
+      color: #888; margin: 0 0 8px; font-size: 1.1rem;
+      font-style: italic; line-height: 1.6;
+    }
+    .attribution {
+      color: #555; font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em; margin-bottom: 32px;
+    }
     a {
       color: #818cf8; text-decoration: none;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem; letter-spacing: 0.05em;
+      font-size: 0.8rem; letter-spacing: 0.05em;
+      text-transform: uppercase;
       border: 1px solid rgba(129, 140, 248, 0.3);
-      padding: 10px 24px; border-radius: 8px;
-      transition: background 0.2s, color 0.2s;
+      padding: 12px 28px; border-radius: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(129,140,248,0.08), rgba(129,140,248,0.03));
+      backdrop-filter: blur(8px);
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
-    a:hover { background: #818cf8; color: #050505; }
+    a:hover {
+      background: rgba(129, 140, 248, 0.15);
+      border-color: rgba(129, 140, 248, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(129, 140, 248, 0.15);
+    }
   </style>
 </head>
 <body>
-  <div>
+  <div class="container">
     <h1>404</h1>
-    <p>This page doesn't exist.</p>
-    <a href="/">Go Home</a>
+    <span class="hand">&#x1F44B;</span>
+    <p class="quote">"These aren't the pages you're looking for."</p>
+    <p class="attribution">&mdash; Obi-Wan Kenobi, probably</p>
+    <a href="/">Return to the Light Side</a>
   </div>
 </body>
 </html>

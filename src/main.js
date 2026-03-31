@@ -982,3 +982,97 @@ window.addEventListener('resize', () => {
   if (resizeTimeout) clearTimeout(resizeTimeout)
   resizeTimeout = setTimeout(() => ScrollTrigger.refresh(), 250)
 })
+
+
+/* ═══ EASTER EGGS ═══ */
+
+/* ─── Konami Code: Order 66 ─── */
+;(function() {
+  const KONAMI = [38,38,40,40,37,39,37,39,66,65] // up up down down left right left right B A
+  let konamiIdx = 0
+  let sithActive = false
+
+  document.addEventListener('keydown', (e) => {
+    if (e.keyCode === KONAMI[konamiIdx]) {
+      konamiIdx++
+      if (konamiIdx === KONAMI.length) {
+        konamiIdx = 0
+        toggleOrder66()
+      }
+    } else {
+      konamiIdx = 0
+    }
+  })
+
+  function toggleOrder66() {
+    sithActive = !sithActive
+
+    if (sithActive) {
+      // Flash "EXECUTE ORDER 66"
+      const flash = document.createElement('div')
+      flash.className = 'order66-flash'
+      flash.innerHTML = '<span>Execute Order 66</span>'
+      document.body.appendChild(flash)
+      setTimeout(() => flash.remove(), 2600)
+
+      // Activate Sith mode
+      setTimeout(() => {
+        document.body.classList.add('sith-mode')
+        // Tell Three.js to go red
+        window.__sithMode = true
+      }, 800)
+
+      console.log(
+        '%c THE DARK SIDE %c Order 66 executed. The Jedi are no more.',
+        'background: #ef4444; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+        'color: #ef4444; font-style: italic;'
+      )
+    } else {
+      document.body.classList.remove('sith-mode')
+      window.__sithMode = false
+      console.log(
+        '%c LIGHT SIDE %c Balance restored to the Force.',
+        'background: #818cf8; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+        'color: #818cf8; font-style: italic;'
+      )
+    }
+  }
+})()
+
+/* ─── Console ASCII Lightsaber + Yoda Message ─── */
+;(function() {
+  const saber = [
+    '                          ',
+    '    ||=================>  ',
+    '    ||                    ',
+    '  ======                  ',
+    '  | __ |                  ',
+    '  | || |                  ',
+    '  | || |                  ',
+    '  |____|                  ',
+    '                          ',
+  ].join('\n')
+
+  console.log(
+    '%c' + saber,
+    'color: #818cf8; font-family: monospace; font-size: 14px; line-height: 1.2;'
+  )
+
+  console.log(
+    '%c A curious developer, you are. %c\n' +
+    'The source, strong with you it is.\n' +
+    'Seeking allies, I am.\n\n' +
+    '%c github.com/DarthAether %c\n' +
+    '%c vjkommuri@gmail.com',
+    'color: #10b981; font-size: 14px; font-weight: bold;',
+    'color: #888; font-size: 12px;',
+    'color: #818cf8; font-size: 12px; font-weight: bold; text-decoration: underline;',
+    '',
+    'color: #818cf8; font-size: 11px;'
+  )
+
+  console.log(
+    '%c May the Force be with you. Always.',
+    'color: #555; font-style: italic; font-size: 11px;'
+  )
+})()
