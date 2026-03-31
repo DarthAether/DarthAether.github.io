@@ -9,7 +9,7 @@ export function initCursor() {
   if (!ring || !dot) return
 
   // Hide native cursor
-  document.body.classList.add('gojo-active')
+  document.body.classList.add('liquid-glass')
 
   // Promote to GPU layer
   ring.style.willChange = 'transform'
