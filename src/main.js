@@ -1076,3 +1076,160 @@ window.addEventListener('resize', () => {
     'color: #555; font-style: italic; font-size: 11px;'
   )
 })()
+
+
+/* ═══ MORE EASTER EGGS ═══ */
+
+/* ─── Secret word detector ─── */
+;(function() {
+  let buffer = ''
+  const SECRETS = {
+    'wish': triggerGenshinWish,
+    'hmm': triggerWitcher,
+    'creeper': triggerCreeper,
+    'hesoyam': triggerGTA,
+  }
+
+  document.addEventListener('keydown', (e) => {
+    // Ignore if typing in an input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+
+    buffer += e.key.toLowerCase()
+    // Keep buffer short
+    if (buffer.length > 20) buffer = buffer.slice(-20)
+
+    for (const [word, fn] of Object.entries(SECRETS)) {
+      if (buffer.endsWith(word)) {
+        fn()
+        buffer = ''
+        break
+      }
+    }
+  })
+
+  // ── Genshin: type "wish" → 5-star gacha pull ──
+  function triggerGenshinWish() {
+    if (document.querySelector('.genshin-wish')) return
+
+    const overlay = document.createElement('div')
+    overlay.className = 'genshin-wish'
+    overlay.innerHTML = `
+      <div class="star-burst"></div>
+      <div class="wish-text">Vijaya Sivanjan Kommuri</div>
+      <div class="wish-stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+      <div class="wish-subtitle">SSR &middot; AI/ML Researcher &amp; Engineer</div>
+    `
+    document.body.appendChild(overlay)
+    setTimeout(() => overlay.remove(), 4200)
+
+    console.log(
+      '%c GENSHIN IMPACT %c Congratulations! You pulled a 5-star character!',
+      'background: #fbbf24; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #fbbf24;'
+    )
+  }
+
+  // ── Witcher: type "hmm" → Wind's howling ──
+  function triggerWitcher() {
+    if (document.querySelector('.witcher-overlay')) return
+
+    const overlay = document.createElement('div')
+    overlay.className = 'witcher-overlay'
+    overlay.innerHTML = `
+      <div class="witcher-text">
+        "Wind's howling."
+        <span class="witcher-sub">&mdash; Geralt of Rivia</span>
+      </div>
+    `
+    document.body.appendChild(overlay)
+    setTimeout(() => overlay.remove(), 3200)
+
+    console.log(
+      '%c THE WITCHER %c Hmm. Looks like rain.',
+      'background: #888; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #888; font-style: italic;'
+    )
+  }
+
+  // ── Minecraft: type "creeper" → Aww man + screen shake ──
+  function triggerCreeper() {
+    if (document.querySelector('.creeper-overlay')) return
+
+    const overlay = document.createElement('div')
+    overlay.className = 'creeper-overlay'
+    overlay.innerHTML = '<span>Aww man...</span>'
+    document.body.appendChild(overlay)
+    document.body.classList.add('screen-shake')
+
+    setTimeout(() => document.body.classList.remove('screen-shake'), 500)
+    setTimeout(() => overlay.remove(), 2200)
+
+    console.log(
+      '%c MINECRAFT %c Creeper? Aww man... So we back in the mine.',
+      'background: #22c55e; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #22c55e;'
+    )
+  }
+
+  // ── GTA: type "hesoyam" → health bar fills, golden accents ──
+  function triggerGTA() {
+    if (document.querySelector('.gta-overlay')) return
+
+    const overlay = document.createElement('div')
+    overlay.className = 'gta-overlay'
+    overlay.innerHTML = `
+      <div class="gta-hud">
+        <span>CHEAT ACTIVATED</span>
+        <div class="gta-bar"><div class="gta-bar-fill"></div></div>
+      </div>
+    `
+    document.body.appendChild(overlay)
+    document.body.classList.add('gta-mode')
+
+    setTimeout(() => overlay.remove(), 3500)
+    setTimeout(() => document.body.classList.remove('gta-mode'), 10000)
+
+    console.log(
+      '%c GTA SAN ANDREAS %c HESOYAM activated. Health, armor, and $250,000.',
+      'background: #f59e0b; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #f59e0b;'
+    )
+  }
+})()
+
+/* ─── Elden Ring: 10 rapid clicks → YOU DIED ─── */
+;(function() {
+  let clickTimes = []
+
+  document.addEventListener('click', () => {
+    const now = Date.now()
+    clickTimes.push(now)
+    // Keep only last 10
+    if (clickTimes.length > 10) clickTimes.shift()
+
+    // Check if 10 clicks within 2 seconds
+    if (clickTimes.length === 10) {
+      const span = clickTimes[9] - clickTimes[0]
+      if (span < 2000) {
+        triggerYouDied()
+        clickTimes = []
+      }
+    }
+  })
+
+  function triggerYouDied() {
+    if (document.querySelector('.you-died')) return
+
+    const overlay = document.createElement('div')
+    overlay.className = 'you-died'
+    overlay.innerHTML = '<span>YOU DIED</span>'
+    document.body.appendChild(overlay)
+    setTimeout(() => overlay.remove(), 4500)
+
+    console.log(
+      '%c ELDEN RING %c YOU DIED. But the Tarnished rises again.',
+      'background: #dc2626; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #dc2626; font-style: italic;'
+    )
+  }
+})()
