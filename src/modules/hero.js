@@ -52,16 +52,18 @@ export function heroReveal() {
   animateCounters('.hero-stats .stat-value[data-target]', false)
 }
 
-/* ─── Hero char stagger (called after preloader) ─── */
+/* ─── Hero char slot-machine spin reveal ─── */
 export function revealHeroChars() {
   const chars = document.querySelectorAll('.name-line .char')
   if (!chars.length) return
 
   chars.forEach((char, i) => {
+    char.style.opacity = '0'
+    char.style.transform = 'rotateY(90deg) translateY(20px)'
+
     setTimeout(() => {
-      char.style.transition = `opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)`
-      char.classList.add('revealed')
-    }, 50 + i * 30) // 30ms stagger between each letter
+      char.classList.add('slot-spin')
+    }, 40 + i * 40) // 40ms stagger — slot machine cascade
   })
 }
 

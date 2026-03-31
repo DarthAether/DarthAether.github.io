@@ -302,3 +302,192 @@ body.scroll-distort .contact-heading {
     margin-bottom: 32px;
   }
 }
+
+
+/* ═══ 3D SECTION TITLE REVEAL ═══ */
+.section-title {
+  perspective: 800px;
+}
+
+.title-reveal-inner {
+  transform-origin: bottom center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* ═══ HERO CHAR SLOT-MACHINE ═══ */
+.name-line .char {
+  display: inline-block;
+  transform-origin: center;
+  perspective: 600px;
+}
+
+.name-line .char.slot-spin {
+  animation: charSlotSpin 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes charSlotSpin {
+  0% { opacity: 0; transform: rotateY(90deg) translateY(20px); }
+  40% { opacity: 1; transform: rotateY(-10deg) translateY(-5px); }
+  70% { transform: rotateY(5deg) translateY(2px); }
+  100% { opacity: 1; transform: rotateY(0) translateY(0); }
+}
+
+/* ═══ PROJECT CARD 3D FLIP CASCADE ═══ */
+.project-card.card-flip-in {
+  animation: cardFlipIn 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes cardFlipIn {
+  0% { opacity: 0; transform: perspective(800px) rotateY(-60deg) translateX(-40px) scale(0.9); }
+  50% { opacity: 1; transform: perspective(800px) rotateY(8deg) translateX(5px) scale(1.02); }
+  75% { transform: perspective(800px) rotateY(-3deg) translateX(-2px) scale(1); }
+  100% { opacity: 1; transform: perspective(800px) rotateY(0) translateX(0) scale(1); }
+}
+
+/* ═══ TEXT SCRAMBLE ═══ */
+.scramble-text {
+  cursor: default;
+}
+
+.scramble-text:hover {
+  color: var(--accent);
+}
+
+/* ═══ CURSOR TRAIL ═══ */
+.cursor-afterimage {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9996;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(129, 140, 248, 0.04) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease-out, width 0.4s ease-out, height 0.4s ease-out;
+}
+
+/* ═══ TYPEWRITER ═══ */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: typewriterBlink 0.8s step-end infinite;
+}
+
+@keyframes typewriterBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ═══ SCROLL PROGRESS DOTS ═══ */
+.scroll-dots {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.4s var(--ease-out);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.scroll-dot:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.3);
+}
+
+.scroll-dot.active {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.4);
+}
+
+.scroll-dot-label {
+  position: absolute;
+  right: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(5px);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+  pointer-events: none;
+}
+
+.scroll-dot:hover .scroll-dot-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ═══ STAT SLOT-MACHINE ═══ */
+.stat-value {
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-digit-col {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.2em;
+  vertical-align: top;
+  position: relative;
+}
+
+.stat-digit-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stat-digit-strip span {
+  display: block;
+  height: 1.2em;
+  line-height: 1.2em;
+}
+
+/* ═══ FLOATING PARALLAX LABELS ═══ */
+.stat-label {
+  will-change: transform;
+}
+
+/* Hide dots on mobile */
+@media (max-width: 768px) {
+  .scroll-dots {
+    display: none;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cursor-afterimage {
+    display: none !important;
+  }
+  .scroll-dots {
+    display: none;
+  }
+}
+

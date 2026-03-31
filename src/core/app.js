@@ -25,6 +25,12 @@ import { initProjectModal } from '../components/modal.js'
 // Three.js
 import { initThreeBackground } from '../three/scene.js'
 
+// New extravagant features
+import { initCursorTrail } from '../modules/cursor-trail.js'
+import { initTypewriter } from '../modules/typewriter.js'
+import { initProgressDots } from '../modules/progress-dots.js'
+import { initTextScramble } from '../modules/text-scramble.js'
+
 // Easter eggs
 import '../easter-eggs/console-art.js'
 import { initTriggers } from '../easter-eggs/triggers.js'
