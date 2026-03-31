@@ -2695,3 +2695,268 @@ body.scroll-distort .contact-heading {
   80% { transform: translateY(-5px); }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   KITTY MODE — FULL SITE CAT OVERHAUL
+   ═══════════════════════════════════════════════════ */
+
+/* ── Color scheme: warm orange/cream ── */
+.kitty-mode {
+  --accent: #f97316;
+  --accent-hover: #fb923c;
+  --bg: #0d0a08;
+  --bg-card: #141008;
+  --bg-card-hover: #1c1610;
+  --text-muted: #a8967e;
+}
+
+/* ── Cat paw cursor ── */
+.kitty-mode .cursor-dot {
+  width: 20px !important;
+  height: 20px !important;
+  background: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.kitty-mode .cursor-dot::before {
+  content: '\01F43E';
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.kitty-mode .cursor-ring {
+  background: linear-gradient(135deg,
+    rgba(249, 115, 22, 0.1) 0%,
+    rgba(249, 115, 22, 0.03) 40%,
+    rgba(251, 146, 60, 0.06) 100%
+  ) !important;
+  border-color: rgba(249, 115, 22, 0.2) !important;
+  border-top-color: rgba(249, 115, 22, 0.3) !important;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.2),
+    0 0 15px rgba(249, 115, 22, 0.08),
+    inset 0 1px 1px rgba(255,255,255,0.08) !important;
+}
+
+/* ── Cat ears on all cards ── */
+.kitty-mode .project-card,
+.kitty-mode .research-card,
+.kitty-mode .experience-card,
+.kitty-mode .other-card {
+  overflow: visible !important;
+}
+
+.kitty-mode .project-card::before,
+.kitty-mode .research-card::before,
+.kitty-mode .experience-card::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  width: 0; height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 14px solid var(--bg-card);
+  z-index: 5;
+  filter: drop-shadow(0 -1px 0 rgba(249, 115, 22, 0.3));
+}
+
+.kitty-mode .project-card::after,
+.kitty-mode .research-card::after,
+.kitty-mode .experience-card::after {
+  content: '' !important;
+  position: absolute !important;
+  top: -12px !important;
+  left: 48px !important;
+  width: 0 !important; height: 0 !important;
+  border-left: 10px solid transparent !important;
+  border-right: 10px solid transparent !important;
+  border-bottom: 14px solid var(--bg-card) !important;
+  z-index: 5 !important;
+  filter: drop-shadow(0 -1px 0 rgba(249, 115, 22, 0.3)) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transform-origin: initial !important;
+  animation: none !important;
+  background: none !important;
+  border-radius: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ── Vignette goes warm ── */
+.kitty-mode .viewport-vignette {
+  box-shadow:
+    inset 0 0 80px 0 rgba(249, 115, 22, 0.04),
+    inset 0 0 160px 0 rgba(249, 115, 22, 0.02),
+    inset 0 0 300px 0 rgba(13, 10, 8, 0.3) !important;
+}
+
+/* ── Scroll progress bar orange ── */
+.kitty-mode #scroll-progress {
+  background: linear-gradient(90deg, #f97316, #fb923c, #f97316) !important;
+}
+
+/* ── Nav underlines orange ── */
+.kitty-mode .nav-link.active,
+.kitty-mode .nav-link:hover {
+  background-image: linear-gradient(#f97316, #f97316) !important;
+}
+
+/* ── Name underline orange ── */
+.kitty-mode .name-line:last-child::after {
+  background: #f97316 !important;
+}
+
+/* ── Availability badge ── */
+.kitty-mode .hero-availability {
+  background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(249,115,22,0.05)) !important;
+  border-color: rgba(249,115,22,0.2) !important;
+  color: #f97316 !important;
+}
+
+/* ── Skill bars become fish-filled ── */
+.kitty-mode .skill-fill {
+  background: repeating-linear-gradient(
+    90deg,
+    #f97316 0px,
+    #f97316 12px,
+    #fb923c 12px,
+    #fb923c 14px
+  ) !important;
+  position: relative;
+}
+
+/* ── Cat emoji rain ── */
+.cat-rain {
+  position: fixed;
+  z-index: 9993;
+  font-size: 20px;
+  pointer-events: none;
+  animation: catFall linear forwards;
+  opacity: 0.7;
+}
+
+@keyframes catFall {
+  0% { transform: translateY(-30px) rotate(0deg); opacity: 0.7; }
+  80% { opacity: 0.5; }
+  100% { transform: translateY(calc(100vh + 30px)) rotate(360deg); opacity: 0; }
+}
+
+/* ── Walking navbar cat ── */
+.navbar-cat {
+  position: fixed;
+  top: 38px;
+  z-index: 1001;
+  font-size: 22px;
+  pointer-events: none;
+  animation: navCatWalk 12s linear infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+@keyframes navCatWalk {
+  0% { left: -30px; transform: scaleX(1); }
+  49% { transform: scaleX(1); }
+  50% { left: calc(100vw + 30px); transform: scaleX(-1); }
+  99% { transform: scaleX(-1); }
+  100% { left: -30px; transform: scaleX(1); }
+}
+
+/* ── Cat fact tooltip ── */
+.cat-fact {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9995;
+  max-width: 400px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #fb923c;
+  background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.03));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(249,115,22,0.15);
+  border-top-color: rgba(249,115,22,0.25);
+  border-radius: 16px;
+  padding: 14px 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.05);
+  animation: catFactIn 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.cat-fact-prefix {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@keyframes catFactIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Sleeping cat footer ── */
+.footer-cat {
+  display: inline-block;
+  font-size: 18px;
+  animation: catSleep 2s ease-in-out infinite;
+  margin-right: 6px;
+}
+
+@keyframes catSleep {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* ── Kitty mode flash ── */
+.kitty-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(13, 10, 8, 0.9);
+  pointer-events: none;
+  animation: kittyFlashAnim 2.5s ease-out forwards;
+}
+
+.kitty-flash-emoji {
+  font-size: 80px;
+  animation: kittyFlashBounce 2.5s ease-out forwards;
+}
+
+.kitty-flash-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #f97316;
+  margin-top: 16px;
+  text-shadow: 0 0 30px rgba(249, 115, 22, 0.4);
+}
+
+@keyframes kittyFlashAnim {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes kittyFlashBounce {
+  0% { transform: scale(0) rotate(-30deg); }
+  25% { transform: scale(1.3) rotate(10deg); }
+  40% { transform: scale(0.9) rotate(-5deg); }
+  55% { transform: scale(1.05) rotate(2deg); }
+  70% { transform: scale(1); }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
