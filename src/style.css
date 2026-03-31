@@ -2609,3 +2609,89 @@ body.scroll-distort .contact-heading {
   --accent-hover: #f59e0b;
 }
 
+
+/* ═══ MEW — CURSOR COMPANION ═══ */
+.mew-companion {
+  position: fixed;
+  z-index: 9997;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4))
+          drop-shadow(0 0 20px rgba(129, 140, 248, 0.2));
+  transition: filter 0.3s var(--ease-out);
+  transform: translate(-50%, -50%);
+  will-change: transform, left, top;
+}
+
+/* Mew aura glow */
+.mew-companion::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 70%);
+  animation: mewAura 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mewAura {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Mew sparkle trail */
+.mew-sparkle {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #c4b5fd;
+  pointer-events: none;
+  z-index: 9996;
+  animation: mewSparkleFade 0.8s var(--ease-out) forwards;
+}
+
+@keyframes mewSparkleFade {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0) translateY(-10px); }
+}
+
+/* ═══ POKEMON ELEMENT IMPACT ═══ */
+/* Element squishes when Pokemon lands on it */
+.pokemon-squish {
+  animation: elementSquish 0.3s var(--ease-out) !important;
+}
+
+@keyframes elementSquish {
+  0% { transform: scaleY(1) scaleX(1); }
+  40% { transform: scaleY(0.95) scaleX(1.02); }
+  70% { transform: scaleY(1.02) scaleX(0.99); }
+  100% { transform: scaleY(1) scaleX(1); }
+}
+
+/* Pokemon stomp/land animation */
+.pokemon-sprite.landing {
+  animation: pokeLand 0.4s var(--ease-out);
+}
+
+@keyframes pokeLand {
+  0% { transform: translateY(-40px) scaleY(1.15) scaleX(0.9); }
+  50% { transform: translateY(4px) scaleY(0.8) scaleX(1.15); }
+  70% { transform: translateY(-3px) scaleY(1.05); }
+  100% { transform: translateY(0) scaleY(1) scaleX(1); }
+}
+
+/* Pokemon bouncing on element repeatedly */
+.pokemon-sprite.trampolining {
+  animation: pokeTrampo 0.6s ease-in-out infinite;
+}
+
+@keyframes pokeTrampo {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  20% { transform: translateY(2px) scaleY(0.9) scaleX(1.1); }
+  50% { transform: translateY(-20px) scaleY(1.1) scaleX(0.95); }
+  80% { transform: translateY(-5px); }
+}
+

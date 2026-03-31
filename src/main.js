@@ -1572,7 +1572,7 @@ window.addEventListener('resize', () => {
       const rect = target.rect
       // Position on top of the element (sit on it)
       const destX = rect.left + rect.width / 2 - 40
-      const destY = rect.top - 60 // sit above the element
+      const destY = rect.top - 20 // walk to just above the element edge
 
       // Show "!" notice
       showNotice(container)
@@ -1654,29 +1654,67 @@ window.addEventListener('resize', () => {
 
   // ── Interact with a target element ──
   function interactWithTarget(container, img, targetEl, onDone) {
-    // Pokemon sits on the element
-    img.classList.add('sitting')
+    const rect = targetEl.getBoundingClientRect()
 
-    // Highlight the target
-    targetEl.classList.add('pokemon-target-glow')
+    // Jump and LAND on the element
+    img.classList.remove('idle', 'walking', 'sitting')
+    img.classList.add('landing')
 
-    // After a moment, "poke" it
+    // Position ON TOP of the element (on its surface)
+    container.style.transition = 'left 0.2s ease-out, top 0.2s ease-out'
+    container.style.left = (rect.left + rect.width / 2 - 40) + 'px'
+    container.style.top = (rect.top - 40) + 'px'
+
+    // Element squishes on impact
     setTimeout(() => {
-      img.classList.remove('sitting')
-      img.classList.add('poking')
-
-      // Trigger hover state on the target
+      targetEl.classList.add('pokemon-squish')
+      targetEl.classList.add('pokemon-target-glow')
       targetEl.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
+    }, 200)
 
+    // After landing, start trampolining on the element
+    setTimeout(() => {
+      img.classList.remove('landing')
+      targetEl.classList.remove('pokemon-squish')
+
+      // Trampoline bounce 2-4 times
+      const bounceCount = 2 + Math.floor(Math.random() * 3)
+      img.classList.add('trampolining')
+
+      // Each bounce squishes the element
+      let bouncesDone = 0
+      const bounceInterval = setInterval(() => {
+        targetEl.classList.remove('pokemon-squish')
+        void targetEl.offsetWidth // force reflow
+        targetEl.classList.add('pokemon-squish')
+        bouncesDone++
+        if (bouncesDone >= bounceCount) {
+          clearInterval(bounceInterval)
+        }
+      }, 600)
+
+      // After bouncing, hop off
       setTimeout(() => {
-        // "Click" it (visual only)
+        img.classList.remove('trampolining')
+        img.classList.add('jumping')
         targetEl.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
-        targetEl.classList.remove('pokemon-target-glow')
-        img.classList.remove('poking')
-        img.classList.add('idle')
-        if (onDone) onDone()
-      }, 800)
-    }, 1000 + Math.random() * 1500)
+
+        // Jump to a nearby position
+        const jumpX = rect.left + rect.width + 20 + Math.random() * 60
+        const jumpY = rect.top - 20 - Math.random() * 40
+        container.style.transition = 'left 0.4s var(--ease-out), top 0.4s var(--ease-out)'
+        container.style.left = jumpX + 'px'
+        container.style.top = jumpY + 'px'
+
+        setTimeout(() => {
+          targetEl.classList.remove('pokemon-target-glow', 'pokemon-squish')
+          img.classList.remove('jumping')
+          img.classList.add('idle')
+          container.style.transition = ''
+          if (onDone) onDone()
+        }, 500)
+      }, bounceCount * 600 + 400)
+    }, 400)
   }
 
   // ── Show "!" notice above Pokemon ──
@@ -1736,5 +1774,99 @@ window.addEventListener('resize', () => {
       'background: linear-gradient(90deg, #fbbf24, #a855f7); color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
       'color: #a855f7;'
     )
+  }
+})()
+
+
+/* ═══ MEW — CURSOR COMPANION ═══ */
+;(function() {
+  let mew = null
+  let mewX = 0, mewY = 0
+  let mouseX = 0, mouseY = 0
+  let angle = 0
+  let sparkleTimer = 0
+  let active = false
+
+  // Listen for Pokemon mode activation
+  const origSpawn = window.__pokemonSpawn
+  window.__pokemonSpawn = function() {
+    if (origSpawn) origSpawn()
+    if (!active) spawnMew()
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX
+    mouseY = e.clientY
+  }, { passive: true })
+
+  function spawnMew() {
+    if (window.innerWidth < 768) return
+    active = true
+
+    mew = document.createElement('img')
+    mew.className = 'mew-companion'
+    mew.src = 'https://play.pokemonshowdown.com/sprites/ani/mew.gif'
+    mew.alt = 'Mew'
+    mew.draggable = false
+    document.body.appendChild(mew)
+
+    mewX = mouseX + 60
+    mewY = mouseY - 30
+    mew.style.left = mewX + 'px'
+    mew.style.top = mewY + 'px'
+
+    orbitLoop()
+
+    console.log(
+      '%c MEW %c A wild Mew appeared near your cursor! It seems curious...',
+      'background: #a855f7; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+      'color: #a855f7; font-style: italic;'
+    )
+  }
+
+  function orbitLoop() {
+    if (!active || !mew) return
+
+    angle += 0.02
+    sparkleTimer++
+
+    // Orbit around cursor with a trailing, figure-8-ish path
+    const orbitRadius = 50 + Math.sin(angle * 0.7) * 20
+    const targetX = mouseX + Math.cos(angle) * orbitRadius
+    const targetY = mouseY + Math.sin(angle * 1.3) * (orbitRadius * 0.6) - 20
+
+    // Smooth follow with lag (creates trailing effect)
+    mewX += (targetX - mewX) * 0.06
+    mewY += (targetY - mewY) * 0.06
+
+    mew.style.left = mewX + 'px'
+    mew.style.top = mewY + 'px'
+
+    // Flip based on movement direction
+    const movingLeft = targetX < mewX
+    mew.style.transform = movingLeft
+      ? 'translate(-50%, -50%) scaleX(-1)'
+      : 'translate(-50%, -50%) scaleX(1)'
+
+    // Sparkle trail every 8 frames
+    if (sparkleTimer % 8 === 0) {
+      spawnSparkle(mewX, mewY)
+    }
+
+    requestAnimationFrame(orbitLoop)
+  }
+
+  function spawnSparkle(x, y) {
+    const s = document.createElement('div')
+    s.className = 'mew-sparkle'
+    s.style.left = (x + (Math.random() - 0.5) * 20) + 'px'
+    s.style.top = (y + (Math.random() - 0.5) * 20) + 'px'
+    // Random sparkle color
+    const colors = ['#c4b5fd', '#a5b4fc', '#e0e7ff', '#ddd6fe', '#818cf8']
+    s.style.background = colors[Math.floor(Math.random() * colors.length)]
+    s.style.width = (2 + Math.random() * 4) + 'px'
+    s.style.height = s.style.width
+    document.body.appendChild(s)
+    setTimeout(() => s.remove(), 800)
   }
 })()
