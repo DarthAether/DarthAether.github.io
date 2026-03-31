@@ -426,44 +426,16 @@ html {
 }
 
 
-/* ═══ SECTION DIVIDERS (rounded, Dennis Snellenberg-style) ═══ */
+/* ═══ SECTION DIVIDERS ═══ */
 #projects, #other-work, #about, #experience, #research, #contact {
   position: relative;
-}
-
-#projects::before, #other-work::before, #about::before,
-#experience::before, #research::before, #contact::before {
-  content: '';
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120%;
-  height: 80px;
-  background: var(--bg);
-  border-radius: 0 0 50% 50%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Subtle line at the curve's edge */
-#projects::after, #other-work::after, #about::after,
-#experience::after, #research::after, #contact::after {
-  content: '';
-  position: absolute;
-  top: 39px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-  z-index: 2;
-  pointer-events: none;
-}
-
-
-#projects, #other-work, #about, #experience, #research, #contact {
   padding-top: 48px;
+}
+
+/* Gradient hairline divider — no overlapping pseudo-elements */
+#projects, #other-work, #about, #experience, #research, #contact {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent 5%, var(--border) 30%, var(--border) 70%, transparent 95%) 1;
 }
 
 /* ═══ HERO ═══ */
@@ -800,8 +772,6 @@ section {
 
 .section-container {
   contain: layout style;
-  position: relative;
-  z-index: 3;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 40px;
@@ -1737,8 +1707,6 @@ pre.modal-arch {
 
   .section-container {
   contain: layout style;
-  position: relative;
-  z-index: 3;
     padding: 0 20px;
   }
 
