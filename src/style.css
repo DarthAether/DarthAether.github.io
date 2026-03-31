@@ -2361,11 +2361,54 @@ body.scroll-distort .contact-heading {
   position: fixed;
   z-index: 9994;
   pointer-events: none;
-  font-size: 32px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
   transition: transform 0.3s var(--ease-out);
   image-rendering: pixelated;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+/* Pokemon name label */
+.pokemon-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+  pointer-events: none;
+}
+
+.pokemon-sprite:hover .pokemon-label,
+.pokemon-sprite.mega .pokemon-label {
+  opacity: 1;
+}
+
+/* Pokemon sprite container for label */
+.pokemon-container {
+  position: fixed;
+  z-index: 9994;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.pokemon-container:hover {
+  transform: scale(1.15);
+}
+
+.pokemon-container:active {
+  transform: scale(0.9);
 }
 
 .pokemon-sprite.bounce {
@@ -2480,9 +2523,11 @@ body.scroll-distort .contact-heading {
 
 /* Mega evolved sprites glow */
 .pokemon-sprite.mega {
-  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.6))
-          drop-shadow(0 0 24px rgba(251, 191, 36, 0.3));
-  font-size: 44px;
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.6))
+          drop-shadow(0 0 32px rgba(251, 191, 36, 0.3))
+          drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  width: 100px;
+  height: 100px;
 }
 
 .pokemon-sprite.mega.idle {

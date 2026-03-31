@@ -1422,15 +1422,20 @@ window.addEventListener('resize', () => {
 /* ═══ POKEMON EASTER EGG ═══ */
 ;(function() {
   // Pokemon data: emoji + name + mega form emoji
+  const SPRITE_BASE = 'https://play.pokemonshowdown.com/sprites/ani/'
   const POKEMON = [
-    { sprite: '\u26A1', name: 'Pikachu', mega: '\u{1F329}\uFE0F' },        // lightning -> cloud lightning
-    { sprite: '\u{1F525}', name: 'Charizard', mega: '\u{1F30B}' },         // fire -> volcano
-    { sprite: '\u{1F4A7}', name: 'Blastoise', mega: '\u{1F30A}' },        // droplet -> wave
-    { sprite: '\u{1F33F}', name: 'Bulbasaur', mega: '\u{1F333}' },        // herb -> tree
-    { sprite: '\u2B50', name: 'Jirachi', mega: '\u{1F31F}' },             // star -> glowing star
-    { sprite: '\u{1F47B}', name: 'Gengar', mega: '\u{1F608}' },           // ghost -> devil
-    { sprite: '\u{1F409}', name: 'Dragonite', mega: '\u{1F432}' },        // dragon
-    { sprite: '\u{1F4A0}', name: 'Mewtwo', mega: '\u{1F52E}' },           // diamond -> crystal ball
+    { name: 'Pikachu', sprite: 'pikachu', mega: 'pikachu-gmax' },
+    { name: 'Charizard', sprite: 'charizard', mega: 'charizard-megax' },
+    { name: 'Blastoise', sprite: 'blastoise', mega: 'blastoise-mega' },
+    { name: 'Venusaur', sprite: 'venusaur', mega: 'venusaur-mega' },
+    { name: 'Gengar', sprite: 'gengar', mega: 'gengar-mega' },
+    { name: 'Mewtwo', sprite: 'mewtwo', mega: 'mewtwo-megay' },
+    { name: 'Lucario', sprite: 'lucario', mega: 'lucario-mega' },
+    { name: 'Gardevoir', sprite: 'gardevoir', mega: 'gardevoir-mega' },
+    { name: 'Rayquaza', sprite: 'rayquaza', mega: 'rayquaza-mega' },
+    { name: 'Garchomp', sprite: 'garchomp', mega: 'garchomp-mega' },
+    { name: 'Gyarados', sprite: 'gyarados', mega: 'gyarados-mega' },
+    { name: 'Absol', sprite: 'absol', mega: 'absol-mega' },
   ]
 
   let pokemonActive = false
@@ -1510,24 +1515,36 @@ window.addEventListener('resize', () => {
     selected.forEach((poke, i) => {
       setTimeout(() => {
         const pos = getRandomSpawnPosition()
-        const el = document.createElement('div')
-        el.className = 'pokemon-sprite bounce'
-        el.textContent = poke.sprite
-        el.dataset.name = poke.name
-        el.dataset.mega = poke.mega
-        el.style.left = pos.x + 'px'
-        el.style.top = pos.y + 'px'
-        document.body.appendChild(el)
-        sprites.push(el)
+        const container = document.createElement('div')
+        container.className = 'pokemon-container'
+        container.style.left = pos.x + 'px'
+        container.style.top = pos.y + 'px'
+
+        const img = document.createElement('img')
+        img.className = 'pokemon-sprite bounce'
+        img.src = SPRITE_BASE + poke.sprite + '.gif'
+        img.alt = poke.name
+        img.draggable = false
+        img.dataset.name = poke.name
+        img.dataset.megaSrc = SPRITE_BASE + poke.mega + '.gif'
+
+        const label = document.createElement('span')
+        label.className = 'pokemon-label'
+        label.textContent = poke.name
+
+        container.appendChild(img)
+        container.appendChild(label)
+        document.body.appendChild(container)
+        sprites.push({ container, img, label, poke })
 
         // After bounce, start floating
         setTimeout(() => {
-          el.classList.remove('bounce')
-          el.classList.add('idle')
+          img.classList.remove('bounce')
+          img.classList.add('idle')
         }, 600)
 
         // Start wandering
-        wanderPokemon(el)
+        wanderPokemon(container, img)
       }, i * 300)
     })
 
@@ -1538,47 +1555,46 @@ window.addEventListener('resize', () => {
     )
   }
 
-  function wanderPokemon(el) {
+  function wanderPokemon(container, img) {
     if (!pokemonActive) return
 
     function move() {
-      if (!document.body.contains(el)) return
+      if (!document.body.contains(container)) return
 
       const pos = getRandomSpawnPosition()
-      const currentX = parseFloat(el.style.left)
-      const currentY = parseFloat(el.style.top)
+      const currentX = parseFloat(container.style.left)
 
-      // Face direction of movement
+      // Face direction of movement (flip sprite)
       if (pos.x < currentX) {
-        el.style.transform = 'scaleX(-1)'
+        img.style.transform = 'scaleX(-1)'
       } else {
-        el.style.transform = 'scaleX(1)'
+        img.style.transform = 'scaleX(1)'
       }
 
-      el.classList.remove('idle')
-      el.classList.add('walking')
+      img.classList.remove('idle')
+      img.classList.add('walking')
 
       // Animate to new position
-      const duration = 2000 + Math.random() * 3000
-      el.style.transition = `left ${duration}ms linear, top ${duration}ms linear`
-      el.style.left = pos.x + 'px'
-      el.style.top = pos.y + 'px'
+      const duration = 3000 + Math.random() * 4000
+      container.style.transition = 'left ' + duration + 'ms linear, top ' + duration + 'ms linear'
+      container.style.left = pos.x + 'px'
+      container.style.top = pos.y + 'px'
 
       // Return to idle after arriving
       setTimeout(() => {
-        if (!document.body.contains(el)) return
-        el.classList.remove('walking')
-        el.classList.add('idle')
-        el.style.transform = ''
-        el.style.transition = ''
+        if (!document.body.contains(container)) return
+        img.classList.remove('walking')
+        img.classList.add('idle')
+        img.style.transform = ''
+        container.style.transition = ''
 
         // Wait then move again
-        setTimeout(move, 2000 + Math.random() * 4000)
+        setTimeout(move, 2000 + Math.random() * 5000)
       }, duration)
     }
 
     // Start first move after a random delay
-    setTimeout(move, 1000 + Math.random() * 3000)
+    setTimeout(move, 1500 + Math.random() * 3000)
   }
 
   function megaEvolve() {
@@ -1601,19 +1617,19 @@ window.addEventListener('resize', () => {
 
     // Transform all sprites after the flash peak
     setTimeout(() => {
-      sprites.forEach((el, i) => {
+      sprites.forEach((s, i) => {
         setTimeout(() => {
-          // Swap to mega form
-          const megaSprite = el.dataset.mega
-          el.textContent = megaSprite
-          el.classList.remove('idle', 'walking')
-          el.classList.add('bounce', 'mega')
+          // Swap to mega form sprite
+          s.img.src = s.img.dataset.megaSrc
+          s.img.classList.remove('idle', 'walking')
+          s.img.classList.add('bounce', 'mega')
+          s.label.textContent = 'Mega ' + s.poke.name
 
           setTimeout(() => {
-            el.classList.remove('bounce')
-            el.classList.add('idle')
+            s.img.classList.remove('bounce')
+            s.img.classList.add('idle')
           }, 600)
-        }, i * 150)
+        }, i * 200)
       })
     }, 800)
 
