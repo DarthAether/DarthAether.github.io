@@ -8,6 +8,9 @@ export function initCursor() {
   const dot = document.querySelector('.cursor-dot')
   if (!ring || !dot) return
 
+  // Hide native cursor
+  document.body.classList.add('gojo-active')
+
   // Promote to GPU layer
   ring.style.willChange = 'transform'
   dot.style.willChange = 'transform'
