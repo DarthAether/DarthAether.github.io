@@ -187,45 +187,112 @@ html {
   outline: none;
 }
 
+
+/* ═══ GOJO CURSOR — HIDE NATIVE ═══ */
+.gojo-active,
+.gojo-active * {
+  cursor: none !important;
+}
+
 /* ═══ CUSTOM CURSOR ═══ */
 .cursor-ring {
   position: fixed;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
-  mix-blend-mode: difference;
   transform: translate(-50%, -50%);
-  transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out),
-              border-color 0.3s var(--ease-out), backdrop-filter 0.3s var(--ease-out);
   will-change: transform;
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-  background: rgba(129, 140, 248, 0.03);
+  /* Gojo Infinity — concentric rings */
+  background: transparent;
+  border: 1.5px solid rgba(129, 140, 248, 0.35);
+  box-shadow:
+    0 0 0 4px rgba(8, 9, 13, 0.6),
+    0 0 0 5.5px rgba(129, 140, 248, 0.2),
+    0 0 0 9px rgba(8, 9, 13, 0.4),
+    0 0 0 10px rgba(99, 102, 241, 0.12),
+    0 0 15px rgba(129, 140, 248, 0.15),
+    0 0 30px rgba(129, 140, 248, 0.06);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out),
+              box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out),
+              backdrop-filter 0.35s var(--ease-out);
 }
 
 .cursor-ring.hover {
-  width: 60px;
-  height: 60px;
-  border-color: rgba(129, 140, 248, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  background: rgba(129, 140, 248, 0.06);
+  width: 56px;
+  height: 56px;
+  border-color: rgba(129, 140, 248, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(8, 9, 13, 0.5),
+    0 0 0 5px rgba(129, 140, 248, 0.35),
+    0 0 0 8px rgba(8, 9, 13, 0.3),
+    0 0 0 10px rgba(99, 102, 241, 0.2),
+    0 0 0 14px rgba(8, 9, 13, 0.2),
+    0 0 0 15.5px rgba(165, 180, 252, 0.1),
+    0 0 20px rgba(129, 140, 248, 0.3),
+    0 0 40px rgba(129, 140, 248, 0.1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: infinityPulse 2s ease-in-out infinite;
+}
+
+@keyframes infinityPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(8, 9, 13, 0.5),
+      0 0 0 5px rgba(129, 140, 248, 0.35),
+      0 0 0 8px rgba(8, 9, 13, 0.3),
+      0 0 0 10px rgba(99, 102, 241, 0.2),
+      0 0 0 14px rgba(8, 9, 13, 0.2),
+      0 0 0 15.5px rgba(165, 180, 252, 0.1),
+      0 0 20px rgba(129, 140, 248, 0.3),
+      0 0 40px rgba(129, 140, 248, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(8, 9, 13, 0.5),
+      0 0 0 5.5px rgba(129, 140, 248, 0.45),
+      0 0 0 8px rgba(8, 9, 13, 0.3),
+      0 0 0 10.5px rgba(99, 102, 241, 0.3),
+      0 0 0 14px rgba(8, 9, 13, 0.2),
+      0 0 0 16px rgba(165, 180, 252, 0.15),
+      0 0 25px rgba(129, 140, 248, 0.4),
+      0 0 50px rgba(129, 140, 248, 0.15);
+  }
 }
 
 .cursor-dot {
   position: fixed;
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
+  width: 6px;
+  height: 6px;
+  background: #c4b5fd;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 9999;
   transform: translate(-50%, -50%);
   will-change: transform;
-  box-shadow: 0 0 6px rgba(129, 140, 248, 0.5), 0 0 12px rgba(129, 140, 248, 0.2);
+  box-shadow:
+    0 0 4px #a5b4fc,
+    0 0 8px rgba(129, 140, 248, 0.7),
+    0 0 16px rgba(129, 140, 248, 0.3),
+    0 0 24px rgba(99, 102, 241, 0.15);
+  animation: sixEyesPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes sixEyesPulse {
+  0%, 100% {
+    width: 6px; height: 6px; opacity: 1;
+    box-shadow: 0 0 4px #a5b4fc, 0 0 8px rgba(129, 140, 248, 0.7),
+                0 0 16px rgba(129, 140, 248, 0.3), 0 0 24px rgba(99, 102, 241, 0.15);
+  }
+  50% {
+    width: 7px; height: 7px; opacity: 0.85;
+    box-shadow: 0 0 6px #a5b4fc, 0 0 12px rgba(129, 140, 248, 0.8),
+                0 0 20px rgba(129, 140, 248, 0.4), 0 0 32px rgba(99, 102, 241, 0.2);
+  }
 }
 
 /* ═══ GRAIN CANVAS ═══ */
@@ -1732,6 +1799,10 @@ pre.modal-arch {
 
   .viewport-vignette {
     display: none !important;
+  }
+
+  .cursor-ring, .cursor-dot {
+    animation: none !important;
   }
 }
 
