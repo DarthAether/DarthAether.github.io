@@ -1,6 +1,5 @@
 /**
- * main.js v2 — Single orchestrator
- * Preloader, Lenis, hero reveal, navbar, mobile menu, scroll anims, clock, marquee
+ * main.js v2.1 — Single orchestrator (all bugs fixed)
  */
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -14,9 +13,7 @@ import { initProjectModal } from './projects.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ═══════════════════════════════════════════
-   Lenis smooth scroll
-   ═══════════════════════════════════════════ */
+/* ═══ Lenis smooth scroll ═══ */
 const lenis = new Lenis({
   duration: 1.2,
   easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -24,34 +21,23 @@ const lenis = new Lenis({
 })
 
 lenis.on('scroll', ScrollTrigger.update)
-
-gsap.ticker.add((time) => {
-  lenis.raf(time * 1000)
-})
+gsap.ticker.add((time) => lenis.raf(time * 1000))
 gsap.ticker.lagSmoothing(0)
 
-/* ═══════════════════════════════════════════
-   Preloader
-   ═══════════════════════════════════════════ */
+/* ═══ Preloader ═══ */
 window.addEventListener('load', () => {
   const preloader = document.getElementById('preloader')
   const counter = document.getElementById('preloader-count')
   const fill = document.getElementById('preloader-fill')
 
-  if (!preloader) {
-    initAnimations()
-    return
-  }
+  if (!preloader) { initAll(); return }
 
   const obj = { val: 0 }
-
   gsap.to(obj, {
     val: 100,
     duration: 1.2,
     ease: 'power2.inOut',
-    onUpdate() {
-      if (counter) counter.textContent = Math.round(obj.val)
-    },
+    onUpdate: () => { if (counter) counter.textContent = Math.round(obj.val) },
   })
 
   gsap.to(fill, {
@@ -64,60 +50,50 @@ window.addEventListener('load', () => {
         duration: 0.4,
         onComplete() {
           preloader.style.display = 'none'
-          initAnimations()
+          initAll()
         },
       })
     },
   })
 })
 
-/* ═══════════════════════════════════════════
-   Counter animation utility
-   ═══════════════════════════════════════════ */
+/* ═══ Counter utility ═══ */
 function formatNumber(n, decimals) {
   if (decimals > 0) return n.toFixed(decimals)
-  const rounded = Math.round(n)
-  return rounded.toLocaleString('en-US')
+  return Math.round(n).toLocaleString('en-US')
 }
 
-function animateCounters(elements, useScrollTrigger = false) {
-  elements.forEach((el) => {
-    const rawTarget = el.dataset.target
-    if (rawTarget == null) return
+function animateCounters(selector, useScrollTrigger = false) {
+  const elements = typeof selector === 'string'
+    ? document.querySelectorAll(selector)
+    : selector
 
-    const cleanTarget = rawTarget.replace(/,/g, '')
-    const target = parseFloat(cleanTarget)
+  elements.forEach((el) => {
+    const raw = el.dataset.target
+    if (raw == null) return
+    const target = parseFloat(raw.replace(/,/g, ''))
     const decimals = parseInt(el.dataset.decimals || '0', 10)
 
-    const doAnimate = () => {
+    const run = () => {
       const obj = { val: 0 }
       gsap.to(obj, {
         val: target,
         duration: 1.6,
         ease: 'power2.out',
-        onUpdate() {
-          el.textContent = formatNumber(obj.val, decimals)
-        },
+        onUpdate: () => { el.textContent = formatNumber(obj.val, decimals) },
       })
     }
 
     if (useScrollTrigger) {
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 85%',
-        once: true,
-        onEnter: doAnimate,
-      })
+      ScrollTrigger.create({ trigger: el, start: 'top 85%', once: true, onEnter: run })
     } else {
-      doAnimate()
+      run()
     }
   })
 }
 
-/* ═══════════════════════════════════════════
-   initAnimations — called after preloader
-   ═══════════════════════════════════════════ */
-function initAnimations() {
+/* ═══ Init everything after preloader ═══ */
+function initAll() {
   heroReveal()
   navbarBehavior()
   mobileMenu()
@@ -125,7 +101,7 @@ function initAnimations() {
   startClock()
   marqueeHover()
 
-  initThreeBackground()
+  try { initThreeBackground() } catch (e) { console.warn('Three.js skipped:', e.message) }
   initCursor()
   initGrain()
   initProjectModal()
@@ -133,56 +109,48 @@ function initAnimations() {
 
 /* ─── Hero reveal ─── */
 function heroReveal() {
-  const nameLines = document.querySelectorAll('.name-line')
-  nameLines.forEach((line) => {
+  // Split name into chars and animate
+  document.querySelectorAll('.name-line').forEach((line) => {
     const split = new SplitType(line, { types: 'chars' })
-    gsap.from(split.chars, {
-      y: 40,
-      opacity: 0,
-      stagger: 0.02,
-      duration: 0.5,
-      ease: 'power3.out',
+    if (split.chars && split.chars.length) {
+      gsap.set(split.chars, { y: 40, opacity: 0 })
+      gsap.to(split.chars, {
+        y: 0, opacity: 1,
+        stagger: 0.02, duration: 0.5, ease: 'power3.out',
+      })
+    }
+  })
+
+  // Fade up supporting hero elements
+  const fadeEls = gsap.utils.toArray('.hero-uni, .hero-role, .hero-bio, .hero-stats, .hero-scroll')
+  if (fadeEls.length) {
+    gsap.set(fadeEls, { y: 30, opacity: 0 })
+    gsap.to(fadeEls, {
+      y: 0, opacity: 1,
+      stagger: 0.1, duration: 0.4, delay: 0.3, ease: 'power2.out',
     })
-  })
+  }
 
-  const fadeEls = document.querySelectorAll(
-    '.hero-uni, .hero-role, .hero-bio, .hero-stats, .hero-scroll'
-  )
-  gsap.from(fadeEls, {
-    y: 30,
-    opacity: 0,
-    stagger: 0.1,
-    duration: 0.4,
-    delay: 0.3,
-    ease: 'power2.out',
-  })
-
-  // Hero stat counters (immediate, no scroll trigger)
-  const heroCounters = document.querySelectorAll('.hero-stats .stat-value[data-target]')
-  animateCounters(heroCounters, false)
+  // Hero stat counters
+  animateCounters('.hero-stats .stat-value[data-target]', false)
 }
 
-/* ─── Navbar scroll behavior ─── */
+/* ─── Navbar ─── */
 function navbarBehavior() {
   const navbar = document.getElementById('navbar')
   if (!navbar) return
 
-  // Scrolled class
+  // Glass effect on scroll
   ScrollTrigger.create({
     start: 100,
     onUpdate(self) {
-      if (self.scroll() > 100) {
-        navbar.classList.add('scrolled')
-      } else {
-        navbar.classList.remove('scrolled')
-      }
+      navbar.classList.toggle('scrolled', self.scroll() > 100)
     },
   })
 
   // Active section tracking
-  const sections = document.querySelectorAll('section[id]')
-  sections.forEach((section) => {
-    const id = section.getAttribute('id')
+  document.querySelectorAll('section[id]').forEach((section) => {
+    const id = section.id
     const link = document.querySelector(`.nav-link[href="#${id}"]`)
     if (!link) return
 
@@ -200,7 +168,7 @@ function navbarBehavior() {
     activeLink.classList.add('active')
   }
 
-  // Nav link click → smooth scroll
+  // Smooth scroll on click
   document.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', (e) => {
       e.preventDefault()
@@ -218,16 +186,17 @@ function closeMobileMenu() {
   if (!toggle || !menu) return
   toggle.classList.remove('open')
   menu.classList.remove('open')
-  gsap.to(menu.querySelectorAll('.mobile-link'), {
-    opacity: 0,
-    duration: 0.2,
-  })
+  // Reset link visibility for next open
+  gsap.set(menu.querySelectorAll('.mobile-link'), { opacity: 0, y: 30 })
 }
 
 function mobileMenu() {
   const toggle = document.querySelector('.nav-toggle')
   const menu = document.getElementById('mobile-menu')
   if (!toggle || !menu) return
+
+  // Set initial hidden state for links
+  gsap.set(menu.querySelectorAll('.mobile-link'), { opacity: 0, y: 30 })
 
   toggle.addEventListener('click', () => {
     const isOpen = toggle.classList.contains('open')
@@ -236,12 +205,9 @@ function mobileMenu() {
     } else {
       toggle.classList.add('open')
       menu.classList.add('open')
-      gsap.from(menu.querySelectorAll('.mobile-link'), {
-        y: 30,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.3,
-        ease: 'power2.out',
+      gsap.to(menu.querySelectorAll('.mobile-link'), {
+        y: 0, opacity: 1,
+        stagger: 0.05, duration: 0.3, ease: 'power2.out',
       })
     }
   })
@@ -256,161 +222,115 @@ function mobileMenu() {
   })
 }
 
-/* ─── Scroll animations ─── */
+/* ─── Scroll animations (gsap.set + gsap.to pattern — no CSS conflicts) ─── */
 function scrollAnimations() {
-  // Reusable fadeUp
-  function fadeUp(selector, opts = {}) {
-    const els = document.querySelectorAll(selector)
+  function revealOnScroll(selector, opts = {}) {
+    const els = gsap.utils.toArray(selector)
     if (!els.length) return
-    gsap.from(els, {
-      y: 40,
+
+    gsap.set(els, {
+      y: opts.y ?? 40,
+      x: opts.x ?? 0,
       opacity: 0,
-      duration: opts.duration || 0.5,
-      stagger: opts.stagger || 0,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: opts.trigger || els[0],
-        start: opts.start || 'top 85%',
+    })
+
+    els.forEach((el, i) => {
+      ScrollTrigger.create({
+        trigger: el,
+        start: opts.start || 'top 88%',
         once: true,
-      },
+        onEnter() {
+          gsap.to(el, {
+            y: 0, x: 0, opacity: 1,
+            duration: opts.duration || 0.5,
+            delay: (opts.stagger || 0) * i,
+            ease: opts.ease || 'power2.out',
+          })
+        },
+      })
     })
   }
 
   // Section titles
-  document.querySelectorAll('.section-title').forEach((el) => {
-    gsap.from(el, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: el, start: 'top 85%', once: true },
-    })
-  })
+  revealOnScroll('.section-title')
 
   // Project cards
-  const projectCards = document.querySelectorAll('.project-card')
-  if (projectCards.length) {
-    gsap.from(projectCards, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: projectCards[0], start: 'top 85%', once: true },
-    })
-  }
+  revealOnScroll('.project-card', { stagger: 0.1 })
 
   // Other cards
-  const otherCards = document.querySelectorAll('.other-card')
-  if (otherCards.length) {
-    gsap.from(otherCards, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: otherCards[0], start: 'top 85%', once: true },
-    })
-  }
+  revealOnScroll('.other-card', { stagger: 0.1 })
 
-  // About section
-  fadeUp('.about-name')
-  const aboutTexts = document.querySelectorAll('.about-text p')
-  if (aboutTexts.length) {
-    gsap.from(aboutTexts, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: aboutTexts[0], start: 'top 85%', once: true },
-    })
-  }
+  // About
+  revealOnScroll('.about-name')
+  revealOnScroll('.about-text p', { stagger: 0.1 })
+  revealOnScroll('.edu-item', { stagger: 0.1 })
 
-  // Skill fills
+  // Skill fills (animate width, not position)
   document.querySelectorAll('.skill-fill[data-width]').forEach((el) => {
-    gsap.to(el, {
-      width: `${el.dataset.width}%`,
-      duration: 1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      once: true,
+      onEnter() {
+        gsap.to(el, { width: `${el.dataset.width}%`, duration: 1, ease: 'power2.out' })
+      },
     })
   })
 
-  // Research cards
-  const researchCards = document.querySelectorAll('.research-card')
-  if (researchCards.length) {
-    gsap.from(researchCards, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: researchCards[0], start: 'top 85%', once: true },
-    })
-  }
+  // Skill rows (fade in the labels)
+  revealOnScroll('.skill-row', { y: 20, stagger: 0.08 })
+
+  // Research card
+  revealOnScroll('.research-card')
 
   // Contact items — slide from left
-  const contactItems = document.querySelectorAll('.contact-item')
-  if (contactItems.length) {
-    gsap.from(contactItems, {
-      x: -20,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: contactItems[0], start: 'top 85%', once: true },
-    })
-  }
-
-  // Edu items
-  const eduItems = document.querySelectorAll('.edu-item')
-  if (eduItems.length) {
-    gsap.from(eduItems, {
-      y: 40,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: eduItems[0], start: 'top 85%', once: true },
-    })
-  }
+  revealOnScroll('.contact-item', { x: -20, y: 0, stagger: 0.08 })
 }
 
-/* ─── Clock (IST) ─── */
+/* ─── Clock (IST with seconds) ─── */
 function startClock() {
-  const clockEl = document.getElementById('clock')
-  if (!clockEl) return
+  const el = document.getElementById('clock')
+  if (!el) return
 
-  function update() {
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+
+  function tick() {
     const now = new Date()
-    // IST = UTC + 5:30
     const utc = now.getTime() + now.getTimezoneOffset() * 60000
     const ist = new Date(utc + 5.5 * 3600000)
 
-    const day = String(ist.getDate()).padStart(2, '0')
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-    const month = months[ist.getMonth()]
-    const year = String(ist.getFullYear()).slice(-2)
-    const hours = String(ist.getHours()).padStart(2, '0')
-    const mins = String(ist.getMinutes()).padStart(2, '0')
+    const d = String(ist.getDate()).padStart(2, '0')
+    const m = months[ist.getMonth()]
+    const y = String(ist.getFullYear()).slice(-2)
+    const h = String(ist.getHours()).padStart(2, '0')
+    const mi = String(ist.getMinutes()).padStart(2, '0')
+    const s = String(ist.getSeconds()).padStart(2, '0')
 
-    clockEl.textContent = `IST ${day} ${month} ${year} \u00B7 ${hours}:${mins}`
+    el.textContent = `IST ${d} ${m} ${y} \u00B7 ${h}:${mi}:${s}`
   }
 
-  update()
-  setInterval(update, 1000)
+  tick()
+  setInterval(tick, 1000)
 }
 
-/* ─── Marquee hover ─── */
+/* ─── Marquee hover (Bug #5 fix: target .marquee-row, not .marquee-strip) ─── */
 function marqueeHover() {
   document.querySelectorAll('.marquee-strip').forEach((strip) => {
+    const row = strip.querySelector('.marquee-row')
+    if (!row) return
+
     strip.addEventListener('mouseenter', () => {
-      strip.style.animationDuration = '60s'
+      row.style.animationDuration = '60s'
     })
     strip.addEventListener('mouseleave', () => {
-      strip.style.animationDuration = '20s'
+      row.style.animationDuration = '20s'
     })
   })
 }
+
+/* ═══ Resize ═══ */
+let resizeTimeout = null
+window.addEventListener('resize', () => {
+  if (resizeTimeout) clearTimeout(resizeTimeout)
+  resizeTimeout = setTimeout(() => ScrollTrigger.refresh(), 250)
+})

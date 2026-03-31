@@ -102,7 +102,6 @@ img {
   width: 0%;
   background: var(--accent);
   border-radius: 1px;
-  transition: width 0.1s linear;
 }
 
 /* ═══ CUSTOM CURSOR ═══ */
@@ -145,7 +144,7 @@ img {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9997;
+  z-index: 9;
   opacity: 0.035;
 }
 
@@ -275,21 +274,8 @@ img {
   display: block;
   margin: 16px 0;
   color: var(--text);
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.4s ease, transform 0.4s ease, color 0.3s ease;
+  transition: color 0.3s ease;
 }
-
-#mobile-menu.open .mobile-link {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-#mobile-menu.open .mobile-link:nth-child(1) { transition-delay: 0.05s; }
-#mobile-menu.open .mobile-link:nth-child(2) { transition-delay: 0.1s; }
-#mobile-menu.open .mobile-link:nth-child(3) { transition-delay: 0.15s; }
-#mobile-menu.open .mobile-link:nth-child(4) { transition-delay: 0.2s; }
-#mobile-menu.open .mobile-link:nth-child(5) { transition-delay: 0.25s; }
 
 .mobile-link:hover {
   color: var(--accent);
@@ -333,8 +319,6 @@ img {
   letter-spacing: 0.15em;
   color: var(--text-dim);
   margin-bottom: 24px;
-  opacity: 0;
-  transform: translateY(20px);
 }
 
 .hero-name {
@@ -348,8 +332,6 @@ img {
 
 .name-line {
   display: block;
-  opacity: 0;
-  transform: translateY(40px);
 }
 
 .name-line:last-child {
@@ -372,8 +354,6 @@ img {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 24px;
-  opacity: 0;
-  transform: translateY(20px);
 }
 
 .hero-dot {
@@ -387,8 +367,6 @@ img {
   color: var(--text-muted);
   max-width: 540px;
   margin-bottom: 40px;
-  opacity: 0;
-  transform: translateY(20px);
 }
 
 .hero-stats {
@@ -396,8 +374,6 @@ img {
   gap: 48px;
   padding-top: 32px;
   border-top: 1px solid var(--border);
-  opacity: 0;
-  transform: translateY(20px);
 }
 
 .stat {
@@ -430,8 +406,6 @@ img {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  opacity: 0;
-  transform: translateX(-50%) translateY(20px);
 }
 
 .hero-scroll span {
@@ -534,8 +508,6 @@ section {
   padding: 32px;
   cursor: pointer;
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  opacity: 0;
-  transform: translateY(30px);
 }
 
 .project-card:hover {
@@ -673,8 +645,6 @@ section {
   text-decoration: none;
   transition: border-color 0.3s ease, transform 0.3s ease;
   display: block;
-  opacity: 0;
-  transform: translateY(30px);
 }
 
 .other-card:hover {
@@ -790,8 +760,6 @@ section {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 40px;
-  opacity: 0;
-  transform: translateY(30px);
 }
 
 .research-badge {
@@ -868,8 +836,6 @@ section {
   text-decoration: none;
   color: inherit;
   transition: padding-left 0.3s ease;
-  opacity: 0;
-  transform: translateX(-20px);
 }
 
 a.contact-item:hover,

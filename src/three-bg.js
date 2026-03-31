@@ -23,15 +23,17 @@ export function initThreeBackground() {
   // Camera
   camera = new THREE.PerspectiveCamera(
     60,
-    wrap.clientWidth / wrap.clientHeight,
+    (wrap.clientWidth || window.innerWidth) / (wrap.clientHeight || window.innerHeight),
     0.1,
     100
   )
   camera.position.z = 6
 
-  // Renderer
+  // Renderer — guard against 0-size container
+  const w = wrap.clientWidth || window.innerWidth
+  const h = wrap.clientHeight || window.innerHeight
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-  renderer.setSize(wrap.clientWidth, wrap.clientHeight)
+  renderer.setSize(w, h)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.setClearColor(0x000000, 0)
   wrap.appendChild(renderer.domElement)
@@ -133,7 +135,7 @@ function animate() {
 
     // Bounce within sphere
     const dist = Math.sqrt(pos[i3] ** 2 + pos[i3 + 1] ** 2 + pos[i3 + 2] ** 2)
-    if (dist > 2.8) {
+    if (dist > 4.5) {
       vel[i3] *= -1
       vel[i3 + 1] *= -1
       vel[i3 + 2] *= -1

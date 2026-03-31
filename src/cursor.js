@@ -1,49 +1,34 @@
 /**
- * cursor.js v2 — Custom cursor with lerp ring + instant dot
+ * cursor.js v2.1 — Fixed translate offset
  */
-
 export function initCursor() {
-  // Skip on mobile / touch
   if (window.innerWidth < 768) return
 
   const ring = document.querySelector('.cursor-ring')
   const dot = document.querySelector('.cursor-dot')
   if (!ring || !dot) return
 
-  let mouseX = 0
-  let mouseY = 0
-  let ringX = 0
-  let ringY = 0
-  let isHovering = false
+  let mouseX = 0, mouseY = 0
+  let ringX = 0, ringY = 0
+  let hovering = false
 
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX
     mouseY = e.clientY
-
-    // Dot follows instantly
-    dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`
+    dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`
   })
 
-  // RAF loop for ring lerp
   function tick() {
     ringX += (mouseX - ringX) * 0.15
     ringY += (mouseY - ringY) * 0.15
-
-    const scale = isHovering ? 1.5 : 1
-    ring.style.transform = `translate(${ringX}px, ${ringY}px) scale(${scale})`
-
+    const s = hovering ? 1.5 : 1
+    ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%) scale(${s})`
     requestAnimationFrame(tick)
   }
   requestAnimationFrame(tick)
 
-  // Hover detection
-  const hoverTargets = document.querySelectorAll('a, button, .project-card')
-  hoverTargets.forEach((el) => {
-    el.addEventListener('mouseenter', () => {
-      isHovering = true
-    })
-    el.addEventListener('mouseleave', () => {
-      isHovering = false
-    })
+  document.querySelectorAll('a, button, .project-card, .other-card').forEach((el) => {
+    el.addEventListener('mouseenter', () => { hovering = true })
+    el.addEventListener('mouseleave', () => { hovering = false })
   })
 }

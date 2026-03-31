@@ -108,25 +108,28 @@ export function initProjectModal() {
 
     modalBody.innerHTML = `
       <h2 style="color:${project.color}">${project.name}</h2>
-      <p class="modal-tagline">${project.tagline}</p>
+      <p class="modal-desc" style="font-size:0.85rem;color:var(--accent);margin-bottom:8px;">${project.tagline}</p>
       <p class="modal-desc">${project.description}</p>
+      <p class="modal-section-title">Architecture</p>
       <pre class="modal-arch">${project.architecture}</pre>
+      <p class="modal-section-title">Metrics</p>
       <div class="modal-metrics">
         ${project.metrics
           .map(
-            (m) => `<div class="modal-metric">
-              <span class="modal-metric-value">${m.value}</span>
-              <span class="modal-metric-label">${m.label}</span>
+            (m) => `<div class="modal-metric-item">
+              <span class="m-value">${m.value}</span>
+              <span class="m-label">${m.label}</span>
             </div>`
           )
           .join('')}
       </div>
+      <p class="modal-section-title">Tech Stack</p>
       <div class="modal-tags">
-        ${project.tags.map((t) => `<span class="modal-tag">${t}</span>`).join('')}
+        ${project.tags.map((t) => `<span>${t}</span>`).join('')}
       </div>
       <div class="modal-actions">
-        <a href="${project.demoUrl}" target="_blank" rel="noopener noreferrer" class="btn-demo">Live Demo</a>
-        <a href="${project.githubUrl}" target="_blank" rel="noopener noreferrer" class="btn-gh">GitHub</a>
+        <a href="${project.demoUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-demo">Live Demo</a>
+        <a href="${project.githubUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-gh">GitHub</a>
       </div>
     `
 
@@ -161,9 +164,9 @@ export function initProjectModal() {
     }
   })
 
-  // Backdrop click
+  // Backdrop click — close if clicking outside modal-body
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
+    if (!e.target.closest('.modal-body') && !e.target.closest('.modal-close')) {
       closeModal()
     }
   })
