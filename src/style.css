@@ -326,6 +326,17 @@ html {
   transition: color 0.3s var(--ease-out);
   position: relative;
   padding-bottom: 4px;
+  /* Significa-style background-size underline */
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 1.5px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: color 0.3s var(--ease-out), background-size 0.4s var(--ease-out);
+}
+
+.nav-link:hover {
+  background-size: 100% 1.5px;
+  background-position: 0% 100%;
 }
 
 .nav-link:hover,
@@ -333,15 +344,9 @@ html {
   color: var(--text);
 }
 
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
+.nav-link.active {
+  background-size: 100% 1.5px;
+  background-position: 0% 100%;
 }
 
 .nav-toggle {
@@ -421,9 +426,44 @@ html {
 }
 
 
-/* ═══ SECTION DIVIDERS ═══ */
+/* ═══ SECTION DIVIDERS (rounded, Dennis Snellenberg-style) ═══ */
 #projects, #other-work, #about, #experience, #research, #contact {
-  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+#projects::before, #other-work::before, #about::before,
+#experience::before, #research::before, #contact::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 80px;
+  background: var(--bg);
+  border-radius: 0 0 50% 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Subtle line at the curve's edge */
+#projects::after, #other-work::after, #about::after,
+#experience::after, #research::after, #contact::after {
+  content: '';
+  position: absolute;
+  top: 39px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+
+#projects, #other-work, #about, #experience, #research, #contact {
+  padding-top: 48px;
 }
 
 /* ═══ HERO ═══ */
@@ -760,6 +800,8 @@ section {
 
 .section-container {
   contain: layout style;
+  position: relative;
+  z-index: 3;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 40px;
@@ -767,6 +809,15 @@ section {
 
 .section-container.narrow {
   max-width: 700px;
+}
+
+
+/* ═══ TITLE CLIP REVEAL ═══ */
+.title-reveal-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
 .section-title {
@@ -1187,6 +1238,15 @@ a.contact-item:hover,
   color: var(--text);
   font-weight: 500;
   font-size: 0.95rem;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 1px;
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-out);
+}
+
+a.contact-item:hover .contact-value {
+  background-size: 100% 1px;
 }
 
 /* ═══ HERO AVAILABILITY BADGE ═══ */
@@ -1677,10 +1737,21 @@ pre.modal-arch {
 
   .section-container {
   contain: layout style;
+  position: relative;
+  z-index: 3;
     padding: 0 20px;
   }
 
-  .section-title {
+  
+/* ═══ TITLE CLIP REVEAL ═══ */
+.title-reveal-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.section-title {
     font-size: 1.6rem;
     margin-bottom: 32px;
   }

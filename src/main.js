@@ -18,6 +18,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 /* ═══ Lenis smooth scroll ═══ */
 let lenis = null
+window.__scrollVelocity = 0
 if (!prefersReducedMotion) {
   lenis = new Lenis({
     lerp: 0.12,
@@ -25,7 +26,10 @@ if (!prefersReducedMotion) {
     wheelMultiplier: 1,
     touchMultiplier: 1.5,
   })
-  lenis.on('scroll', ScrollTrigger.update)
+  lenis.on('scroll', (e) => {
+    ScrollTrigger.update()
+    window.__scrollVelocity = e.velocity || 0
+  })
   gsap.ticker.add((time) => lenis.raf(time * 1000))
 }
 gsap.ticker.lagSmoothing(500, 33)
@@ -577,7 +581,7 @@ function scrollAnimations() {
         onEnter() {
           gsap.to(el, {
             y: 0, x: 0, scale: 1, opacity: 1,
-            duration: opts.duration || 0.7,
+            duration: opts.duration || 0.9,
             delay: (opts.stagger || 0) * i,
             ease: opts.ease || EASE,
           })
@@ -586,8 +590,31 @@ function scrollAnimations() {
     })
   }
 
-  // Section titles
-  revealOnScroll('.section-title')
+  // Section titles — overflow-clip reveal (Dennis Snellenberg style)
+  document.querySelectorAll('.section-title').forEach((title) => {
+    // Wrap inner content in a clip container
+    const inner = document.createElement('span')
+    inner.className = 'title-reveal-inner'
+    inner.innerHTML = title.innerHTML
+    title.innerHTML = ''
+    title.appendChild(inner)
+    title.style.overflow = 'hidden'
+
+    gsap.set(inner, { y: '110%' })
+
+    ScrollTrigger.create({
+      trigger: title,
+      start: 'top 88%',
+      once: true,
+      onEnter() {
+        gsap.to(inner, {
+          y: '0%',
+          duration: 0.9,
+          ease: 'power4.out',
+        })
+      },
+    })
+  })
 
   // Project cards
   revealOnScroll('.project-card', { stagger: 0.1 })
@@ -698,17 +725,28 @@ function scrollAnimations() {
 function initMagneticButtons() {
   if (window.innerWidth < 768 || prefersReducedMotion) return
 
-  document.querySelectorAll('.btn, .contact-cv').forEach((btn) => {
+  document.querySelectorAll('.btn, .contact-cv, .nav-brand').forEach((btn) => {
+    const strength = parseFloat(btn.dataset.strength) || 25
+
     btn.addEventListener('mousemove', (e) => {
       const rect = btn.getBoundingClientRect()
-      const x = e.clientX - rect.left - rect.width / 2
-      const y = e.clientY - rect.top - rect.height / 2
-      // Subtle pull — 20% of distance
-      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width
+      const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height
+
+      gsap.to(btn, {
+        x: dx * strength,
+        y: dy * strength,
+        duration: 0.4,
+        ease: 'power3.out',
+      })
     }, { passive: true })
 
     btn.addEventListener('mouseleave', () => {
-      btn.style.transform = ''
+      gsap.to(btn, {
+        x: 0, y: 0,
+        duration: 0.8,
+        ease: 'elastic.out(1, 0.4)',
+      })
     })
   })
 }
