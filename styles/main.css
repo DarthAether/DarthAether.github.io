@@ -1,0 +1,25 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   VSK Portfolio v2 — Dark Cinematic Design System
+   Modular CSS Architecture
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Base */
+@import './base/variables.css';
+@import './base/reset.css';
+@import './base/typography.css';
+@import './base/a11y.css';
+
+/* Components */
+@import './components/cursor.css';
+@import './components/preloader.css';
+@import './components/navigation.css';
+@import './components/hero.css';
+@import './components/marquee.css';
+@import './components/cards.css';
+@import './components/about.css';
+@import './components/contact.css';
+@import './components/modal.css';
+@import './components/effects.css';
+
+/* Easter Eggs */
+@import './easter-eggs/modes.css';

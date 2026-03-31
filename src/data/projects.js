@@ -1,5 +1,5 @@
 /**
- * projects.js v2 — Project data + modal logic
+ * projects.js — Project data + tech stack data
  */
 
 export const PROJECTS = {
@@ -92,123 +92,95 @@ User Input ──→ Security Rules Engine     Execute
   },
 }
 
-/* ═══════════════════════════════════════════
-   Modal logic
-   ═══════════════════════════════════════════ */
-export function initProjectModal() {
-  const modal = document.getElementById('project-modal')
-  if (!modal) return
-
-  const modalBody = modal.querySelector('.modal-body')
-  const closeBtn = modal.querySelector('.modal-close')
-
-  let previousFocus = null
-
-  function openModal(key) {
-    const project = PROJECTS[key]
-    if (!project || !modalBody) return
-
-    previousFocus = document.activeElement
-    modal.setAttribute('aria-hidden', 'false')
-
-    modalBody.innerHTML = `
-      <h2 style="color:${project.color}">${project.name}</h2>
-      <p class="modal-desc" style="font-size:0.85rem;color:var(--accent);margin-bottom:8px;">${project.tagline}</p>
-      <p class="modal-desc">${project.description}</p>
-      <p class="modal-section-title">Architecture</p>
-      <pre class="modal-arch">${project.architecture}</pre>
-      <p class="modal-section-title">Metrics</p>
-      <div class="modal-metrics">
-        ${project.metrics
-          .map(
-            (m) => `<div class="modal-metric-item">
-              <span class="m-value">${m.value}</span>
-              <span class="m-label">${m.label}</span>
-            </div>`
-          )
-          .join('')}
-      </div>
-      <p class="modal-section-title">Tech Stack</p>
-      <div class="modal-tags">
-        ${project.tags.map((t) => `<span>${t}</span>`).join('')}
-      </div>
-      <div class="modal-actions">
-        <a href="${project.demoUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-demo">Live Demo</a>
-        <a href="${project.githubUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-gh">GitHub</a>
-      </div>
-    `
-
-    modal.classList.add('open')
-    // Focus close button for keyboard users
-    if (closeBtn) setTimeout(() => closeBtn.focus(), 100)
-    document.body.style.overflow = 'hidden'
-  }
-
-  function closeModal() {
-    modal.classList.remove('open')
-    modal.setAttribute('aria-hidden', 'true')
-    document.body.style.overflow = ''
-    // Restore focus to the card that opened the modal
-    if (previousFocus) previousFocus.focus()
-  }
-
-  // Card click + keyboard — but not on demo/gh buttons
-  document.querySelectorAll('.project-card[data-project]').forEach((card) => {
-    // Make cards keyboard-focusable
-    card.setAttribute('tabindex', '0')
-    card.setAttribute('role', 'button')
-    card.setAttribute('aria-label', `View details for ${card.querySelector('.card-name')?.textContent || 'project'}`)
-
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('.btn-demo') || e.target.closest('.btn-gh')) return
-      const key = card.dataset.project
-      openModal(key)
-    })
-
-    // Enter/Space to open
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        openModal(card.dataset.project)
-      }
-    })
-  })
-
-  // Close button
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeModal)
-  }
-
-  // Keyboard: Escape to close, Tab to trap focus
-  document.addEventListener('keydown', (e) => {
-    if (!modal.classList.contains('open')) return
-
-    if (e.key === 'Escape') {
-      closeModal()
-      return
-    }
-
-    // Focus trap
-    if (e.key === 'Tab') {
-      const focusable = modal.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])')
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
-  })
-
-  // Backdrop click — close if clicking outside modal-body
-  modal.addEventListener('click', (e) => {
-    if (!e.target.closest('.modal-body') && !e.target.closest('.modal-close')) {
-      closeModal()
-    }
-  })
+export const TECH_DATA = {
+  xgboost: {
+    name: 'XGBoost',
+    desc: 'Gradient boosted decision trees for tabular outage prediction. Primary model in the GridShield ensemble achieving 0.967 AUC-ROC with temporal cross-validation.',
+    projects: ['GridShield AI', 'Credit Risk XAI'],
+  },
+  lightgbm: {
+    name: 'LightGBM',
+    desc: 'Histogram-based gradient boosting for fast training on 138 engineered features. Second model in the stacking ensemble with leaf-wise growth strategy.',
+    projects: ['GridShield AI'],
+  },
+  pytorch: {
+    name: 'PyTorch',
+    desc: 'LSTM with multi-head self-attention for sequential weather patterns. MC Dropout for uncertainty quantification in the temporal model branch.',
+    projects: ['GridShield AI', 'ThreatSight'],
+  },
+  fastapi: {
+    name: 'FastAPI',
+    desc: 'Async REST API backbone for all 3 enterprise systems. JWT/RBAC auth, WebSocket streaming, Pydantic schemas, dependency injection, and OpenAPI docs.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  threejs: {
+    name: 'Three.js',
+    desc: 'WebGL particle constellation in the portfolio hero. 1000 particles with proximity-based connections and mouse-reactive rotation.',
+    projects: ['This Portfolio'],
+  },
+  gsap: {
+    name: 'GSAP',
+    desc: 'ScrollTrigger-driven animations throughout this portfolio. Text reveals, section fades, counter animations, and smooth scroll integration with Lenis.',
+    projects: ['This Portfolio'],
+  },
+  docker: {
+    name: 'Docker',
+    desc: 'Multi-stage builds with non-root users and healthchecks. Docker Compose orchestrating API + PostgreSQL + Redis + Prometheus + Grafana stacks.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  postgresql: {
+    name: 'PostgreSQL',
+    desc: 'Primary database for all systems. TimescaleDB hypertables for time-series in GridShield. Async SQLAlchemy with Alembic migrations across all projects.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  redis: {
+    name: 'Redis',
+    desc: 'Caching layer for API responses, pub/sub for real-time WebSocket broadcasting, rate limiting, and alert deduplication across all 3 platforms.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  prometheus: {
+    name: 'Prometheus',
+    desc: '11 custom metrics in ThreatSight: detection latency, FPS, alerts fired, active cameras. Pre-built Grafana dashboards for all 3 systems.',
+    projects: ['GridShield AI', 'ThreatSight', 'IoTGuard'],
+  },
+  shap: {
+    name: 'SHAP',
+    desc: 'SHapley Additive exPlanations for model interpretability. Feature importance analysis on 138 features in GridShield and credit risk predictions.',
+    projects: ['GridShield AI', 'Credit Risk XAI'],
+  },
+  onnx: {
+    name: 'ONNX Runtime',
+    desc: 'YOLOv5 model export to ONNX for 2-5x faster CPU inference in ThreatSight. Runtime-selectable backend: native PyTorch vs ONNX via configuration.',
+    projects: ['ThreatSight'],
+  },
+  typescript: {
+    name: 'TypeScript',
+    desc: 'Strongly-typed JavaScript for production applications. Used across the full stack at VTAG Software with Next.js, React, NestJS, and Playwright test suites.',
+    projects: ['VTAG Software'],
+  },
+  react: {
+    name: 'React',
+    desc: 'Component-based UI library for building interactive dashboards. Broker portal, property management, and lead attribution interfaces at VTAG Software.',
+    projects: ['VTAG Software'],
+  },
+  nextjs: {
+    name: 'Next.js',
+    desc: 'React meta-framework with SSR and file-based routing. Production frontend for broker dashboards and property management at VTAG Software.',
+    projects: ['VTAG Software', 'GridShield AI'],
+  },
+  nestjs: {
+    name: 'NestJS',
+    desc: 'Enterprise Node.js framework with dependency injection, decorators, and module system. Backend services for the Senior Living platform at VTAG Software.',
+    projects: ['VTAG Software'],
+  },
+  graphql: {
+    name: 'GraphQL',
+    desc: 'Query language for APIs with typed schemas. Used with NestJS and Prisma for efficient data fetching across VTAG Software platforms.',
+    projects: ['VTAG Software'],
+  },
+  playwright: {
+    name: 'Playwright',
+    desc: 'Cross-browser end-to-end testing framework. 695+ tests across 9 projects at VTAG Software covering critical user flows and regression detection.',
+    projects: ['VTAG Software'],
+  },
 }

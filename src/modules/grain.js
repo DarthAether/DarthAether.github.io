@@ -1,5 +1,5 @@
 /**
- * grain.js v2.1 — Film grain canvas, optimized with Uint32Array bulk fill
+ * grain.js — Film grain canvas, optimized with Uint32Array bulk fill
  */
 
 export function initGrain() {
