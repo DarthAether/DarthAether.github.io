@@ -1526,46 +1526,169 @@ window.addEventListener('resize', () => {
     )
   }
 
+  // Interactive elements Pokemon can target
+  const TARGETS_SELECTOR = '.btn, .contact-cv, .nav-brand, .nav-link, .project-card, .other-card, .research-card, .experience-card, .contact-item, .stat, .card-tags span, .exp-tags span, .back-to-top, .hero-availability, .research-badge'
+
+  function getVisibleTargets() {
+    const els = document.querySelectorAll(TARGETS_SELECTOR)
+    const visible = []
+    els.forEach(el => {
+      const rect = el.getBoundingClientRect()
+      // Only targets currently in viewport
+      if (rect.top > -50 && rect.bottom < window.innerHeight + 50 &&
+          rect.left > -50 && rect.right < window.innerWidth + 50 &&
+          rect.width > 10 && rect.height > 10) {
+        visible.push({ el, rect })
+      }
+    })
+    return visible
+  }
+
   function wanderPokemon(container, img) {
     if (!pokemonActive) return
 
-    function move() {
-      if (!document.body.contains(container)) return
+    const behaviors = ['findTarget', 'randomWalk', 'findTarget', 'findTarget', 'jump']
+    let behaviorIdx = 0
 
-      const pos = getRandomSpawnPosition()
-      const currentX = parseFloat(container.style.left)
+    function nextBehavior() {
+      if (!document.body.contains(container) || !pokemonActive) return
 
-      // Face direction of movement (flip sprite)
-      if (pos.x < currentX) {
-        img.style.transform = 'scaleX(-1)'
-      } else {
-        img.style.transform = 'scaleX(1)'
+      const behavior = behaviors[behaviorIdx % behaviors.length]
+      behaviorIdx++
+
+      switch (behavior) {
+        case 'findTarget': goToTarget(); break
+        case 'randomWalk': randomWalk(); break
+        case 'jump': doJump(); break
       }
-
-      img.classList.remove('idle')
-      img.classList.add('walking')
-
-      // Animate to new position
-      const duration = 3000 + Math.random() * 4000
-      container.style.transition = 'left ' + duration + 'ms linear, top ' + duration + 'ms linear'
-      container.style.left = pos.x + 'px'
-      container.style.top = pos.y + 'px'
-
-      // Return to idle after arriving
-      setTimeout(() => {
-        if (!document.body.contains(container)) return
-        img.classList.remove('walking')
-        img.classList.add('idle')
-        img.style.transform = ''
-        container.style.transition = ''
-
-        // Wait then move again
-        setTimeout(move, 2000 + Math.random() * 5000)
-      }, duration)
     }
 
-    // Start first move after a random delay
-    setTimeout(move, 1500 + Math.random() * 3000)
+    // ── Walk to a random interactive element ──
+    function goToTarget() {
+      const targets = getVisibleTargets()
+      if (targets.length === 0) { randomWalk(); return }
+
+      const target = targets[Math.floor(Math.random() * targets.length)]
+      const rect = target.rect
+      // Position on top of the element (sit on it)
+      const destX = rect.left + rect.width / 2 - 40
+      const destY = rect.top - 60 // sit above the element
+
+      // Show "!" notice
+      showNotice(container)
+
+      // Brief pause, then walk
+      setTimeout(() => {
+        walkTo(container, img, destX, destY, () => {
+          // Arrived at target — interact with it
+          interactWithTarget(container, img, target.el, () => {
+            // After interaction, wait then do next thing
+            setTimeout(nextBehavior, 1500 + Math.random() * 2000)
+          })
+        })
+      }, 600)
+    }
+
+    // ── Random walk to a viewport position ──
+    function randomWalk() {
+      const pos = getRandomSpawnPosition()
+      walkTo(container, img, pos.x, pos.y, () => {
+        img.classList.remove('walking')
+        img.classList.add('sitting')
+        setTimeout(() => {
+          img.classList.remove('sitting')
+          img.classList.add('idle')
+          setTimeout(nextBehavior, 1000 + Math.random() * 2000)
+        }, 2000 + Math.random() * 3000)
+      })
+    }
+
+    // ── Jump in place ──
+    function doJump() {
+      img.classList.remove('idle', 'sitting', 'walking')
+      img.classList.add('jumping')
+      setTimeout(() => {
+        img.classList.remove('jumping')
+        img.classList.add('idle')
+        setTimeout(nextBehavior, 800 + Math.random() * 1500)
+      }, 500)
+    }
+
+    // Start after a delay
+    setTimeout(nextBehavior, 1500 + Math.random() * 2000)
+  }
+
+  // ── Walk animation: move from current pos to destination ──
+  function walkTo(container, img, destX, destY, onArrive) {
+    const startX = parseFloat(container.style.left) || 0
+    const startY = parseFloat(container.style.top) || 0
+    const dx = destX - startX
+    const dy = destY - startY
+    const dist = Math.sqrt(dx * dx + dy * dy)
+
+    // Face direction
+    if (dx < 0) {
+      img.style.transform = 'scaleX(-1)'
+    } else {
+      img.style.transform = 'scaleX(1)'
+    }
+
+    img.classList.remove('idle', 'sitting', 'jumping')
+    img.classList.add('walking')
+
+    // Speed: ~120px/sec
+    const duration = Math.max(800, dist / 0.12)
+
+    container.style.transition = 'left ' + duration + 'ms ease-in-out, top ' + duration + 'ms ease-in-out'
+    container.style.left = destX + 'px'
+    container.style.top = destY + 'px'
+
+    setTimeout(() => {
+      if (!document.body.contains(container)) return
+      img.classList.remove('walking')
+      img.style.transform = ''
+      container.style.transition = ''
+      if (onArrive) onArrive()
+    }, duration)
+  }
+
+  // ── Interact with a target element ──
+  function interactWithTarget(container, img, targetEl, onDone) {
+    // Pokemon sits on the element
+    img.classList.add('sitting')
+
+    // Highlight the target
+    targetEl.classList.add('pokemon-target-glow')
+
+    // After a moment, "poke" it
+    setTimeout(() => {
+      img.classList.remove('sitting')
+      img.classList.add('poking')
+
+      // Trigger hover state on the target
+      targetEl.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
+
+      setTimeout(() => {
+        // "Click" it (visual only)
+        targetEl.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+        targetEl.classList.remove('pokemon-target-glow')
+        img.classList.remove('poking')
+        img.classList.add('idle')
+        if (onDone) onDone()
+      }, 800)
+    }, 1000 + Math.random() * 1500)
+  }
+
+  // ── Show "!" notice above Pokemon ──
+  function showNotice(container) {
+    const existing = container.querySelector('.pokemon-notice')
+    if (existing) existing.remove()
+
+    const notice = document.createElement('span')
+    notice.className = 'pokemon-notice'
+    notice.textContent = '!'
+    container.appendChild(notice)
+    setTimeout(() => notice.remove(), 900)
   }
 
   function megaEvolve() {
