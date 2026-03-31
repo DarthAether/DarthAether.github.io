@@ -1233,3 +1233,187 @@ window.addEventListener('resize', () => {
     )
   }
 })()
+
+
+/* ═══ LEGENDARY FEATURES ═══ */
+
+/* ─── 1. Scroll-Velocity Text Distortion ─── */
+;(function() {
+  if (prefersReducedMotion) return
+
+  document.body.classList.add('scroll-distort')
+  let smoothVel = 0
+
+  function updateDistortion() {
+    const vel = window.__scrollVelocity || 0
+    smoothVel += (vel - smoothVel) * 0.12
+
+    const absVel = Math.min(Math.abs(smoothVel), 15)
+
+    // Distortion only kicks in at velocity > 2
+    if (absVel > 2) {
+      const blur = (absVel - 2) * 0.15 // max ~2px blur
+      const skew = smoothVel * 0.08     // skew in scroll direction
+      const scaleY = 1 + absVel * 0.003 // subtle vertical stretch
+
+      document.body.style.setProperty('--distort-blur', blur.toFixed(2) + 'px')
+      document.body.style.setProperty('--distort-skew', skew.toFixed(2) + 'deg')
+      document.body.style.setProperty('--distort-scaleY', scaleY.toFixed(4))
+    } else {
+      document.body.style.setProperty('--distort-blur', '0px')
+      document.body.style.setProperty('--distort-skew', '0deg')
+      document.body.style.setProperty('--distort-scaleY', '1')
+    }
+
+    requestAnimationFrame(updateDistortion)
+  }
+  requestAnimationFrame(updateDistortion)
+})()
+
+/* ─── 2. Mic-Reactive Audio Visualization ─── */
+;(function() {
+  const btn = document.getElementById('mic-toggle')
+  if (!btn || prefersReducedMotion) {
+    if (btn) btn.style.display = 'none'
+    return
+  }
+
+  let audioCtx = null
+  let analyser = null
+  let dataArray = null
+  let micStream = null
+  let active = false
+  let rafId = null
+
+  btn.addEventListener('click', async () => {
+    if (!active) {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+        const source = audioCtx.createMediaStreamSource(micStream)
+        analyser = audioCtx.createAnalyser()
+        analyser.fftSize = 256
+        source.connect(analyser)
+        dataArray = new Uint8Array(analyser.frequencyBinCount)
+
+        active = true
+        btn.classList.add('active')
+        pumpAudio()
+
+        console.log(
+          '%c AUDIO MODE %c Particles are now reacting to your microphone.',
+          'background: #818cf8; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+          'color: #818cf8;'
+        )
+      } catch (e) {
+        console.warn('Mic access denied:', e.message)
+      }
+    } else {
+      stopAudio()
+    }
+  })
+
+  function pumpAudio() {
+    if (!active || !analyser) return
+    analyser.getByteFrequencyData(dataArray)
+
+    const len = dataArray.length
+    // Split into 3 bands
+    let bass = 0, mid = 0, high = 0
+    const bassEnd = Math.floor(len * 0.15)
+    const midEnd = Math.floor(len * 0.5)
+
+    for (let i = 0; i < bassEnd; i++) bass += dataArray[i]
+    for (let i = bassEnd; i < midEnd; i++) mid += dataArray[i]
+    for (let i = midEnd; i < len; i++) high += dataArray[i]
+
+    bass = bass / bassEnd / 255
+    mid = mid / (midEnd - bassEnd) / 255
+    high = high / (len - midEnd) / 255
+
+    // Expose to Three.js
+    window.__audioBass = bass
+    window.__audioMid = mid
+    window.__audioHigh = high
+
+    rafId = requestAnimationFrame(pumpAudio)
+  }
+
+  function stopAudio() {
+    active = false
+    btn.classList.remove('active')
+    if (rafId) cancelAnimationFrame(rafId)
+    if (micStream) micStream.getTracks().forEach(t => t.stop())
+    if (audioCtx) audioCtx.close()
+    window.__audioBass = 0
+    window.__audioMid = 0
+    window.__audioHigh = 0
+    audioCtx = null
+    analyser = null
+    micStream = null
+  }
+})()
+
+/* ─── 3. Section-Based Particle Color Shifting ─── */
+;(function() {
+  if (prefersReducedMotion) return
+
+  const sectionColors = {
+    'hero': 0x818cf8,      // indigo
+    'projects': 0x6366f1,  // deeper indigo
+    'other-work': 0x7c3aed,// violet
+    'about': 0x818cf8,     // indigo
+    'experience': 0x06b6d4,// cyan
+    'research': 0xa855f7,  // purple
+    'contact': 0x818cf8,   // indigo
+  }
+
+  document.querySelectorAll('section[id]').forEach((section) => {
+    const color = sectionColors[section.id]
+    if (!color) return
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top center',
+      end: 'bottom center',
+      onEnter: () => { window.__particleTargetColor = color },
+      onEnterBack: () => { window.__particleTargetColor = color },
+    })
+  })
+})()
+
+/* ─── 4. Gyroscope Parallax (mobile) ─── */
+;(function() {
+  if (window.innerWidth >= 768) return // desktop has cursor parallax
+
+  // Show prompt
+  const prompt = document.createElement('div')
+  prompt.className = 'gyro-prompt'
+  prompt.textContent = 'Tilt device to explore'
+  document.body.appendChild(prompt)
+  setTimeout(() => prompt.remove(), 8000)
+
+  function initGyro() {
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma === null) return
+      // gamma: left/right tilt (-90 to 90)
+      // beta: front/back tilt (-180 to 180)
+      window.__gyroX = (e.gamma || 0) / 90  // -1 to 1
+      window.__gyroY = ((e.beta || 0) - 45) / 90  // centered around 45deg (holding phone)
+    }, { passive: true })
+  }
+
+  // iOS requires permission request
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // Will be triggered by first touch
+    document.addEventListener('touchstart', function onTouch() {
+      DeviceOrientationEvent.requestPermission().then(state => {
+        if (state === 'granted') initGyro()
+      }).catch(() => {})
+      document.removeEventListener('touchstart', onTouch)
+    }, { once: true })
+  } else {
+    initGyro()
+  }
+})()

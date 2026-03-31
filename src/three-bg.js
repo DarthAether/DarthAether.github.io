@@ -220,12 +220,77 @@ function animate() {
   const targetOpacity = 0.5 + absVel * 0.05
   particles.material.opacity += (targetOpacity - particles.material.opacity) * 0.1
 
-  // Sith mode: swap particle color to red
+  // ── Color: Sith mode OR section-based shifting ──
   const sithMode = window.__sithMode || false
-  const targetColor = sithMode ? 0xef4444 : 0x818cf8
-  if (particles.material.color.getHex() !== targetColor) {
-    particles.material.color.setHex(targetColor)
-    lineMesh.material.color.setHex(targetColor)
+  let targetColor = sithMode ? 0xef4444 : (window.__particleTargetColor || 0x818cf8)
+  const currentHex = particles.material.color.getHex()
+  if (currentHex !== targetColor) {
+    // Lerp color for smooth transition
+    const cur = particles.material.color
+    const tgt = new THREE.Color(targetColor)
+    cur.lerp(tgt, 0.03)
+    lineMesh.material.color.copy(cur)
+  }
+
+  // ── Audio reactivity ──
+  const bass = window.__audioBass || 0
+  const mid = window.__audioMid || 0
+  const high = window.__audioHigh || 0
+
+  if (bass > 0.01 || mid > 0.01) {
+    // Bass: displacement/scale pulse
+    const bassScale = 1 + bass * 0.3
+    particles.scale.x += (bassScale - particles.scale.x) * 0.15
+    particles.scale.z += (bassScale - particles.scale.z) * 0.15
+
+    // Mid: rotation speed boost
+    particles.rotation.y += mid * 0.008
+
+    // High: brightness/size boost
+    const audioSize = 0.03 + high * 0.04
+    particles.material.size += (audioSize - particles.material.size) * 0.15
+
+    // Opacity reacts to overall energy
+    const audioOpacity = 0.5 + (bass + mid) * 0.3
+    particles.material.opacity += (audioOpacity - particles.material.opacity) * 0.12
+  } else {
+    // Settle back to defaults when no audio
+    particles.scale.x += (1 - particles.scale.x) * 0.05
+    particles.scale.z += (1 - particles.scale.z) * 0.05
+  }
+
+  // ── Gyroscope parallax (mobile) ──
+  const gyroX = window.__gyroX || 0
+  const gyroY = window.__gyroY || 0
+  if (Math.abs(gyroX) > 0.01 || Math.abs(gyroY) > 0.01) {
+    const gyroTargetY = gyroX * 0.5
+    const gyroTargetX = gyroY * 0.3
+    particles.rotation.y += (gyroTargetY - particles.rotation.y) * 0.03
+    particles.rotation.x += (gyroTargetX - particles.rotation.x) * 0.03
+    lineMesh.rotation.y = particles.rotation.y
+    lineMesh.rotation.x = particles.rotation.x
+  }
+
+  // ── Cursor repulsion field (lightweight) ──
+  if (mouseX !== 0 || mouseY !== 0) {
+    const repulsorX = mouseX * 4 // map -1..1 to -4..4 (3D space coords)
+    const repulsorY = mouseY * 3
+    const repulseRadius = 1.5
+    const repulseStrength = 0.002
+
+    // Only check a subset for performance
+    for (let i = 0; i < PARTICLE_COUNT; i += (isLowEnd ? 4 : 2)) {
+      const i3 = i * 3
+      const dx = pos[i3] - repulsorX
+      const dy = pos[i3 + 1] - repulsorY
+      const distSq = dx * dx + dy * dy
+      if (distSq < repulseRadius * repulseRadius && distSq > 0.01) {
+        const dist = Math.sqrt(distSq)
+        const force = repulseStrength / dist
+        vel[i3] += dx * force
+        vel[i3 + 1] += dy * force
+      }
+    }
   }
 
   renderer.render(scene, camera)
