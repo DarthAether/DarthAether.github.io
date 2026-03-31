@@ -2272,3 +2272,86 @@ body.screen-shake {
   100% { opacity: 0; }
 }
 
+
+/* ═══ SCROLL VELOCITY TEXT DISTORTION ═══ */
+.section-title,
+.hero-name,
+.contact-heading {
+  transition: filter 0.15s linear, transform 0.15s linear;
+}
+
+body.scroll-distort .section-title,
+body.scroll-distort .hero-name,
+body.scroll-distort .contact-heading {
+  filter: blur(var(--distort-blur, 0px));
+  transform: skewX(var(--distort-skew, 0deg)) scaleY(var(--distort-scaleY, 1));
+}
+
+/* ═══ MIC TOGGLE BUTTON ═══ */
+.mic-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9995;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-dim);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.06);
+}
+
+.mic-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--accent);
+  transform: scale(1.1);
+}
+
+.mic-toggle.active {
+  border-color: rgba(129, 140, 248, 0.4);
+  color: var(--accent);
+  box-shadow: 0 0 16px rgba(129, 140, 248, 0.15), 0 2px 8px rgba(0,0,0,0.2);
+  animation: micPulse 2s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(129, 140, 248, 0.15), 0 2px 8px rgba(0,0,0,0.2); }
+  50% { box-shadow: 0 0 24px rgba(129, 140, 248, 0.3), 0 2px 8px rgba(0,0,0,0.2); }
+}
+
+/* ═══ GYROSCOPE PROMPT (mobile) ═══ */
+.gyro-prompt {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9995;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation: gyroFadeIn 0.5s 3s var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+@keyframes gyroFadeIn {
+  to { opacity: 1; }
+}
+
