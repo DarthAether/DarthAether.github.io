@@ -1097,6 +1097,9 @@ window.addEventListener('resize', () => {
     'kitty': () => {
       if (window.__kittyToggle) window.__kittyToggle()
     },
+    'ascii': () => {
+      if (window.__asciiToggle) window.__asciiToggle()
+    },
   }
 
   document.addEventListener('keydown', (e) => {
@@ -2073,5 +2076,95 @@ window.addEventListener('resize', () => {
     el.innerHTML = '<span class="cat-fact-prefix">\u{1F43E} Cat Fact</span>' + CAT_FACTS[idx]
     document.body.appendChild(el)
     setTimeout(() => { if (el.parentNode) el.remove() }, 7000)
+  }
+})()
+
+
+/* ═══ CUTTING EDGE FEATURES ═══ */
+
+/* ─── Variable Font Weight Morph on Scroll ─── */
+;(function() {
+  if (prefersReducedMotion) return
+
+  // Inter already supports variable weight (300-900)
+  const heroName = document.querySelector('.hero-name')
+  if (!heroName) return
+
+  // Morph hero name weight from 800 to 400 as you scroll past hero
+  gsap.to(heroName, {
+    fontWeight: 400,
+    letterSpacing: '0.02em',
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+    },
+  })
+
+  // Per-character weight stagger on section titles as they scroll through
+  document.querySelectorAll('.contact-heading').forEach(heading => {
+    gsap.to(heading, {
+      fontWeight: 300,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heading,
+        start: 'top 80%',
+        end: 'top 20%',
+        scrub: true,
+      },
+    })
+  })
+})()
+
+/* ─── Cursor X-Ray Mode (hold Shift) ─── */
+;(function() {
+  if (window.innerWidth < 768 || prefersReducedMotion) return
+
+  const ring = document.querySelector('.cursor-ring')
+  if (!ring) return
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Shift' && !e.repeat) {
+      ring.classList.add('xray-mode')
+    }
+  })
+
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'Shift') {
+      ring.classList.remove('xray-mode')
+    }
+  })
+})()
+
+/* ─── ASCII Mode Easter Egg ─── */
+;(function() {
+  let active = false
+  let scanlines = null
+
+  window.__asciiToggle = function() {
+    active = !active
+
+    if (active) {
+      document.body.classList.add('ascii-mode')
+      // Particles go green (terminal style)
+      window.__particleTargetColor = 0x00ff41
+
+      // Add scanlines
+      scanlines = document.createElement('div')
+      scanlines.className = 'ascii-scanlines'
+      document.body.appendChild(scanlines)
+
+      console.log(
+        '%c ASCII MODE %c > TERMINAL INTERFACE ACTIVATED\n> ALL SYSTEMS NOMINAL\n> RENDERING IN TEXT MODE',
+        'background: #00ff41; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 3px;',
+        'color: #00ff41; font-family: monospace;'
+      )
+    } else {
+      document.body.classList.remove('ascii-mode')
+      window.__particleTargetColor = 0x818cf8
+      if (scanlines) { scanlines.remove(); scanlines = null }
+    }
   }
 })()

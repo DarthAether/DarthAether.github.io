@@ -2960,3 +2960,200 @@ body.scroll-distort .contact-heading {
   100% { transform: scale(1.2); opacity: 0; }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   CUTTING EDGE 2025-2026 TECHNIQUES
+   ═══════════════════════════════════════════════════ */
+
+/* ── 1. OKLCH HOLOGRAPHIC GRADIENT BORDERS ── */
+@property --hue-offset {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.project-card {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  background-origin: border-box;
+  position: relative;
+}
+
+.project-card:hover {
+  border-color: transparent;
+}
+
+/* Holographic border on hover via box-shadow conic gradient trick */
+.project-card:hover,
+.other-card:hover {
+  animation: hueRotate 4s linear infinite;
+  box-shadow:
+    0 0 0 1px oklch(70% 0.15 var(--hue-offset)),
+    0 0 15px oklch(70% 0.1 var(--hue-offset) / 0.15),
+    0 0 30px oklch(70% 0.08 var(--hue-offset) / 0.08);
+}
+
+@keyframes hueRotate {
+  to { --hue-offset: 360deg; }
+}
+
+/* ── 2. MESH GRADIENT BACKGROUND ── */
+.mesh-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  background:
+    radial-gradient(ellipse at 20% 50%, oklch(25% 0.08 260) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, oklch(20% 0.06 300) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, oklch(22% 0.05 230) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 30%, oklch(18% 0.04 280) 0%, transparent 50%);
+  animation: meshShift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes meshShift {
+  0% {
+    background:
+      radial-gradient(ellipse at 20% 50%, oklch(25% 0.08 260) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, oklch(20% 0.06 300) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, oklch(22% 0.05 230) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 30%, oklch(18% 0.04 280) 0%, transparent 50%);
+  }
+  33% {
+    background:
+      radial-gradient(ellipse at 50% 30%, oklch(23% 0.07 280) 0%, transparent 50%),
+      radial-gradient(ellipse at 30% 70%, oklch(21% 0.06 240) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 50%, oklch(24% 0.05 310) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, oklch(19% 0.04 260) 0%, transparent 50%);
+  }
+  66% {
+    background:
+      radial-gradient(ellipse at 70% 60%, oklch(22% 0.08 250) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 30%, oklch(24% 0.06 290) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, oklch(20% 0.05 270) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 40%, oklch(23% 0.04 240) 0%, transparent 50%);
+  }
+  100% {
+    background:
+      radial-gradient(ellipse at 40% 70%, oklch(25% 0.07 270) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 20%, oklch(22% 0.06 310) 0%, transparent 50%),
+      radial-gradient(ellipse at 30% 40%, oklch(21% 0.05 250) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 60%, oklch(20% 0.04 290) 0%, transparent 50%);
+  }
+}
+
+/* ── 3. CSS SCROLL-TRIGGERED (progressive enhancement, Chrome 145+) ── */
+@supports (animation-timeline: view()) {
+  .section-title,
+  .project-card,
+  .other-card,
+  .research-card,
+  .experience-card {
+    animation: cssScrollReveal 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+
+  @keyframes cssScrollReveal {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+/* ── 4. CURSOR X-RAY REVEAL ── */
+/* When holding Shift, cursor ring becomes a large X-ray lens */
+.cursor-ring.xray-mode {
+  width: 160px !important;
+  height: 160px !important;
+  backdrop-filter: blur(1px) invert(0.85) hue-rotate(180deg) saturate(2) !important;
+  -webkit-backdrop-filter: blur(1px) invert(0.85) hue-rotate(180deg) saturate(2) !important;
+  background: rgba(255,255,255,0.02) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 0 40px rgba(129, 140, 248, 0.08),
+    inset 0 0 30px rgba(0,0,0,0.1) !important;
+  transition: width 0.5s var(--ease-out), height 0.5s var(--ease-out),
+              backdrop-filter 0.5s var(--ease-out) !important;
+  mix-blend-mode: normal !important;
+}
+
+/* ── 5. ASCII MODE ── */
+.ascii-mode {
+  font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+}
+
+.ascii-mode * {
+  font-family: inherit !important;
+  border-radius: 0 !important;
+}
+
+.ascii-mode .project-card,
+.ascii-mode .research-card,
+.ascii-mode .experience-card,
+.ascii-mode .other-card {
+  border: 1px solid #444 !important;
+  background: #111 !important;
+  box-shadow: none !important;
+}
+
+.ascii-mode .hero-name {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0 !important;
+}
+
+.ascii-mode .nav-link,
+.ascii-mode .hero-role,
+.ascii-mode .stat-value,
+.ascii-mode .stat-label {
+  text-transform: uppercase;
+}
+
+.ascii-mode .cursor-ring,
+.ascii-mode .cursor-dot,
+.ascii-mode .viewport-vignette,
+.ascii-mode #grain,
+.ascii-mode .mesh-gradient {
+  display: none !important;
+}
+
+.ascii-mode .section-title::before {
+  content: '>' !important;
+  background: none !important;
+  color: var(--accent);
+  font-size: 1.2rem;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+}
+
+/* ASCII scanlines overlay */
+.ascii-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 9991;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 0, 0.015) 2px,
+    rgba(0, 255, 0, 0.015) 4px
+  );
+  mix-blend-mode: screen;
+}
+
+.ascii-mode .hero-availability,
+.ascii-mode .research-badge {
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
