@@ -1088,6 +1088,12 @@ window.addEventListener('resize', () => {
     'hmm': triggerWitcher,
     'creeper': triggerCreeper,
     'hesoyam': triggerGTA,
+    'pokemon': () => {
+      if (window.__pokemonSpawn) window.__pokemonSpawn()
+    },
+    'megaevolve': () => {
+      if (window.__pokemonMega) window.__pokemonMega()
+    },
   }
 
   document.addEventListener('keydown', (e) => {
@@ -1442,61 +1448,20 @@ window.addEventListener('resize', () => {
   let megaEvolved = false
   let sprites = []
 
-  // Less important areas where Pokemon can appear
-  const SPAWN_ZONES = [
-    { selector: '#other-work', weight: 3 },
-    { selector: '#footer', weight: 2 },
-    { selector: '.about-skills', weight: 2 },
-    { selector: '.marquee-strip', weight: 1 },
-    { selector: '.about-education', weight: 1 },
-  ]
-
-  // Register secret words
-  // "pokemon" triggers spawn, "megaevolve" triggers mega evolution
-  // These integrate with the existing secret word buffer
-  const origKeydown = null
-  let buffer2 = ''
-
-  document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-
-    buffer2 += e.key.toLowerCase()
-    if (buffer2.length > 20) buffer2 = buffer2.slice(-20)
-
-    if (buffer2.endsWith('pokemon') && !pokemonActive) {
-      buffer2 = ''
-      spawnPokemon()
-    } else if (buffer2.endsWith('megaevolve') && pokemonActive && !megaEvolved) {
-      buffer2 = ''
-      megaEvolve()
-    }
-  })
+  // Register triggers — integrated into existing SECRETS buffer
+  // (added 'pokemon' and 'megaevolve' to the main secret word system below)
 
   function getRandomSpawnPosition() {
-    // Pick a random zone weighted by importance
-    const zones = []
-    for (const z of SPAWN_ZONES) {
-      const el = document.querySelector(z.selector)
-      if (!el) continue
-      for (let i = 0; i < z.weight; i++) zones.push(el)
-    }
-
-    if (zones.length === 0) {
-      // Fallback: random position on screen
-      return {
-        x: 100 + Math.random() * (window.innerWidth - 200),
-        y: 200 + Math.random() * (window.innerHeight - 300),
-      }
-    }
-
-    const zone = zones[Math.floor(Math.random() * zones.length)]
-    const rect = zone.getBoundingClientRect()
-
+    // Spawn within the visible viewport — edges with padding
+    const pad = 100
     return {
-      x: rect.left + Math.random() * rect.width,
-      y: rect.top + Math.random() * Math.max(rect.height - 40, 20),
+      x: pad + Math.random() * (window.innerWidth - pad * 2 - 80),
+      y: pad + Math.random() * (window.innerHeight - pad * 2 - 80),
     }
   }
+
+  window.__pokemonSpawn = spawnPokemon
+  window.__pokemonMega = megaEvolve
 
   function spawnPokemon() {
     pokemonActive = true
@@ -1546,6 +1511,12 @@ window.addEventListener('resize', () => {
         // Start wandering
         wanderPokemon(container, img)
       }, i * 300)
+    })
+
+    // Preload sprites
+    selected.forEach(p => {
+      const preload = new Image()
+      preload.src = SPRITE_BASE + p.sprite + '.gif'
     })
 
     console.log(
