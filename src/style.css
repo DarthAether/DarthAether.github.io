@@ -100,6 +100,39 @@ img {
 #preloader-count {
 }
 
+
+/* ═══ SKIP LINK (a11y) ═══ */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 16px;
+  z-index: 10001;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #050505;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ═══ FOCUS RINGS (a11y) ═══ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Remove outline for mouse clicks, keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* ═══ CUSTOM CURSOR ═══ */
 .cursor-ring {
   position: fixed;
@@ -830,6 +863,15 @@ section {
   transition: width 1.2s ease-out;
 }
 
+.edu-detail {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
 .about-education {
   margin-top: 8px;
 }
@@ -854,10 +896,16 @@ section {
 
 /* ═══ RESEARCH ═══ */
 .research-card {
+  transition: border-color 0.3s ease, transform 0.3s ease;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 40px;
+}
+
+.research-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
 }
 
 .research-badge {
@@ -988,10 +1036,16 @@ a.contact-item:hover,
 
 /* ═══ EXPERIENCE ═══ */
 .experience-card {
+  transition: border-color 0.3s ease, transform 0.3s ease;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 40px;
+}
+
+.experience-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
 }
 
 .exp-header {
@@ -1392,6 +1446,7 @@ pre.modal-arch {
 
   /* Research */
   .research-card {
+  transition: border-color 0.3s ease, transform 0.3s ease;
     padding: 24px;
   }
 
@@ -1408,6 +1463,7 @@ pre.modal-arch {
   }
 
   .experience-card {
+  transition: border-color 0.3s ease, transform 0.3s ease;
     padding: 24px;
   }
 
@@ -1463,4 +1519,76 @@ pre.modal-arch {
   .hero-stats {
     gap: 16px;
   }
+}
+
+/* ═══ REDUCED MOTION (a11y) ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .marquee-row {
+    animation: none !important;
+  }
+
+  .scroll-line {
+    animation: none !important;
+  }
+
+  .hero-availability {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  #grain {
+    display: none !important;
+  }
+}
+
+/* ═══ PRINT STYLESHEET ═══ */
+@media print {
+  /* Hide non-essential elements */
+  #preloader, .cursor-ring, .cursor-dot, #grain,
+  #scroll-progress, .hero-bg, .hero-scroll, .marquee-strip,
+  .tech-popup, #project-modal, .nav-toggle, #mobile-menu,
+  .card-actions, .research-links, .btn { display: none !important; }
+
+  /* Reset colors for ink */
+  body { background: #fff !important; color: #111 !important; font-size: 11pt; }
+  a { color: #111 !important; text-decoration: underline; }
+  .hero-name, .section-title, .card-name, .about-name,
+  .exp-role, .research-paper-title, .contact-heading { color: #111 !important; }
+  .hero-role, .hero-bio, .card-desc, .about-text p,
+  .exp-highlights li, .research-contributions li,
+  .contact-value, .stat-label, .research-journal,
+  .research-authors { color: #333 !important; }
+  .stat-value, .metric-big, .exp-company, .edu-detail,
+  .contact-seeking { color: #222 !important; }
+
+  /* Layout fixes */
+  #navbar { position: static !important; background: none !important;
+    backdrop-filter: none !important; border: none !important; }
+  #hero { min-height: auto !important; padding: 20pt 0 !important; }
+  .hero-content { padding: 0 !important; }
+  .hero-stats { border-top: 1pt solid #ccc !important; }
+  .section-container { padding: 15pt 0 !important; }
+  .project-card, .research-card, .experience-card, .other-card {
+    background: none !important; border: 1pt solid #ccc !important;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .projects-grid, .research-grid, .other-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Show URLs after links */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #666;
+  }
+
+  /* Footer */
+  #footer { border-top: 1pt solid #ccc !important; }
 }

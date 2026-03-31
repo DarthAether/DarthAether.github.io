@@ -13,16 +13,21 @@ import { initProjectModal } from './projects.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ═══ Lenis smooth scroll ═══ */
-const lenis = new Lenis({
-  lerp: 0.12,
-  smoothWheel: true,
-  wheelMultiplier: 1,
-  touchMultiplier: 1.5,
-})
+/* ═══ Reduced motion detection ═══ */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time) => lenis.raf(time * 1000))
+/* ═══ Lenis smooth scroll ═══ */
+let lenis = null
+if (!prefersReducedMotion) {
+  lenis = new Lenis({
+    lerp: 0.12,
+    smoothWheel: true,
+    wheelMultiplier: 1,
+    touchMultiplier: 1.5,
+  })
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => lenis.raf(time * 1000))
+}
 gsap.ticker.lagSmoothing(500, 33)
 
 /* ═══ Preloader: seamless particle-to-page transition ═══
@@ -389,9 +394,11 @@ function initAll() {
   startClock()
   marqueeHover()
 
-  try { initThreeBackground() } catch (e) { console.warn('Three.js skipped:', e.message) }
+  if (!prefersReducedMotion) {
+    try { initThreeBackground() } catch (e) { console.warn('Three.js skipped:', e.message) }
+  }
   initCursor()
-  initGrain()
+  if (!prefersReducedMotion) initGrain()
   initProjectModal()
 }
 
@@ -444,7 +451,7 @@ function navbarBehavior() {
     link.addEventListener('click', (e) => {
       e.preventDefault()
       const target = link.getAttribute('href')
-      if (target) lenis.scrollTo(target, { offset: 0 })
+      if (target && lenis) lenis.scrollTo(target, { offset: 0 })
       closeMobileMenu()
     })
   })
@@ -487,7 +494,7 @@ function mobileMenu() {
     link.addEventListener('click', (e) => {
       e.preventDefault()
       const target = link.getAttribute('href')
-      if (target) lenis.scrollTo(target, { offset: 0 })
+      if (target && lenis) lenis.scrollTo(target, { offset: 0 })
       closeMobileMenu()
     })
   })
@@ -554,7 +561,7 @@ function scrollAnimations() {
   // Experience card
   revealOnScroll('.experience-card')
   // Research card
-  revealOnScroll('.research-card')
+  revealOnScroll('.research-card', { stagger: 0.12 })
 
   // Contact items — slide from left
   revealOnScroll('.contact-item', { x: -20, y: 0, stagger: 0.08 })
