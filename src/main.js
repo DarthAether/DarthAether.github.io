@@ -185,7 +185,7 @@ function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
   function animate() {
     // Semi-transparent clear for motion trail effect
     ctx.globalCompositeOperation = 'source-over'
-    ctx.fillStyle = 'rgba(5, 5, 5, 0.15)'
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.1)'
     ctx.fillRect(0, 0, W, H)
 
     frame++
@@ -234,16 +234,22 @@ function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
         p.x += dx * spd + swirlX
         p.y += dy * spd + swirlY
 
-        // Approaching target — fade out particle, reveal DOM
-        if (dist < 50) {
-          const closeness = 1 - dist / 50
-          p.alpha -= 0.02 * (1 + closeness * 2)
-          p.size = p.baseSize * (0.3 + 0.7 * (dist / 50))
+        // Reveal DOM element EARLY while particles are still dense around it
+        if (dist < 120 && p.targetEl && !fadedIn.has(p.targetEl)) {
+          fadedIn.add(p.targetEl)
+          // Start fading in the DOM while particles are still swarming
+          gsap.to(p.targetEl, { opacity: 1, duration: 0.8, ease: 'power1.out' })
+        }
 
-          if (p.targetEl && !fadedIn.has(p.targetEl)) {
-            fadedIn.add(p.targetEl)
-            gsap.to(p.targetEl, { opacity: 1, duration: 0.6, ease: 'power2.out' })
-          }
+        // Particles linger and fade SLOWLY — they glow around the text
+        if (dist < 60) {
+          const closeness = 1 - dist / 60
+          // Very slow fade so particles overlap with visible text
+          p.alpha -= 0.008 * (1 + closeness)
+          // Shrink gently
+          p.size = p.baseSize * (0.5 + 0.5 * (dist / 60))
+          // Particles settle and orbit the target briefly
+          p.swirlRadius = 10 * (dist / 60)
         }
       }
 
@@ -550,6 +556,67 @@ function scrollAnimations() {
 
   // Contact items — slide from left
   revealOnScroll('.contact-item', { x: -20, y: 0, stagger: 0.08 })
+
+  // Contact heading — dramatic scale reveal
+  const contactHeading = document.querySelector('.contact-heading')
+  if (contactHeading) {
+    gsap.set(contactHeading, { opacity: 0, scale: 0.8 })
+    ScrollTrigger.create({
+      trigger: contactHeading,
+      start: 'top 85%',
+      once: true,
+      onEnter() {
+        gsap.to(contactHeading, {
+          opacity: 1, scale: 1,
+          duration: 0.7, ease: 'back.out(1.2)',
+        })
+      },
+    })
+  }
+
+  // ── Project card 3D tilt on hover ──
+  document.querySelectorAll('.project-card, .other-card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width - 0.5  // -0.5 to 0.5
+      const y = (e.clientY - rect.top) / rect.height - 0.5
+      const tiltX = y * -8  // degrees
+      const tiltY = x * 8
+      card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px)`
+    })
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = ''
+    })
+  })
+
+  // ── Parallax on hero background ──
+  const heroBg = document.querySelector('.hero-bg')
+  if (heroBg) {
+    gsap.to(heroBg, {
+      y: 100,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1,
+      },
+    })
+  }
+
+  // ── Stagger section labels with accent dot pulse ──
+  document.querySelectorAll('.section-title').forEach((title) => {
+    const dot = title.querySelector('::before') // can't select pseudo, but we can animate the title
+    ScrollTrigger.create({
+      trigger: title,
+      start: 'top 85%',
+      once: true,
+      onEnter() {
+        // The dot is a pseudo-element, so animate a scale pulse on the title
+        gsap.fromTo(title, { '--dot-scale': 0 }, { '--dot-scale': 1, duration: 0.4, ease: 'back.out(3)' })
+      },
+    })
+  })
 }
 
 /* ─── Clock (IST with seconds) ─── */
@@ -718,6 +785,18 @@ function marqueeHover() {
   popup.addEventListener('mouseenter', () => clearTimeout(hideTimeout))
   popup.addEventListener('mouseleave', () => {
     hideTimeout = setTimeout(() => popup.classList.remove('visible'), 200)
+  })
+}
+
+/* ═══ Scroll progress bar ═══ */
+const progressBar = document.getElementById('scroll-progress')
+if (progressBar) {
+  ScrollTrigger.create({
+    start: 0,
+    end: 'max',
+    onUpdate(self) {
+      progressBar.style.width = `${self.progress * 100}%`
+    },
   })
 }
 

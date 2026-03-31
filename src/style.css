@@ -146,6 +146,19 @@ img {
   opacity: 0.035;
 }
 
+/* ═══ SCROLL PROGRESS ═══ */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #c4b5fd, var(--accent));
+  z-index: 1001;
+  transition: width 0.05s linear;
+  will-change: width;
+}
+
 /* ═══ NAVBAR ═══ */
 #navbar {
   position: fixed;
@@ -589,13 +602,14 @@ section {
   border-radius: 16px;
   padding: 32px;
   cursor: pointer;
-  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .project-card:hover {
   border-color: rgba(129, 140, 248, 0.2);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(129, 140, 248, 0.06);
 }
 
 .card-header {
