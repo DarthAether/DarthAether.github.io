@@ -24,18 +24,42 @@ lenis.on('scroll', ScrollTrigger.update)
 gsap.ticker.add((time) => lenis.raf(time * 1000))
 gsap.ticker.lagSmoothing(0)
 
-/* ═══ Preloader with particle explosion ═══ */
+/* ═══ Preloader: seamless particle-to-page transition ═══
+ *
+ * 3 phases, one continuous flow:
+ * Phase 1 (0-1.2s): Counter 0→100 with progress bar
+ * Phase 2 (1.2-1.5s): "100" explodes into 200 purple particles that scatter
+ * Phase 3 (1.5-3.0s): Particles swirl, converge toward hero text positions,
+ *   and as they arrive, the actual DOM elements fade in — particles dissolve
+ *   INTO the page. Seamless. No cut.
+ */
+
 window.addEventListener('load', () => {
-  // Init homepage IMMEDIATELY so it renders behind preloader
+  // Render homepage immediately but keep it invisible
   initAll()
+
+  // Hide all hero content — particles will "become" them
+  const heroEls = document.querySelectorAll(
+    '.hero-uni, .hero-name, .hero-role, .hero-bio, .hero-stats, .hero-scroll'
+  )
+  heroEls.forEach((el) => { el.style.opacity = '0' })
+
+  // Also hide navbar initially
+  const navbar = document.getElementById('navbar')
+  if (navbar) navbar.style.opacity = '0'
 
   const preloader = document.getElementById('preloader')
   const counter = document.getElementById('preloader-count')
   const fill = document.getElementById('preloader-fill')
   const bar = document.getElementById('preloader-bar')
 
-  if (!preloader) return
+  if (!preloader) {
+    heroEls.forEach((el) => { el.style.opacity = '1' })
+    if (navbar) navbar.style.opacity = '1'
+    return
+  }
 
+  // Phase 1: Count to 100
   const obj = { val: 0 }
   gsap.to(obj, {
     val: 100,
@@ -48,96 +72,206 @@ window.addEventListener('load', () => {
     width: '100%',
     duration: 1.2,
     ease: 'power2.inOut',
-    onComplete: () => particleExplosion(preloader, counter, bar),
+    onComplete: () => seamlessParticleTransition(preloader, counter, bar, heroEls, navbar),
   })
 })
 
-function particleExplosion(preloader, counter, bar) {
-  // Hide the progress bar
-  if (bar) gsap.to(bar, { opacity: 0, duration: 0.2 })
+function seamlessParticleTransition(preloader, counter, bar, heroEls, navbar) {
+  if (bar) gsap.to(bar, { opacity: 0, duration: 0.15 })
 
-  // Create a canvas over the preloader for particles
+  const W = window.innerWidth
+  const H = window.innerHeight
+
+  // Create fullscreen canvas
   const canvas = document.createElement('canvas')
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
-  canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;'
+  canvas.width = W * window.devicePixelRatio
+  canvas.height = H * window.devicePixelRatio
+  canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:10002;pointer-events:none;'
   document.body.appendChild(canvas)
   const ctx = canvas.getContext('2d')
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
 
-  // Get the "100" text position to spawn particles from it
+  // Counter position (explosion origin)
   const counterRect = counter.getBoundingClientRect()
-  const cx = counterRect.left + counterRect.width / 2
-  const cy = counterRect.top + counterRect.height / 2
+  const originX = counterRect.left + counterRect.width / 2
+  const originY = counterRect.top + counterRect.height / 2
 
-  // Create particles from the counter position
-  const PARTICLE_COUNT = 80
+  // Target positions: where hero elements are on the page
+  const targets = []
+  heroEls.forEach((el) => {
+    const r = el.getBoundingClientRect()
+    // Create multiple target points spread across each element
+    const pts = Math.max(3, Math.floor(r.width / 40))
+    for (let i = 0; i < pts; i++) {
+      targets.push({
+        x: r.left + (r.width * (i + 0.5)) / pts,
+        y: r.top + r.height / 2,
+        el,
+      })
+    }
+  })
+
+  // Also add targets for navbar
+  if (navbar) {
+    const nr = navbar.getBoundingClientRect()
+    for (let i = 0; i < 5; i++) {
+      targets.push({
+        x: nr.left + (nr.width * (i + 0.5)) / 5,
+        y: nr.top + nr.height / 2,
+        el: navbar,
+      })
+    }
+  }
+
+  // Create particles
+  const COUNT = 200
   const particles = []
-  const ACCENT_COLORS = ['#818cf8', '#a5b4fc', '#6366f1', '#c4b5fd', '#e0e7ff']
+  const COLORS = ['#818cf8', '#a5b4fc', '#6366f1', '#c4b5fd', '#e0e7ff', '#7c3aed']
 
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
+  for (let i = 0; i < COUNT; i++) {
     const angle = Math.random() * Math.PI * 2
-    const speed = 2 + Math.random() * 6
-    const size = 2 + Math.random() * 4
+    const speed = 3 + Math.random() * 8
+    const target = targets[i % targets.length]
+
     particles.push({
-      x: cx + (Math.random() - 0.5) * counterRect.width,
-      y: cy + (Math.random() - 0.5) * counterRect.height,
+      // Current position (starts at counter)
+      x: originX + (Math.random() - 0.5) * 60,
+      y: originY + (Math.random() - 0.5) * 30,
+      // Velocity (explosion outward)
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
-      size,
+      // Target position (where on the page to converge)
+      tx: target.x + (Math.random() - 0.5) * 30,
+      ty: target.y + (Math.random() - 0.5) * 20,
+      targetEl: target.el,
+      // Visual
+      size: 1.5 + Math.random() * 3.5,
       alpha: 1,
-      color: ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)],
-      decay: 0.012 + Math.random() * 0.015,
-      gravity: 0.04 + Math.random() * 0.03,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      // Timing
+      phase: 'explode', // explode → swirl → converge → done
+      explodeFrames: 20 + Math.floor(Math.random() * 15), // how long to fly outward
+      swirlFrames: 0,
+      convergeSpeed: 0.03 + Math.random() * 0.04,
+      // Swirl params
+      swirlRadius: 20 + Math.random() * 40,
+      swirlSpeed: (Math.random() - 0.5) * 0.15,
+      swirlAngle: Math.random() * Math.PI * 2,
     })
   }
 
-  // Hide the counter text
-  gsap.to(counter, { opacity: 0, scale: 1.5, duration: 0.15 })
+  // Hide counter
+  gsap.to(counter, { opacity: 0, scale: 2, duration: 0.2 })
 
-  // Fade the preloader background
+  // Track which elements have been faded in
+  const fadedIn = new Set()
+  let frame = 0
+  const TOTAL_FRAMES = 150 // ~2.5s at 60fps
+
+  // Fade preloader bg during phase 2-3
   gsap.to(preloader, {
     opacity: 0,
-    duration: 0.8,
-    delay: 0.1,
-    ease: 'power2.out',
+    duration: 1.0,
+    delay: 0.3,
+    ease: 'power1.out',
   })
 
-  // Animate particles
-  let frame = 0
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  function animate() {
+    ctx.clearRect(0, 0, W, H)
+    frame++
 
-    let alive = 0
+    const progress = Math.min(frame / TOTAL_FRAMES, 1) // 0→1 over animation
+
     for (const p of particles) {
       if (p.alpha <= 0) continue
-      alive++
 
-      p.x += p.vx
-      p.y += p.vy
-      p.vy += p.gravity
-      p.vx *= 0.99
-      p.alpha -= p.decay
+      if (p.phase === 'explode') {
+        // Phase 2: fly outward
+        p.x += p.vx
+        p.y += p.vy
+        p.vx *= 0.96
+        p.vy *= 0.96
+        p.explodeFrames--
+        if (p.explodeFrames <= 0) p.phase = 'swirl'
 
-      if (p.alpha <= 0) continue
+      } else if (p.phase === 'swirl') {
+        // Brief swirl before converging
+        p.swirlAngle += p.swirlSpeed
+        p.swirlFrames++
 
-      ctx.globalAlpha = p.alpha
-      ctx.fillStyle = p.color
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-      ctx.fill()
+        // Start converging toward target
+        const dx = p.tx - p.x
+        const dy = p.ty - p.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        // Add circular swirl motion
+        const swirlFade = Math.max(0, 1 - p.swirlFrames / 40)
+        p.x += dx * p.convergeSpeed + Math.cos(p.swirlAngle) * p.swirlRadius * swirlFade * 0.1
+        p.y += dy * p.convergeSpeed + Math.sin(p.swirlAngle) * p.swirlRadius * swirlFade * 0.1
+
+        // When close to target, start fading and reveal the element
+        if (dist < 30) {
+          p.alpha -= 0.04
+          p.size *= 0.97
+
+          // Fade in the target DOM element
+          if (p.targetEl && !fadedIn.has(p.targetEl)) {
+            fadedIn.add(p.targetEl)
+            gsap.to(p.targetEl, {
+              opacity: 1,
+              duration: 0.5,
+              ease: 'power2.out',
+            })
+          }
+        }
+      }
+
+      // Draw particle
+      if (p.alpha > 0) {
+        ctx.globalAlpha = Math.min(p.alpha, 1)
+        ctx.fillStyle = p.color
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2)
+        ctx.fill()
+
+        // Glow effect for larger particles
+        if (p.size > 2.5) {
+          ctx.globalAlpha = p.alpha * 0.15
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
     }
 
-    frame++
-    if (alive > 0 && frame < 120) {
-      requestAnimationFrame(animateParticles)
+    // Force-reveal any remaining elements after 80% progress
+    if (progress > 0.8) {
+      heroEls.forEach((el) => {
+        if (!fadedIn.has(el)) {
+          fadedIn.add(el)
+          gsap.to(el, { opacity: 1, duration: 0.4 })
+        }
+      })
+      if (navbar && !fadedIn.has(navbar)) {
+        fadedIn.add(navbar)
+        gsap.to(navbar, { opacity: 1, duration: 0.4 })
+      }
+    }
+
+    // Continue or cleanup
+    const alive = particles.some((p) => p.alpha > 0)
+    if (alive && frame < TOTAL_FRAMES) {
+      requestAnimationFrame(animate)
     } else {
-      // Cleanup
+      // Ensure everything is visible
+      heroEls.forEach((el) => { el.style.opacity = '1' })
+      if (navbar) navbar.style.opacity = '1'
       canvas.remove()
       preloader.style.display = 'none'
     }
   }
 
-  requestAnimationFrame(animateParticles)
+  requestAnimationFrame(animate)
 }
 
 /* ═══ Counter utility ═══ */
@@ -192,29 +326,13 @@ function initAll() {
 
 /* ─── Hero reveal ─── */
 function heroReveal() {
-  // Split name into chars and animate
+  // Don't animate hero elements here — the particle transition handles
+  // fading them in seamlessly. Just split text for styling and start counters.
   document.querySelectorAll('.name-line').forEach((line) => {
-    const split = new SplitType(line, { types: 'chars' })
-    if (split.chars && split.chars.length) {
-      gsap.set(split.chars, { y: 40, opacity: 0 })
-      gsap.to(split.chars, {
-        y: 0, opacity: 1,
-        stagger: 0.02, duration: 0.5, ease: 'power3.out',
-      })
-    }
+    new SplitType(line, { types: 'chars' })
   })
 
-  // Fade up supporting hero elements
-  const fadeEls = gsap.utils.toArray('.hero-uni, .hero-role, .hero-bio, .hero-stats, .hero-scroll')
-  if (fadeEls.length) {
-    gsap.set(fadeEls, { y: 30, opacity: 0 })
-    gsap.to(fadeEls, {
-      y: 0, opacity: 1,
-      stagger: 0.1, duration: 0.4, delay: 0.3, ease: 'power2.out',
-    })
-  }
-
-  // Hero stat counters
+  // Hero stat counters (start immediately — they'll be visible when particles converge)
   animateCounters('.hero-stats .stat-value[data-target]', false)
 }
 
