@@ -49,9 +49,8 @@ export function scrollAnimations() {
     })
   }
 
-  // Section titles — overflow-clip reveal (Dennis Snellenberg style)
+  // Section titles — 3D rotateX reveal (laying down → standing up)
   document.querySelectorAll('.section-title').forEach((title) => {
-    // Wrap inner content in a clip container
     const inner = document.createElement('span')
     inner.className = 'title-reveal-inner'
     inner.innerHTML = title.innerHTML
@@ -59,7 +58,12 @@ export function scrollAnimations() {
     title.appendChild(inner)
     title.style.overflow = 'hidden'
 
-    gsap.set(inner, { y: '110%' })
+    gsap.set(inner, {
+      rotateX: 90,
+      y: '50%',
+      opacity: 0,
+      transformOrigin: 'bottom center',
+    })
 
     ScrollTrigger.create({
       trigger: title,
@@ -67,16 +71,44 @@ export function scrollAnimations() {
       once: true,
       onEnter() {
         gsap.to(inner, {
+          rotateX: 0,
           y: '0%',
-          duration: 0.9,
+          opacity: 1,
+          duration: 1,
           ease: 'power4.out',
         })
       },
     })
   })
 
-  // Project cards
-  revealOnScroll('.project-card', { stagger: 0.1 })
+  // Project cards — 3D flip cascade (deal like playing cards)
+  const projectCards = gsap.utils.toArray('.project-card')
+  projectCards.forEach((card, i) => {
+    gsap.set(card, {
+      opacity: 0,
+      rotateY: -60,
+      x: -40,
+      scale: 0.9,
+      transformPerspective: 800,
+    })
+
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 88%',
+      once: true,
+      onEnter() {
+        gsap.to(card, {
+          opacity: 1,
+          rotateY: 0,
+          x: 0,
+          scale: 1,
+          duration: 0.9,
+          delay: i * 0.15,
+          ease: 'power3.out',
+        })
+      },
+    })
+  })
 
   // Other cards
   revealOnScroll('.other-card', { stagger: 0.1 })
@@ -163,6 +195,21 @@ export function scrollAnimations() {
       },
     })
   }
+
+  // ── Floating parallax on stat labels ──
+  document.querySelectorAll('.stat-label').forEach((label, i) => {
+    const speed = 10 + i * 8 // different speeds create depth
+    gsap.to(label, {
+      y: speed,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero-stats',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+      },
+    })
+  })
 
   // ── Stagger section labels with accent dot pulse ──
   document.querySelectorAll('.section-title').forEach((title) => {
